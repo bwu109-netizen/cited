@@ -10,6 +10,7 @@ Batches (Anthropic Message Batches) reserve the summed worst case of all their r
 submission, because a submitted batch cannot be stopped half-way without paying for finished requests.
 """
 import json
+import threading
 import time
 import uuid
 from contextlib import contextmanager
@@ -18,6 +19,9 @@ from pathlib import Path
 
 class BudgetExceeded(RuntimeError):
     pass
+
+
+_LOCK = threading.RLock()  # check-then-reserve must be atomic across worker threads
 
 
 class Budget:
@@ -45,18 +49,19 @@ class Budget:
 
     def _append(self, row):
         row["t"] = time.time()
-        with self.path.open("a") as f:
+        with _LOCK, self.path.open("a") as f:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     def open(self, worst_case_usd, label):
         """Reserve explicitly (for batches that outlive one process). Returns the reservation id."""
-        st = self.status()
-        if worst_case_usd > st["left"]:
-            raise BudgetExceeded(f"{label}: worst case ${worst_case_usd:.4f} > left ${st['left']:.4f} "
-                                 f"(cap ${self.cap}, spent ${st['spent']:.4f}, reserved ${st['reserved']:.4f})")
-        rid = uuid.uuid4().hex
-        self._append({"kind": "reserve", "id": rid, "usd": worst_case_usd, "label": label})
-        return rid
+        with _LOCK:
+            st = self.status()
+            if worst_case_usd > st["left"]:
+                raise BudgetExceeded(f"{label}: worst case ${worst_case_usd:.4f} > left ${st['left']:.4f} "
+                                     f"(cap ${self.cap}, spent ${st['spent']:.4f}, reserved ${st['reserved']:.4f})")
+            rid = uuid.uuid4().hex
+            self._append({"kind": "reserve", "id": rid, "usd": worst_case_usd, "label": label})
+            return rid
 
     def close(self, rid, actual_usd, label="", estimated=False):
         self._append({"kind": "settle", "id": rid, "usd": actual_usd, "label": label, "estimated": estimated})
@@ -71,12 +76,7 @@ class Budget:
     @contextmanager
     def reserve(self, worst_case_usd, label):
         """Reserve the worst case; yields a settle(actual_usd) function. Raises BudgetExceeded up front."""
-        st = self.status()
-        if worst_case_usd > st["left"]:
-            raise BudgetExceeded(f"{label}: worst case ${worst_case_usd:.4f} > left ${st['left']:.4f} "
-                                 f"(cap ${self.cap}, spent ${st['spent']:.4f}, reserved ${st['reserved']:.4f})")
-        rid = uuid.uuid4().hex
-        self._append({"kind": "reserve", "id": rid, "usd": worst_case_usd, "label": label})
+        rid = self.open(worst_case_usd, label)
         settled = {}
 
         def settle(actual_usd):

@@ -1,5 +1,5 @@
 {
- "version": "draft-2026-10-06",
+ "version": "frozen-2026-10-06",
  "budget_usd": 20,
  "reports": [
   {
@@ -562,6 +562,15 @@
    "max_tokens": 16000,
    "fallback": null
   },
+  "ds_simple": {
+   "provider": "deepseek",
+   "model": "deepseek-flash",
+   "reasoning_effort": "low",
+   "temperature": 0,
+   "max_tokens": 16000,
+   "fallback": null,
+   "note": "simple direct ask: one-sentence question, no definitions (eval_design §3.5)"
+  },
   "fable_pipeline": {
    "provider": "anthropic-batch",
    "model": "claude-fable-5-1",
@@ -590,5 +599,14 @@
    "eval2",
    "eval3"
   ]
- }
+ },
+ "stability_cells": [
+  "ds_simple",
+  "ds_direct",
+  "ds_pipeline"
+ ],
+ "fable_batches": [
+  "direct",
+  "pipeline"
+ ]
 }

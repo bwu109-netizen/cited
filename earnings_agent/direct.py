@@ -60,6 +60,24 @@ def build_direct_prompt(doc, template, pages):
     return "", user
 
 
+SIMPLE_QUESTION = "请告诉我这份报告期内的营业收入、归母净利润、基本每股收益、毛利、经营活动现金流量净额分别是多少"
+
+
+def build_simple_prompt(doc, pages):
+    """'Simple' direct ask (eval_design §3.5): same report text and preamble as build_direct_prompt, but the
+    question is one plain sentence — no definitions, no period wording, no request for original numbers.
+    Identical for every company and template (banks are asked the same five items)."""
+    body = "\n\n".join(f"[PAGE {p['page']}]\n{p['text']}" for p in pages)
+    user = f"""以下是 {doc.get('name')}（{doc['code']}）的《{doc['title']}》全文，按页标注了页码。
+
+{body}
+
+---
+
+{SIMPLE_QUESTION}"""
+    return "", user
+
+
 PARSER_SYSTEM = """你是一个解析器。你只看给定的“回答文本”，把其中每个指标的数字原样抄出来。
 硬性规则：
 1. 只能使用回答文本里出现的内容，不要使用任何其他知识，不要计算，不要换算，不要补全。

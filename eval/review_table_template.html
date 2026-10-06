@@ -128,6 +128,8 @@ function render() {
     html += '<section class="row" id="row' + i + '" data-row="' + i + '">' +
       '<div class="head"><span class="field">' + esc(r.field_name) + '</span><span class="ptype">' +
       esc(r.ptype_name) + '（' + esc(r.ptype) + '）</span>' + (r.agree ? '<span class="agree">各来源一致</span>' : '') +
+      (r.kind === "dispute" ? '<span class="agree" style="color:var(--bad)">争议：自动答案（XBRL/AKShare）与多数方法不同</span>' :
+       r.kind === "pending" ? '<span class="ptype">无自动答案</span>' : '') +
       '<span class="status" id="st' + i + '"></span></div>' +
       '<div class="def">口径：' + esc(r.definition) + '</div>' +
       '<div class="cands">' + cands + '</div>' +

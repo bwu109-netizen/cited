@@ -99,6 +99,24 @@ def candidates_from_pipeline(result):
     return out
 
 
+def candidates_from_direct(parsed):
+    out = {}
+    for it in parsed or []:
+        if it.get("value") is None or it.get("field") not in SCORED:
+            continue
+        label = f"{it.get('raw_value')} {it.get('raw_unit') or it.get('raw_currency') or ''}".strip()
+        out.setdefault((it["field"], it["period_type"]), []).append(
+            {"value": it["value"], "currency": it.get("currency"), "label": label, "raw": it.get("raw_value"),
+             "page": None, "derived": False})
+    return out
+
+
+def candidates_from_key(key_items):
+    """Automatic answer key value shown as one more (unlabelled) candidate on dispute rows."""
+    return {(k["field"], k["ptype"]): [{"value": k["value"], "currency": k.get("currency"), "label": None,
+                                         "raw": None, "page": None, "derived": False}] for k in key_items}
+
+
 def candidates_from_benchmark(result):
     out = {}
     if result.get("benchmark_invalid"):  # currency-converted source: not a valid candidate
@@ -143,9 +161,12 @@ def build_rows(reports):
         doc = r["doc"]
         pages = load_doc_pages(doc)
         part_urls = [p["url"] for p in doc.get("parts") or []] or [doc["url"]]
-        keys = sorted({k for cs in rep["candidate_sets"] for k in cs} |
-                      {(i["field"], i["period_type"]) for i in r["items"] if i["field"] in SCORED},
-                      key=lambda k: (SCORED.index(k[0]), k[1]))
+        if rep.get("only") is not None:
+            keys = sorted({tuple(k) for k in rep["only"]}, key=lambda k: (SCORED.index(k[0]), k[1]))
+        else:
+            keys = sorted({k for cs in rep["candidate_sets"] for k in cs} |
+                          {(i["field"], i["period_type"]) for i in r["items"] if i["field"] in SCORED},
+                          key=lambda k: (SCORED.index(k[0]), k[1]))
         for field, ptype in keys:
             cands = merge_candidates([cs.get((field, ptype), []) for cs in rep["candidate_sets"]])
             for c in cands:
@@ -176,6 +197,7 @@ def build_rows(reports):
                 "ptype_name": PERIOD_NAMES.get(ptype, ptype),
                 "definition": d,
                 "candidates": cands, "agree": len(cands) == 1 and cands[0]["votes"] > 1,
+                "kind": (rep.get("kinds") or {}).get((field, ptype), "review"),
             })
     # inside a company: rows where every source agrees first (quick confirmations), then the rest
     order = {}
@@ -193,6 +215,33 @@ def render(rows, title, table_id):
     return TEMPLATE().replace("/*__DATA__*/null", data).replace("__TITLE__", html.escape(title))
 
 
+def eval_rows(run):
+    """Rows the reviewer must decide: every HK item, US/A items with no automatic truth, and disputes."""
+    sys.path.insert(0, str(ROOT / "eval"))
+    from score_eval import DS_CELLS, analyse
+
+    cfg = json.loads((ROOT / "eval" / "config.json").read_text())
+    reports = []
+    for x in analyse(run, cfg["reports"]):
+        outs, ctx = x["outputs"], x["ctx"]
+        pipe = outs.get("ds_pipeline") or {"items": [], "benchmarks": ctx["benchmarks"], "benchmark_invalid": None}
+        sets = [candidates_from_pipeline(pipe)] + [candidates_from_direct((outs.get(c) or {}).get("parsed"))
+                                                   for c in DS_CELLS if c != "ds_pipeline"]
+        kinds = {tuple(it): "pending" for it in x["pending"]}
+        if ctx["doc"]["market"] == "hk":
+            sets.append(candidates_from_benchmark(pipe))  # Eastmoney, unless the EPS probe says converted
+        disputed = [d["item"] for d in x["disputes"]]
+        if disputed:
+            sets.append(candidates_from_key([k for k in x["key"] if (k["field"], k["ptype"]) in disputed]))
+            kinds.update({tuple(it): "dispute" for it in disputed})
+        only = [tuple(i) for i in x["pending"]] + [tuple(i) for i in disputed]
+        if not only:
+            continue
+        result = dict(pipe, doc=ctx["doc"], template=ctx["template"])
+        reports.append({"result": result, "candidate_sets": sets, "only": only, "kinds": kinds})
+    return build_rows(reports)
+
+
 def demo():
     reports = []
     for f in sorted((ROOT / "data/output").glob("hk_*_2026H1.json")):
@@ -203,7 +252,7 @@ def demo():
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("runs", nargs="*", help="evaluation output JSONs, grouped per report by doc code")
+    ap.add_argument("--run", default="eval1", help="evaluation run id (data/eval/<run>)")
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
@@ -211,7 +260,8 @@ if __name__ == "__main__":
         rows, tid, title = demo(), "hk-demo-dev3", "港股标准答案核对表（演示：开发集 3 家）"
         out = Path(a.out or ROOT / "data/review/hk_answer_key_demo.html")
     else:
-        sys.exit("eval mode is wired up after the frozen runs (needs the direct-ask parser output); use --demo")
+        rows, tid, title = eval_rows(a.run), f"answer-key-{a.run}", f"标准答案核对表（{a.run}：港股全部 + 美股/A 股待定与争议）"
+        out = Path(a.out or ROOT / f"data/review/answer_key_{a.run}.html")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render(rows, title, tid))
     print(f"{len(rows)} rows -> {out}")

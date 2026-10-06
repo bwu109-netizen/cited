@@ -27,8 +27,8 @@ FROZEN = [
     # model calls, parameters, prices, budget
     "earnings_agent/config.py", "earnings_agent/llm_client.py", "earnings_agent/anthropic_batch.py",
     "earnings_agent/budget.py",
-    # scoring
-    "eval/score.py",
+    # scoring and running
+    "eval/score.py", "eval/score_eval.py", "eval/run_eval.py",
     # rules as written
     "docs/metrics_spec.md", "docs/eval_design.md",
 ]

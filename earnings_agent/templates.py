@@ -51,8 +51,15 @@ def template_from_structure(statement_pages):
 
 
 def choose_template(industry, statement_pages):
+    """An explicit financial industry code (bank / insurance) wins: conglomerates such as insurers that own a
+    bank show net interest income and no cost of revenue, which the structure test reads as "bank".
+    The structure decides only when the code says general or is missing (e.g. holding companies)."""
     by_code = template_from_code(industry)
     by_struct = template_from_structure(statement_pages)
+    if by_code in ("bank", "insurance"):
+        notes = ({"template_conflict": f"行业代码判为 {by_code}，报表结构判为 {by_struct}，按行业代码"}
+                 if by_struct and by_struct != by_code else {})
+        return by_code, notes
     if by_code and by_struct and by_code != by_struct:
         return by_struct, {"template_conflict": f"行业代码判为 {by_code}，报表结构判为 {by_struct}，按报表结构"}
     return by_struct or by_code or "general", {}

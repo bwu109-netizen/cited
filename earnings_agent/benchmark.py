@@ -47,6 +47,24 @@ def us_benchmark(doc, template):
             if rows:
                 out.extend(rows)
                 break
+    # some filers stopped tagging NetIncomeLoss (seen: AIG 2026, NIO 20-F): parent = ProfitLoss − NCI
+    if not any(r["field"] == "net_income_parent" for r in out):
+        def facts_of(tag):
+            res = {}
+            for unit, facts in ug.get(tag, {}).get("units", {}).items():
+                for f in facts:
+                    if f.get("accn") == accn and f["end"] == end and "start" in f:
+                        res[(unit, f["start"])] = float(f["val"])
+            return res
+        total, nci = facts_of("ProfitLoss"), facts_of("NetIncomeLossAttributableToNoncontrollingInterest")
+        for (unit, start), v in total.items():
+            if (unit, start) in nci:
+                days = (date.fromisoformat(end) - date.fromisoformat(start)).days
+                out.append({"field": "net_income_parent", "period_type": type_from_days(days), "period_end": end,
+                            "value": v - nci[(unit, start)], "currency": unit.split("/")[0],
+                            "source": "SEC companyfacts",
+                            "source_field": "ProfitLoss − NetIncomeLossAttributableToNoncontrollingInterest",
+                            "note": "NetIncomeLoss 未打标签，按 XBRL 推导"})
     return out
 
 

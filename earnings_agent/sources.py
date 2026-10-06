@@ -36,7 +36,7 @@ def sec_cik(ticker):
     raise LookupError(f"ticker {ticker} not found in SEC company_tickers.json")
 
 
-def fetch_us(code, period):
+def fetch_us(code, period, download=True):
     year, part = parse_period(period)
     cik = sec_cik(code)
     sub = sec_submissions(cik)
@@ -52,17 +52,33 @@ def fetch_us(code, period):
     accns = [a for a, (fy, fp, _) in meta.items() if fy == year and fp == want_fp]
     r = sub["filings"]["recent"]
     idx = [i for i, a in enumerate(r["accessionNumber"]) if a in accns and r["form"][i] in PERIODIC_FORMS]
+    # "recent" holds only the last 1,000 filings; frequent issuers (e.g. banks filing 424B2s daily) push
+    # their 10-Qs into the older pages listed under filings.files
+    for extra in ([] if idx else sub["filings"].get("files", [])):
+        r = cached_json(("sec-sub-page", extra["name"]),
+                        lambda n=extra["name"]: SEC.get(f"https://data.sec.gov/submissions/{n}").json(), daily=False)
+        idx = [i for i, a in enumerate(r["accessionNumber"]) if a in accns and r["form"][i] in PERIODIC_FORMS]
+        if idx:
+            break
     if not idx:
-        raise LookupError(f"no {want_fp} FY{year} periodic filing for {code} (CIK {cik}) in SEC recent filings")
+        # companyfacts may lack a filing's XBRL (seen: Citigroup 2026 10-Qs): fall back to the report date
+        fye = sub.get("fiscalYearEnd") or "1231"
+        nominal = period_end(period, f"{fye[:2]}-{fye[2:]}")
+        r = sub["filings"]["recent"]
+        idx = [i for i, f in enumerate(r["form"]) if f in PERIODIC_FORMS and r["reportDate"][i]
+               and abs((date.fromisoformat(r["reportDate"][i]) - nominal).days) <= 10
+               and (f in ("10-K", "20-F", "40-F")) == (part == "FY")]
+    if not idx:
+        raise LookupError(f"no {want_fp} FY{year} periodic filing for {code} (CIK {cik}) in SEC filings")
     i = min(idx, key=lambda k: r["filingDate"][k])  # original, not later amendments
     accn = r["accessionNumber"][i]
     url = (f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accn.replace('-', '')}/{r['primaryDocument'][i]}")
-    path = cached_download(SEC, url, f"us/{code}", f"{accn}_{r['primaryDocument'][i]}")
+    path = cached_download(SEC, url, f"us/{code}", f"{accn}_{r['primaryDocument'][i]}") if download else None
     fye = sub.get("fiscalYearEnd") or "1231"
     return {
         "market": "us", "code": code.upper(), "name": sub["name"], "period": period,
         "period_end": r["reportDate"][i], "fiscal_year_end": f"{fye[:2]}-{fye[2:]}",
-        "doc_kind": r["form"][i], "title": f"{r['form'][i]} {r['reportDate'][i]}", "url": url, "path": str(path),
+        "doc_kind": r["form"][i], "title": f"{r['form'][i]} {r['reportDate'][i]}", "url": url, "path": str(path) if path else None,
         "filed": r["filingDate"][i],
         "industry": {"source": "SEC SIC", "code": sub.get("sic"), "name": sub.get("sicDescription")},
         "extra": {"cik": cik, "accession": accn},
@@ -96,7 +112,7 @@ def cninfo_industry(code):
     return cached_json(("cninfo-profile", code), fetch, daily=False)
 
 
-def fetch_a(code, period):
+def fetch_a(code, period, download=True):
     year, part = parse_period(period)
     org = cninfo_org(code)
     column = "szse" if code.startswith(("0", "3")) else "sse"
@@ -105,18 +121,22 @@ def fetch_a(code, period):
                 seDate=f"{year}-01-01~{year + 1}-12-31", sortName="", sortType="", isHLtitle="true")
     anns = cached_json(("cninfo-q", code, period), lambda: WEB.post(
         "http://www.cninfo.com.cn/new/hisAnnouncement/query", data=data).json().get("announcements") or [])
-    cands = [a for a in anns if f"{year}年" in a["announcementTitle"] and not any(k in a["announcementTitle"] for k in A_SKIP)]
+    def title(a):  # some titles carry spaces ("2025 年半年度报告") or highlight tags
+        return re.sub(r"<[^>]+>|\s+", "", a["announcementTitle"])
+    # "2025年半年度报告" / "2025 年…" / "工商银行2025半年度报告" (no 年)
+    year_re = re.compile(rf"(?<!\d){year}(?!\d)")
+    cands = [a for a in anns if year_re.search(title(a)) and not any(k in title(a) for k in A_SKIP)]
     if not cands:
         raise LookupError(f"cninfo: no {period} report for {code}; titles seen: {[a['announcementTitle'] for a in anns][:6]}")
     a = cands[0]  # newest first: a 更新后/修订 version wins over the original
     url = "http://static.cninfo.com.cn/" + a["adjunctUrl"]
-    path = cached_download(WEB, url, f"a/{code}", a["adjunctUrl"].split("/")[-1])
+    path = cached_download(WEB, url, f"a/{code}", a["adjunctUrl"].split("/")[-1]) if download else None
     ind = cninfo_industry(code)
     title = re.sub(r"<[^>]+>", "", a["announcementTitle"])
     return {
         "market": "a", "code": code, "name": a.get("secName") or ind.get("company"), "period": period,
         "period_end": period_end(period).isoformat(), "fiscal_year_end": "12-31",
-        "doc_kind": "定期报告", "title": title, "url": url, "path": str(path),
+        "doc_kind": "定期报告", "title": title, "url": url, "path": str(path) if path else None,
         "filed": datetime.fromtimestamp(a["announcementTime"] / 1000).date().isoformat(),
         "industry": {"source": "cninfo 证监会行业", "code": None, "name": ind.get("name")},
         "extra": {"orgId": org["orgId"]},
@@ -167,7 +187,7 @@ def _hk_date(s):
     return datetime.strptime(s, "%d/%m/%Y %H:%M").date()
 
 
-def fetch_hk(code, period):
+def fetch_hk(code, period, download=True):
     year, part = parse_period(period)
     prof = hk_profile(code)
     pend = period_end(period, prof["fye"])
@@ -179,8 +199,21 @@ def fetch_hk(code, period):
 
     anns = [r for r in hk_search(sid, 10000, 3, year=year)
             if HK_RESULT_CAT[part] in r["LONG_TEXT"] and in_window(r, 150)]
+    parts = []
     if anns:
-        row, kind = sorted(anns, key=lambda r: _hk_date(r["DATE_TIME"]))[0], "業績公告"
+        first_day = min(_hk_date(r["DATE_TIME"]) for r in anns)
+        same_day = sorted([r for r in anns if _hk_date(r["DATE_TIME"]) == first_day],
+                          key=lambda r: datetime.strptime(r["DATE_TIME"], "%d/%m/%Y %H:%M"))
+        # some issuers split one results announcement into several PDFs ("第一部分" / "第二部分" / "Part 1")
+        # ...or put the full statements in a second same-day document (e.g. HKEX: announcement at 12:00,
+        # condensed financial statements at 16:45): merge every same-day results document
+        multi = [r for r in same_day if re.search(r"第[一二三四五六]部|Part\s*\d", r["TITLE"], re.I)] or same_day
+        if len(multi) > 1:
+            multi.sort(key=lambda r: (_part_no(r["TITLE"]), r["DATE_TIME"]))
+            row, parts = multi[0], multi
+        else:
+            row = same_day[0]
+        kind = "業績公告"
     else:
         reports = [r for r in hk_search(sid, 40000, year=year)
                    if part in HK_REPORT_CAT and HK_REPORT_CAT[part] in r["LONG_TEXT"] and in_window(r, 200)]
@@ -188,18 +221,35 @@ def fetch_hk(code, period):
             raise LookupError(f"HKEXnews: no results announcement or report for {code} {period} (period end {pend})")
         row, kind = sorted(reports, key=lambda r: _hk_date(r["DATE_TIME"]))[0], "中期報告/年報"
     url = HKEX + row["FILE_LINK"]
-    path = cached_download(WEB, url, f"hk/{code}", url.split("/")[-1])
+    path = cached_download(WEB, url, f"hk/{code}", url.split("/")[-1]) if download else None
+    part_paths = []
+    for r in parts:
+        u = HKEX + r["FILE_LINK"]
+        part_paths.append({"title": r["TITLE"], "url": u,
+                           "path": str(cached_download(WEB, u, f"hk/{code}", u.split("/")[-1])) if download else None})
     return {
         "market": "hk", "code": code, "name": prof.get("name"), "period": period, "period_end": pend.isoformat(),
-        "fiscal_year_end": prof["fye"], "doc_kind": kind, "title": row["TITLE"], "url": url, "path": str(path),
+        "fiscal_year_end": prof["fye"], "doc_kind": kind, "title": row["TITLE"], "url": url, "path": str(path) if path else None,
         "filed": _hk_date(row["DATE_TIME"]).isoformat(),
         "industry": {"source": "东财港股 所属行业", "code": None, "name": prof.get("industry")},
         "extra": {"stockId": sid, "category": row["LONG_TEXT"]},
+        "parts": part_paths,  # non-empty when the announcement is split over several PDFs (merged on parse)
     }
+
+
+_CN_NUM = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6}
+
+
+def _part_no(title):
+    m = re.search(r"第([一二三四五六])部", title) or re.search(r"Part\s*(\d)", title, re.I)
+    if not m:
+        return 99
+    return _CN_NUM.get(m.group(1)) or int(m.group(1))
 
 
 FETCHERS = {"us": fetch_us, "a": fetch_a, "hk": fetch_hk}
 
 
-def fetch_report(market, code, period):
-    return FETCHERS[market](code, period)
+def fetch_report(market, code, period, download=True):
+    """download=False only resolves which document it would be (no file fetched; 'path' is None)."""
+    return FETCHERS[market](code, period, download=download)

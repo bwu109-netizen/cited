@@ -68,6 +68,17 @@ def html_pages(path, chunk=6000):
     return [{"page": i, "text": t} for i, t in enumerate(texts, 1)]
 
 
+def load_doc_pages(doc):
+    """Pages of a fetched report; multi-part announcements are concatenated with continuous page numbers
+    (each page also keeps its part index and page-within-part)."""
+    parts = [p["path"] for p in doc.get("parts") or []] or [doc["path"]]
+    out = []
+    for k, path in enumerate(parts, 1):
+        for pg in load_pages(path):
+            out.append({"page": len(out) + 1, "text": pg["text"], "part": k, "part_page": pg["page"]})
+    return out
+
+
 def load_pages(path):
     cp = _cache_path(path)
     if cp.exists():

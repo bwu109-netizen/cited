@@ -6,7 +6,7 @@ from . import config
 from .benchmark import get_benchmark, get_prior
 from .extract import run_extraction, run_followup
 from .locate import select_pages
-from .parse import load_pages
+from .parse import load_doc_pages
 from .sources import fetch_report
 from .templates import choose_template
 from .verify import verify_report
@@ -22,7 +22,7 @@ def _sum_usage(recs):
 def extract(market, code, period, use_llm_cache=True):
     t0 = time.time()
     doc = fetch_report(market, code, period)
-    pages = load_pages(doc["path"])
+    pages = load_doc_pages(doc)
     selected, groups = select_pages(pages)
     by_num = {p["page"]: p["text"] for p in pages}
     template, tnotes = choose_template(doc["industry"], [by_num[n] for n in groups.get("income", [])[:2]])

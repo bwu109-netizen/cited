@@ -7,9 +7,10 @@ from .textnorm import _T2S, for_match
 
 GROUPS = {
     "income": [r"合并利润表", r"合併利潤表", r"綜合損益表", r"综合损益表", r"綜合收益表", r"综合收益表", r"損益表",
-               r"收益表", r"利润表", r"statementsofoperations", r"statementsofincome", r"incomestatement",
+               r"收益表", r"利润表", r"经营状况表", r"經營狀況表", r"损益账", r"損益賬", r"经营业绩表", r"全面亏损表", r"全面虧損表", r"亏损表",
+               r"statementsofoperations", r"statementsofcomprehensiveloss", r"statementofcomprehensiveloss", r"statementsofincome", r"incomestatement",
                r"statementofincome", r"statementofprofitorloss", r"consolidatedstatementsofcomprehensiveincome"],
-    "cashflow": [r"现金流量表", r"現金流量表", r"statementsofcashflows", r"statementofcashflows", r"cashflowstatement",
+    "cashflow": [r"现金流量表", r"現金流量表", r"现金流动表", r"現金流動表", r"statementsofcashflows", r"statementofcashflows", r"cashflowstatement",
                  r"经营活动产生的现金流量净额", r"經營活動(所得|產生)的?現金(流量)?淨額", r"營業活動產生之現金淨額",
                  r"netcash(provided|used|generated)", r"經營活動", r"经营活动"],
     "highlights": [r"主要会计数据和财务指标", r"主要會計數據", r"财务摘要", r"財務摘要", r"财务概要", r"財務概要", r"業績摘要",
@@ -34,11 +35,13 @@ def score_pages(pages):
     for p in pages:
         t = for_match(p["text"])
         dens = math.log1p(len(BIG_NUMBER.findall(p["text"])))
-        head = t[:400]  # statement titles sit at the top of the page; notes merely mention them
+        # statement titles sit in the first lines of the page; notes merely mention them further down
+        head = for_match("\n".join(p["text"].split("\n")[:3]))
         s = {}
         for g, pats in GROUPS.items():
-            hits = sum(len(re.findall(pat, t)) for pat in pats)
-            hits += 5 * sum(len(re.findall(pat, head)) for pat in pats)
+            # body mentions are capped: notes repeat phrases like "計入損益賬" dozens of times
+            hits = min(3, sum(len(re.findall(pat, t)) for pat in pats))
+            hits += 10 * sum(len(re.findall(pat, head)) for pat in pats)
             s[g] = hits * (0.3 + dens)  # TOC pages mention every title but carry few numbers
         scores.append(s)
     return scores

@@ -88,6 +88,15 @@ def candidates_from_pipeline(result):
                 parts.append((op + " " if k else ("− " if op == "−" else "")) + str(c.get("raw_value")).strip("()"))
             unit = comps[0].get("raw_unit", "") if comps else ""
             label = f"推导：{' '.join(parts)} {unit}".strip() if comps else f"推导：{it.get('formula', '')}"
+            if not comps and it["field"] == "gross_profit":  # code-derived: revenue − |cost of revenue|
+                rev = next((x for x in result["items"] if x["field"] == "revenue"
+                            and x.get("period_type") == it["period_type"]), None)
+                cost = next((x for x in result["items"] if x["field"] == "cost_of_revenue"
+                             and x.get("period_type") == it["period_type"]), None)
+                if rev and cost:
+                    label = (f"推导：营业收入 {rev.get('raw_value')} − 营业成本 {str(cost.get('raw_value')).strip('()')} "
+                             f"{cost.get('raw_unit') or ''}").strip()
+                    comps = [cost]
             # point the snippet at the first component's line in the report
             raw = comps[0].get("raw_value") if comps else None
             page = (comps[0].get("page_used") or comps[0].get("page")) if comps else page

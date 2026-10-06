@@ -1,0 +1,594 @@
+{
+ "version": "draft-2026-10-06",
+ "budget_usd": 20,
+ "reports": [
+  {
+   "market": "us",
+   "code": "MSFT",
+   "period": "2026FY",
+   "name": "MICROSOFT CORP",
+   "template": "general",
+   "prior_period": "2026Q3",
+   "reason": "软件；6 月财年 10-K"
+  },
+  {
+   "market": "us",
+   "code": "NVDA",
+   "period": "2027Q2",
+   "name": "NVIDIA CORP",
+   "template": "general",
+   "prior_period": "2027Q1",
+   "reason": "半导体；1 月财年，FY 标签跨自然年"
+  },
+  {
+   "market": "us",
+   "code": "AMZN",
+   "period": "2026Q2",
+   "name": "AMAZON COM INC",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "电商/云；无毛利行"
+  },
+  {
+   "market": "us",
+   "code": "KO",
+   "period": "2025FY",
+   "name": "COCA COLA CO",
+   "template": "general",
+   "prior_period": "2025Q3",
+   "reason": "消费品；10-K 年报"
+  },
+  {
+   "market": "us",
+   "code": "PFE",
+   "period": "2026Q2",
+   "name": "PFIZER INC",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "医药"
+  },
+  {
+   "market": "us",
+   "code": "CVX",
+   "period": "2026Q2",
+   "name": "CHEVRON CORP",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "能源（原选 XOM：2026 年改为新控股公司 CIK，上一期 10-Q 在旧 CIK 下，换掉）"
+  },
+  {
+   "market": "us",
+   "code": "TSLA",
+   "period": "2026Q2",
+   "name": "Tesla, Inc.",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "汽车"
+  },
+  {
+   "market": "us",
+   "code": "INTC",
+   "period": "2026Q2",
+   "name": "INTEL CORP",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "半导体；近年亏损"
+  },
+  {
+   "market": "us",
+   "code": "RIVN",
+   "period": "2026Q2",
+   "name": "Rivian Automotive, Inc. / DE",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "电动车；亏损"
+  },
+  {
+   "market": "us",
+   "code": "UBER",
+   "period": "2026Q2",
+   "name": "Uber Technologies, Inc",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "平台"
+  },
+  {
+   "market": "us",
+   "code": "SNAP",
+   "period": "2026Q2",
+   "name": "Snap Inc",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "互联网；以千美元列报、亏损"
+  },
+  {
+   "market": "us",
+   "code": "BAC",
+   "period": "2026Q2",
+   "name": "BANK OF AMERICA CORP /DE/",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行"
+  },
+  {
+   "market": "us",
+   "code": "WFC",
+   "period": "2026Q2",
+   "name": "WELLS FARGO & COMPANY/MN",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行"
+  },
+  {
+   "market": "us",
+   "code": "USB",
+   "period": "2026Q2",
+   "name": "US BANCORP \\DE\\",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行（原选 C：2026 年 10-Q 在 companyfacts 里没有 XBRL，无自动标准答案，换掉）"
+  },
+  {
+   "market": "us",
+   "code": "MET",
+   "period": "2026Q2",
+   "name": "METLIFE INC",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "寿险"
+  },
+  {
+   "market": "us",
+   "code": "PGR",
+   "period": "2026Q2",
+   "name": "PROGRESSIVE CORP/OH/",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "财险"
+  },
+  {
+   "market": "us",
+   "code": "AIG",
+   "period": "2026Q2",
+   "name": "AMERICAN INTERNATIONAL GROUP, INC.",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "保险"
+  },
+  {
+   "market": "us",
+   "code": "PDD",
+   "period": "2025FY",
+   "name": "PDD Holdings Inc.",
+   "template": "general",
+   "prior_period": "2024FY",
+   "reason": "中概股 20-F；人民币"
+  },
+  {
+   "market": "us",
+   "code": "BIDU",
+   "period": "2025FY",
+   "name": "Baidu, Inc.",
+   "template": "general",
+   "prior_period": "2024FY",
+   "reason": "中概股 20-F；人民币"
+  },
+  {
+   "market": "us",
+   "code": "NIO",
+   "period": "2025FY",
+   "name": "NIO Inc.",
+   "template": "general",
+   "prior_period": "2024FY",
+   "reason": "中概股 20-F；人民币、亏损"
+  },
+  {
+   "market": "a",
+   "code": "002594",
+   "period": "2026H1",
+   "name": "比亚迪",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "汽车"
+  },
+  {
+   "market": "a",
+   "code": "000333",
+   "period": "2026H1",
+   "name": "美的集团",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "家电"
+  },
+  {
+   "market": "a",
+   "code": "601857",
+   "period": "2025FY",
+   "name": "中国石油",
+   "template": "general",
+   "prior_period": "2025Q3",
+   "reason": "能源；年报（长文档）"
+  },
+  {
+   "market": "a",
+   "code": "600900",
+   "period": "2026Q1",
+   "name": "长江电力",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "电力；一季报（短文档）"
+  },
+  {
+   "market": "a",
+   "code": "601012",
+   "period": "2026H1",
+   "name": "隆基绿能",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "光伏；亏损"
+  },
+  {
+   "market": "a",
+   "code": "688981",
+   "period": "2026H1",
+   "name": "中芯国际",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "科创板半导体；千元"
+  },
+  {
+   "market": "a",
+   "code": "600276",
+   "period": "2026H1",
+   "name": "恒瑞医药",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "医药"
+  },
+  {
+   "market": "a",
+   "code": "603288",
+   "period": "2026Q1",
+   "name": "海天味业",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "食品；一季报"
+  },
+  {
+   "market": "a",
+   "code": "000002",
+   "period": "2026H1",
+   "name": "万科A",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "地产；亏损"
+  },
+  {
+   "market": "a",
+   "code": "000725",
+   "period": "2026H1",
+   "name": "京东方Ａ",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "面板"
+  },
+  {
+   "market": "a",
+   "code": "002475",
+   "period": "2026H1",
+   "name": "立讯精密",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "消费电子制造"
+  },
+  {
+   "market": "a",
+   "code": "601888",
+   "period": "2026H1",
+   "name": "中国中免",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "免税零售"
+  },
+  {
+   "market": "a",
+   "code": "002714",
+   "period": "2026H1",
+   "name": "牧原股份",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "养殖"
+  },
+  {
+   "market": "a",
+   "code": "601899",
+   "period": "2026H1",
+   "name": "紫金矿业",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "矿业"
+  },
+  {
+   "market": "a",
+   "code": "601398",
+   "period": "2025FY",
+   "name": "工商银行",
+   "template": "bank",
+   "prior_period": "2025Q3",
+   "reason": "银行；年报、百万元"
+  },
+  {
+   "market": "a",
+   "code": "000001",
+   "period": "2026Q1",
+   "name": "平安银行",
+   "template": "bank",
+   "prior_period": "2025FY",
+   "reason": "银行；一季报"
+  },
+  {
+   "market": "a",
+   "code": "002142",
+   "period": "2026H1",
+   "name": "宁波银行",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行"
+  },
+  {
+   "market": "a",
+   "code": "601318",
+   "period": "2026H1",
+   "name": "中国平安",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "保险（新准则）"
+  },
+  {
+   "market": "a",
+   "code": "601628",
+   "period": "2026H1",
+   "name": "中国人寿",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "寿险"
+  },
+  {
+   "market": "a",
+   "code": "601601",
+   "period": "2026H1",
+   "name": "中国太保",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "保险"
+  },
+  {
+   "market": "hk",
+   "code": "01810",
+   "period": "2026H1",
+   "name": "小米集团",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "消费电子；人民币千元"
+  },
+  {
+   "market": "hk",
+   "code": "09618",
+   "period": "2026H1",
+   "name": "京东集团股份有限公司",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "电商；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "00941",
+   "period": "2026H1",
+   "name": "中国移动有限公司",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "电信；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "02331",
+   "period": "2026H1",
+   "name": "李宁有限公司",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "运动服饰；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "09868",
+   "period": "2026H1",
+   "name": "小鹏集团",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "电动车；亏损"
+  },
+  {
+   "market": "hk",
+   "code": "09660",
+   "period": "2026H1",
+   "name": "地平线",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "智驾芯片；亏损"
+  },
+  {
+   "market": "hk",
+   "code": "01024",
+   "period": "2026H1",
+   "name": "快手科技",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "短视频；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "00992",
+   "period": "2027Q1",
+   "name": "联想集团有限公司",
+   "template": "general",
+   "prior_period": "2026FY",
+   "reason": "PC；3 月财年、美元、季度业绩"
+  },
+  {
+   "market": "hk",
+   "code": "01910",
+   "period": "2026H1",
+   "name": "新秀丽集团有限公司",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "消费品；美元"
+  },
+  {
+   "market": "hk",
+   "code": "00388",
+   "period": "2026H1",
+   "name": "香港交易及结算所有限公司",
+   "template": "general",
+   "prior_period": "2026Q1",
+   "reason": "交易所；港币"
+  },
+  {
+   "market": "hk",
+   "code": "00001",
+   "period": "2026H1",
+   "name": "长江和记实业有限公司",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "综合企业；港币"
+  },
+  {
+   "market": "hk",
+   "code": "00002",
+   "period": "2026H1",
+   "name": "中电控股有限公司",
+   "template": "general",
+   "prior_period": "2025FY",
+   "reason": "公用事业；港币"
+  },
+  {
+   "market": "hk",
+   "code": "00016",
+   "period": "2026FY",
+   "name": "新鸿基地产发展有限公司",
+   "template": "general",
+   "prior_period": "2026H1",
+   "reason": "地产；6 月财年年度业绩、港币"
+  },
+  {
+   "market": "hk",
+   "code": "02388",
+   "period": "2026H1",
+   "name": "中银香港(控股)有限公司",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行；港币"
+  },
+  {
+   "market": "hk",
+   "code": "02888",
+   "period": "2026H1",
+   "name": "渣打集团有限公司",
+   "template": "bank",
+   "prior_period": "2025FY",
+   "reason": "银行；美元"
+  },
+  {
+   "market": "hk",
+   "code": "03328",
+   "period": "2026H1",
+   "name": "交通银行股份有限公司",
+   "template": "bank",
+   "prior_period": "2026Q1",
+   "reason": "银行；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "01299",
+   "period": "2026H1",
+   "name": "友邦保险控股有限公司",
+   "template": "insurance",
+   "prior_period": "2025FY",
+   "reason": "寿险；美元"
+  },
+  {
+   "market": "hk",
+   "code": "02378",
+   "period": "2026H1",
+   "name": "保诚有限公司",
+   "template": "insurance",
+   "prior_period": "2025FY",
+   "reason": "寿险；美元"
+  },
+  {
+   "market": "hk",
+   "code": "06060",
+   "period": "2026H1",
+   "name": "众安在线财产保险股份有限公司",
+   "template": "insurance",
+   "prior_period": "2025FY",
+   "reason": "互联网保险；人民币"
+  },
+  {
+   "market": "hk",
+   "code": "02328",
+   "period": "2026H1",
+   "name": "中国人民财产保险股份有限公司",
+   "template": "insurance",
+   "prior_period": "2026Q1",
+   "reason": "财险；人民币"
+  }
+ ],
+ "fable_subset": "eval/fable_subset.json",
+ "stability_subset": "eval/stability_subset.json",
+ "cells": {
+  "ds_pipeline": {
+   "provider": "deepseek",
+   "model": "deepseek-flash",
+   "reasoning_effort": "low",
+   "temperature": 0,
+   "max_tokens": 16000,
+   "fallback": null
+  },
+  "ds_direct": {
+   "provider": "deepseek",
+   "model": "deepseek-flash",
+   "reasoning_effort": "low",
+   "temperature": 0,
+   "max_tokens": 16000,
+   "fallback": null
+  },
+  "fable_pipeline": {
+   "provider": "anthropic-batch",
+   "model": "claude-fable-5-1",
+   "effort": "default (high)",
+   "temperature": "API default",
+   "max_tokens": 32000
+  },
+  "fable_direct": {
+   "provider": "anthropic-batch",
+   "model": "claude-fable-5-1",
+   "effort": "default (high)",
+   "temperature": "API default",
+   "max_tokens": 32000
+  },
+  "direct_parser": {
+   "provider": "deepseek",
+   "model": "deepseek-flash",
+   "reasoning_effort": "low",
+   "temperature": 0
+  }
+ },
+ "runs": {
+  "main": "eval1",
+  "stability": [
+   "eval1",
+   "eval2",
+   "eval3"
+  ]
+ }
+}

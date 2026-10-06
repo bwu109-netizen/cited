@@ -2,7 +2,6 @@
 The model copies numbers and units verbatim; it never converts or computes."""
 import json
 
-from .llm_client import cached_complete_json
 from .periods import cumulative_type, parse_period
 from .templates import FIELDS
 
@@ -116,14 +115,8 @@ def build_prompt(doc, template, pages, selected):
     return SYSTEM, user
 
 
-def run_extraction(doc, template, pages, selected, use_cache=True):
-    system, user = build_prompt(doc, template, pages, selected)
-    rec = cached_complete_json(system, user, use_cache=use_cache)
-    return rec, {"system_chars": len(system), "user_chars": len(user)}
-
-
-def run_followup(doc, template, pages, selected, missing, use_cache=True):
-    """Ask once more, only for the (field, period_type) pairs the first reply lacked."""
+def build_followup_prompt(doc, template, pages, selected, missing):
+    """Same pages and instructions, asking once more only for the (field, period_type) pairs that were missing."""
     system, user = build_prompt(doc, template, pages, selected)
     names = {"Q": "单季（三个月）", "H": "半年累计", "YTD": "年初至今累计", "FY": "全年"}
     ask = "\n".join(f"- {f}，period_type={t}（{names.get(t, t)}）" for f, t in missing)
@@ -133,5 +126,4 @@ def run_followup(doc, template, pages, selected, missing, use_cache=True):
 上一轮回答缺少下面这些字段/期间。请只针对它们再看一遍页面，按同样的 JSON 格式只返回 items
 （industry_metrics 返回空数组）。如果页面里确实没有，就不要填，并在 "not_found" 数组里写明字段名和原因。
 {ask}"""
-    rec = cached_complete_json(system, user, use_cache=use_cache)
-    return rec
+    return system, user

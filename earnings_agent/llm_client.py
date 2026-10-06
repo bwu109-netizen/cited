@@ -132,6 +132,22 @@ class OpenAICompatClient(BaseClient):
     extra_body: dict = {}
     max_tokens = 16000
 
+    def complete_text(self, system: str, user: str) -> tuple[str, dict]:
+        """Free-text reply (direct-ask cell): no JSON mode, no format instructions added."""
+        msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": user}]
+        body = {"model": self.model, "temperature": 0, "max_tokens": self.max_tokens, "messages": msgs,
+                **self.extra_body}
+        headers = {"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"}
+        data = self._post(f"{self.base}/chat/completions", headers, body)
+        try:
+            content = data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            raise LLMError(f"Unexpected response: {json.dumps(data)[:300]}")
+        u = data.get("usage", {})
+        cached = u.get("prompt_cache_hit_tokens", (u.get("prompt_tokens_details") or {}).get("cached_tokens", 0))
+        return content, {"input_tokens": u.get("prompt_tokens", 0), "cached_input_tokens": cached or 0,
+                         "output_tokens": u.get("completion_tokens", 0), "model": self.model}
+
     def complete_json(self, system: str, user: str) -> tuple[dict, dict]:
         body = {
             "model": self.model,
@@ -300,8 +316,15 @@ def _worst_case(client, system: str, user: str) -> float:
     return worst_case_usd((len(system) + len(user)) * _TOKENS_PER_CHAR_UPPER, max_out, p["input_miss"], p["output"])
 
 
+def cached_complete_text(system: str, user: str, providers: list[str] | None = None,
+                         use_cache: bool = True, budget=None, label: str = "", salt: str = "") -> dict:
+    """Free-text version of cached_complete_json (same caching / budget rules); rec["data"] is the text."""
+    return cached_complete_json(system, user, providers, use_cache, budget, label, salt, mode="text")
+
+
 def cached_complete_json(system: str, user: str, providers: list[str] | None = None,
-                         use_cache: bool = True, budget=None, label: str = "") -> dict:
+                         use_cache: bool = True, budget=None, label: str = "", salt: str = "",
+                         mode: str = "json") -> dict:
     """Call the first working provider; replies are cached by (provider, model, prompt) hash.
 
     Returns {"data", "usage", "cost_usd", "provider", "model", "from_cache"}. Cost/usage of a cache hit
@@ -314,7 +337,9 @@ def cached_complete_json(system: str, user: str, providers: list[str] | None = N
     errors = []
     for name in providers:
         client = get_client(name)
-        key = hashlib.sha256(json.dumps([name, client.model, system, user]).encode()).hexdigest()
+        # salt = run id: stability reruns must not hit the local cache of the main run
+        key = hashlib.sha256(json.dumps([name, client.model, system, user] + ([mode] if mode != "json" else [])
+                                        + ([salt] if salt else [])).encode()).hexdigest()
         path = cache_dir / f"{key}.json"
         if use_cache and path.exists():
             rec = json.loads(path.read_text())
@@ -324,11 +349,12 @@ def cached_complete_json(system: str, user: str, providers: list[str] | None = N
         for attempt in range(2):  # one retry when the reply is not valid JSON
             try:
                 t0 = datetime.now(timezone.utc)
+                call = client.complete_text if mode == "text" else client.complete_json
                 if budget is None:
-                    data, usage = client.complete_json(system, user)
+                    data, usage = call(system, user)
                 else:  # reserve the worst case first; BudgetExceeded propagates and stops the run
                     with budget.reserve(_worst_case(client, system, user), label or name) as settle:
-                        data, usage = client.complete_json(system, user)
+                        data, usage = call(system, user)
                         settle(cost_usd(usage, t0) or 0.0)
                 break
             except LLMError as e:

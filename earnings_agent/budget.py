@@ -48,6 +48,26 @@ class Budget:
         with self.path.open("a") as f:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
+    def open(self, worst_case_usd, label):
+        """Reserve explicitly (for batches that outlive one process). Returns the reservation id."""
+        st = self.status()
+        if worst_case_usd > st["left"]:
+            raise BudgetExceeded(f"{label}: worst case ${worst_case_usd:.4f} > left ${st['left']:.4f} "
+                                 f"(cap ${self.cap}, spent ${st['spent']:.4f}, reserved ${st['reserved']:.4f})")
+        rid = uuid.uuid4().hex
+        self._append({"kind": "reserve", "id": rid, "usd": worst_case_usd, "label": label})
+        return rid
+
+    def close(self, rid, actual_usd, label="", estimated=False):
+        self._append({"kind": "settle", "id": rid, "usd": actual_usd, "label": label, "estimated": estimated})
+
+    def is_open(self, rid):
+        state = None
+        for r in self._rows():
+            if r.get("id") == rid:
+                state = r["kind"]
+        return state == "reserve"
+
     @contextmanager
     def reserve(self, worst_case_usd, label):
         """Reserve the worst case; yields a settle(actual_usd) function. Raises BudgetExceeded up front."""

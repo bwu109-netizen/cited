@@ -1,0 +1,39 @@
+{
+ "_note": "Manual answer-key entries for the 9-report dev set. Only values checked by hand against the report page during phase 1 review (docs/phase1_review_notes.md 3.4). US/A-share items not listed here come from XBRL / AKShare automatically. HK has no automatic key. 'tol' overrides the printed-precision tolerance for derived values (sum of component rounding).",
+ "hk:00700:2026H1": [
+  {"field": "revenue", "ptype": "H", "raw": "401,243", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "revenue", "ptype": "Q", "raw": "204,785", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "net_income_parent", "ptype": "H", "raw": "114,115", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "net_income_parent", "ptype": "Q", "raw": "56,022", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "eps_basic", "ptype": "H", "raw": "12.639", "unit": "元", "currency": "CNY", "page": 18},
+  {"field": "eps_basic", "ptype": "Q", "raw": "6.207", "unit": "元", "currency": "CNY", "page": 18},
+  {"field": "gross_profit", "ptype": "H", "raw": "229,698", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "gross_profit", "ptype": "Q", "raw": "118,433", "unit": "人民币百万元", "currency": "CNY", "page": 18},
+  {"field": "operating_cash_flow", "ptype": "H", "raw": "154,061", "unit": "人民币百万元", "currency": "CNY", "page": 24}
+ ],
+ "hk:03690:2026H1": [
+  {"field": "revenue", "ptype": "H", "raw": "195,681,950", "unit": "人民币千元", "currency": "CNY", "page": 25},
+  {"field": "net_income_parent", "ptype": "H", "raw": "(4,672,487)", "unit": "人民币千元", "currency": "CNY", "page": 25},
+  {"field": "eps_basic", "ptype": "H", "raw": "(0.76)", "unit": "元", "currency": "CNY", "page": 25},
+  {"field": "gross_profit", "ptype": "H", "raw": "61,064,869", "unit": "人民币千元", "currency": "CNY", "page": 25},
+  {"field": "operating_cash_flow", "ptype": "H", "raw": "2,719,085", "unit": "人民币千元", "currency": "CNY", "page": 29}
+ ],
+ "hk:00005:2026H1": [
+  {"field": "revenue", "ptype": "H", "raw": "37,742", "unit": "百万美元", "currency": "USD", "page": 10, "note": "扣预期信贷损失前"},
+  {"field": "net_income_parent", "ptype": "H", "raw": "15,259", "unit": "百万美元", "currency": "USD", "tol": 1000000, "note": "推导：普通股股东 14,626 + 其他权益持有人 633（第 10 页）"},
+  {"field": "eps_basic", "ptype": "H", "raw": "0.85", "unit": "美元", "currency": "USD", "page": 10},
+  {"field": "operating_cash_flow", "ptype": "H", "raw": "81,762", "unit": "百万美元", "currency": "USD", "page": 16},
+  {"field": "net_interest_income", "ptype": "H", "raw": "18,233", "unit": "百万美元", "currency": "USD", "page": 10},
+  {"field": "ppop", "ptype": "H", "raw": "20,316", "unit": "百万美元", "currency": "USD", "tol": 1000000, "note": "推导：37,742 − 17,426（第 10 页）"}
+ ],
+ "a:600036:2026H1": [
+  {"field": "ppop", "ptype": "H", "raw": "119,974", "unit": "人民币百万元", "currency": "CNY", "tol": 2000000, "note": "推导：178,181 − 1,508 − 52,912 − 3,787（第 88 页）"}
+ ],
+ "us:JPM:2026Q2": [
+  {"field": "ppop", "ptype": "Q", "raw": "30,031", "unit": "$ in millions", "currency": "USD", "page": 18, "note": "reported，不是 managed 30,706"},
+  {"field": "ppop", "ptype": "H", "raw": "53,017", "unit": "$ in millions", "currency": "USD", "page": 18}
+ ],
+ "us:BABA:2026FY": [
+  {"field": "gross_profit", "ptype": "FY", "raw": "407,534", "unit": "RMB in millions", "currency": "CNY", "tol": 1000000, "note": "推导：1,023,670 − 616,136（第 224 页）；无 GrossProfit 标签"}
+ ]
+}

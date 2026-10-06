@@ -285,8 +285,23 @@ def cost_usd(usage: dict, at: datetime | None = None) -> float | None:
     return (hit * p["input_hit"] + miss * p["input_miss"] + usage.get("output_tokens", 0) * p["output"]) / 1e6
 
 
+# conservative input-token estimate for budget reservations (dev set: <= 0.67 token/char)
+_TOKENS_PER_CHAR_UPPER = 0.8
+
+
+def _worst_case(client, system: str, user: str) -> float:
+    from .budget import worst_case_usd
+
+    table = config.PRICES.get(client.model, {})
+    p = table.get("flat") or table.get("peak")
+    if not p:
+        raise LLMError(f"no price entry for {client.model}: refusing to run under a budget")
+    max_out = getattr(client, "max_tokens", 16000)
+    return worst_case_usd((len(system) + len(user)) * _TOKENS_PER_CHAR_UPPER, max_out, p["input_miss"], p["output"])
+
+
 def cached_complete_json(system: str, user: str, providers: list[str] | None = None,
-                         use_cache: bool = True) -> dict:
+                         use_cache: bool = True, budget=None, label: str = "") -> dict:
     """Call the first working provider; replies are cached by (provider, model, prompt) hash.
 
     Returns {"data", "usage", "cost_usd", "provider", "model", "from_cache"}. Cost/usage of a cache hit
@@ -309,7 +324,12 @@ def cached_complete_json(system: str, user: str, providers: list[str] | None = N
         for attempt in range(2):  # one retry when the reply is not valid JSON
             try:
                 t0 = datetime.now(timezone.utc)
-                data, usage = client.complete_json(system, user)
+                if budget is None:
+                    data, usage = client.complete_json(system, user)
+                else:  # reserve the worst case first; BudgetExceeded propagates and stops the run
+                    with budget.reserve(_worst_case(client, system, user), label or name) as settle:
+                        data, usage = client.complete_json(system, user)
+                        settle(cost_usd(usage, t0) or 0.0)
                 break
             except LLMError as e:
                 errors.append(f"{name}: {str(e)[:200]}")

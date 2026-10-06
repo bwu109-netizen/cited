@@ -1,0 +1,77 @@
+{
+ "seed": 20261006,
+ "subset": [
+  {
+   "market": "us",
+   "code": "MSFT",
+   "stratum": [
+    "general",
+    "USD"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "PDD",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "BAC",
+   "stratum": [
+    "bank",
+    "USD"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "601012",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "601398",
+   "stratum": [
+    "bank",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "601628",
+   "stratum": [
+    "insurance",
+    "CNY"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "02888",
+   "stratum": [
+    "bank",
+    "USD"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "00388",
+   "stratum": [
+    "general",
+    "HKD"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "01810",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --muted: #6b6b66; --line: #e3e2dd;
+    --accent: #2f6fdd; --ok: #1f8a4c; --bad: #c2412d; --warn: #b7791f; --mark: #fff3a3; --focus: #2f6fdd33;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --card: #1f1f1d; --ink: #ecebe6; --muted: #a09f98; --line: #34332f;
+            --accent: #7aa7ff; --ok: #5cc98a; --bad: #ff8a73; --warn: #f0b85a; --mark: #5c5216; --focus: #7aa7ff33; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
+           padding: 10px 16px; }
+  header h1 { font-size: 17px; margin: 0 0 6px; }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--ok); width: 0; transition: width .2s; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); }
+  button, select, input { font: inherit; color: var(--ink); }
+  button { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  main { max-width: 1100px; margin: 0 auto; padding: 12px 16px 80px; }
+  h2 { font-size: 15px; margin: 22px 0 8px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  h2 small { color: var(--muted); font-weight: normal; }
+  .row { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0;
+         scroll-margin-top: 110px; }
+  .row.focus { outline: 3px solid var(--focus); border-color: var(--accent); }
+  .row.done { border-left: 4px solid var(--ok); }
+  .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .field { font-weight: 600; }
+  .ptype { color: var(--muted); font-size: 13px; }
+  .def { color: var(--muted); font-size: 12px; margin: 2px 0 6px; }
+  .agree { color: var(--ok); font-size: 12px; }
+  .cands { display: grid; gap: 6px; }
+  .cand { display: grid; grid-template-columns: 26px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 6px;
+          padding: 6px 8px; cursor: pointer; }
+  .cand.picked { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+  .key { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); border: 1px solid var(--line); border-radius: 4px;
+         text-align: center; height: 20px; line-height: 18px; }
+  .val { font-variant-numeric: tabular-nums; }
+  .val b { font-weight: 600; }
+  .base { color: var(--muted); font-size: 12px; margin-left: 6px; }
+  pre.snip { margin: 6px 0 0; padding: 6px 8px; background: var(--bg); border-radius: 4px; font: 12px/1.45 ui-monospace,
+             "SF Mono", Menlo, monospace; white-space: pre-wrap; word-break: break-all; max-height: 170px; overflow: auto; }
+  pre.snip .hitline { background: color-mix(in srgb, var(--accent) 10%, transparent); display: block; }
+  mark { background: var(--mark); color: inherit; padding: 0 1px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 13px; }
+  .actions button.on { border-color: var(--bad); color: var(--bad); }
+  .actions button.na.on { border-color: var(--warn); color: var(--warn); }
+  .edit { display: none; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
+  .edit.show { display: flex; }
+  .edit input[type=text] { width: 170px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--card); }
+  .comment { width: 100%; margin-top: 6px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px;
+             background: var(--card); display: none; }
+  .comment.show { display: block; }
+  .status { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .help { font-size: 12px; color: var(--muted); }
+  kbd { font: 11px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; }
+  a { color: var(--accent); }
+  @media (max-width: 640px) {
+    .base { display: block; margin: 0; }
+    header { position: static; }
+    .tools .help { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title"></h1>
+  <div class="bar"><div id="bar"></div></div>
+  <div class="tools">
+    <span id="count"></span>
+    <button id="next-todo">跳到下一条未做</button>
+    <button id="export-json">导出 JSON</button>
+    <button id="export-csv">导出 CSV</button>
+    <label><button id="import-btn" type="button">导入 JSON</button><input id="import" type="file" accept=".json" hidden></label>
+    <span class="help"><kbd>j</kbd>/<kbd>k</kbd> 上下 · <kbd>1</kbd>–<kbd>9</kbd> 选候选 · <kbd>0</kbd> 都不对 ·
+      <kbd>e</kbd> 改成 X · <kbd>n</kbd> 原文没有/不适用 · <kbd>c</kbd> 备注 · <kbd>Enter</kbd> 下一条</span>
+  </div>
+</header>
+<main id="main"></main>
+<script>
+const DATA = /*__DATA__*/null;
+const KEY = "review:" + DATA.id;
+const UNITS = [["元", 1], ["千元", 1e3], ["万元", 1e4], ["百万元", 1e6], ["亿元", 1e8], ["十亿", 1e9], ["每股（元）", 1]];
+let answers = {};
+try { answers = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { answers = {}; }
+let focus = 0;
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(answers)); } catch (e) { /* private mode: keep in memory */ }
+  progress();
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c])); }
+
+function snippetHTML(sn) {
+  if (!sn) return '<pre class="snip">（没有在原文定位到这个数字）</pre>';
+  const re = new RegExp(sn.hl, "g");
+  const body = sn.lines.map((l, i) => {
+    const h = esc(l).replace(re, m => "<mark>" + m + "</mark>");
+    return i === sn.hit ? '<span class="hitline">' + h + "</span>" : h;
+  }).join("\n");
+  return '<pre class="snip">' + body + '</pre><div class="help">第 ' + sn.page + ' 页 · <a href="' + esc(sn.url) +
+         '" target="_blank" rel="noopener">打开 PDF 此页</a></div>';
+}
+
+function render() {
+  const main = document.getElementById("main");
+  document.getElementById("title").textContent = DATA.title;
+  let html = "", company = null;
+  DATA.rows.forEach((r, i) => {
+    if (r.company !== company) {
+      company = r.company;
+      html += '<h2>' + esc(r.company) + ' <small>' + esc(r.report) + ' · 期末 ' + esc(r.period_end) +
+              ' · <a href="' + esc(r.doc_url) + '" target="_blank" rel="noopener">PDF</a></small></h2>';
+    }
+    const cands = r.candidates.map((c, k) =>
+      '<div class="cand" data-row="' + i + '" data-k="' + k + '"><div class="key">' + (k + 1) + '</div><div>' +
+      '<span class="val"><b>' + esc(c.display) + '</b></span><span class="base">= ' + esc(c.base) + '</span>' +
+      snippetHTML(c.snippet) + '</div></div>').join("") ||
+      '<div class="help">没有候选值：请按原文用“改成 X”填写，或标“原文没有”。</div>';
+    html += '<section class="row" id="row' + i + '" data-row="' + i + '">' +
+      '<div class="head"><span class="field">' + esc(r.field_name) + '</span><span class="ptype">' +
+      esc(r.ptype_name) + '（' + esc(r.ptype) + '）</span>' + (r.agree ? '<span class="agree">各来源一致</span>' : '') +
+      '<span class="status" id="st' + i + '"></span></div>' +
+      '<div class="def">口径：' + esc(r.definition) + '</div>' +
+      '<div class="cands">' + cands + '</div>' +
+      '<div class="actions">' +
+        '<button data-act="none" data-row="' + i + '">都不对 <kbd>0</kbd></button>' +
+        '<button data-act="edit" data-row="' + i + '">改成 X <kbd>e</kbd></button>' +
+        '<button class="na" data-act="na" data-row="' + i + '">原文没有 / 不适用 <kbd>n</kbd></button>' +
+        '<button data-act="comment" data-row="' + i + '">备注 <kbd>c</kbd></button>' +
+        '<button data-act="clear" data-row="' + i + '">清除</button>' +
+      '</div>' +
+      '<div class="edit" id="edit' + i + '">原文数字 <input type="text" id="ev' + i + '" placeholder="如 401,243 或 (2,353)">' +
+        '<select id="eu' + i + '">' + UNITS.map((u, j) => '<option value="' + j + '">' + u[0] + '</option>').join("") + '</select>' +
+        '<select id="ec' + i + '"><option>CNY</option><option>HKD</option><option>USD</option></select>' +
+        '<span class="base" id="eb' + i + '"></span><button data-act="save-edit" data-row="' + i + '">保存</button></div>' +
+      '<input class="comment" id="cm' + i + '" placeholder="备注（例如：口径不同的原因）">' +
+      '</section>';
+  });
+  main.innerHTML = html;
+  DATA.rows.forEach((r, i) => paint(i));
+  progress();
+}
+
+function parseRaw(s) {
+  const t = s.replace(/[,\s，]/g, "");
+  const neg = /^\(.*\)$/.test(t) || /^[-−–]/.test(t);
+  const v = parseFloat(t.replace(/[()−–-]/g, ""));
+  return isNaN(v) ? null : (neg ? -v : v);
+}
+function editValue(i) {
+  const v = parseRaw(document.getElementById("ev" + i).value || "");
+  const u = UNITS[+document.getElementById("eu" + i).value];
+  return v === null ? null : {value: v * u[1], raw: document.getElementById("ev" + i).value, unit: u[0],
+                              currency: document.getElementById("ec" + i).value};
+}
+
+function paint(i) {
+  const a = answers[DATA.rows[i].id];
+  const row = document.getElementById("row" + i);
+  row.classList.toggle("done", !!a && a.decision !== undefined);
+  row.querySelectorAll(".cand").forEach(el => el.classList.toggle("picked", !!a && a.decision === "pick" && +el.dataset.k === a.k));
+  row.querySelectorAll(".actions button").forEach(b => b.classList.toggle("on",
+    !!a && ((b.dataset.act === "none" && a.decision === "none") || (b.dataset.act === "na" && a.decision === "na") ||
+            (b.dataset.act === "edit" && a.decision === "edit"))));
+  const st = document.getElementById("st" + i);
+  st.textContent = !a ? "未做" : {pick: "已选候选 " + (a.k + 1), none: "都不对（待补值）", edit: "已改为 " + (a.raw || "") + " " + (a.unit || ""),
+                                 na: "原文没有 / 不适用"}[a.decision] || "";
+  const cm = document.getElementById("cm" + i);
+  if (a && a.comment) { cm.value = a.comment; cm.classList.add("show"); }
+}
+
+function setAnswer(i, patch) {
+  const id = DATA.rows[i].id;
+  const prev = answers[id] || {};
+  answers[id] = Object.assign({}, prev, patch, {at: new Date().toISOString()});
+  if (patch.decision && patch.decision !== "edit") { delete answers[id].value; delete answers[id].raw; delete answers[id].unit; }
+  if (patch.decision && patch.decision !== "pick") delete answers[id].k;
+  save(); paint(i);
+}
+
+function pick(i, k) {
+  const c = DATA.rows[i].candidates[k];
+  if (!c) return;
+  setAnswer(i, {decision: "pick", k: k, value: c.value, currency: c.currency});
+  answers[DATA.rows[i].id].value = c.value; answers[DATA.rows[i].id].currency = c.currency; save();
+}
+
+function setFocus(i, scroll = true) {
+  focus = Math.max(0, Math.min(DATA.rows.length - 1, i));
+  document.querySelectorAll(".row").forEach(r => r.classList.remove("focus"));
+  const el = document.getElementById("row" + focus);
+  el.classList.add("focus");
+  if (scroll) el.scrollIntoView({block: "nearest", behavior: "smooth"});
+}
+
+function progress() {
+  const n = DATA.rows.length, done = DATA.rows.filter(r => answers[r.id] && answers[r.id].decision).length;
+  document.getElementById("bar").style.width = (n ? 100 * done / n : 0) + "%";
+  const left = n - done;
+  document.getElementById("count").textContent = done + " / " + n + " 已完成" +
+    (left ? " · 剩余约 " + Math.max(1, Math.round(left * 25 / 60)) + " 分钟" : " · 全部完成，请导出");
+}
+
+function act(i, a) {
+  if (a === "none") setAnswer(i, {decision: "none"});
+  else if (a === "na") setAnswer(i, {decision: "na"});
+  else if (a === "clear") { delete answers[DATA.rows[i].id]; save(); paint(i); }
+  else if (a === "edit") { const e = document.getElementById("edit" + i); e.classList.add("show"); document.getElementById("ev" + i).focus(); }
+  else if (a === "comment") { const c = document.getElementById("cm" + i); c.classList.add("show"); c.focus(); }
+  else if (a === "save-edit") {
+    const v = editValue(i);
+    if (!v) { document.getElementById("eb" + i).textContent = "数字无法识别"; return; }
+    setAnswer(i, Object.assign({decision: "edit"}, v));
+    document.getElementById("edit" + i).classList.remove("show");
+  }
+}
+
+document.addEventListener("click", e => {
+  const c = e.target.closest(".cand");
+  if (c && !e.target.closest("a")) { setFocus(+c.dataset.row, false); pick(+c.dataset.row, +c.dataset.k); return; }
+  const b = e.target.closest("button[data-act]");
+  if (b) { setFocus(+b.dataset.row, false); act(+b.dataset.row, b.dataset.act); }
+  const r = e.target.closest(".row");
+  if (r && !b && !c) setFocus(+r.dataset.row, false);
+});
+document.addEventListener("input", e => {
+  const m = e.target.id.match(/^(ev|eu|ec)(\d+)$/);
+  if (m) { const v = editValue(+m[2]); document.getElementById("eb" + m[2]).textContent = v ? "= " + v.value.toLocaleString() + " " + v.currency : ""; }
+});
+document.addEventListener("change", e => {
+  const m = e.target.id.match(/^cm(\d+)$/);
+  if (m) setAnswer(+m[1], {comment: e.target.value});
+});
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input, select, textarea")) {
+    if (e.key === "Enter") { const m = e.target.id.match(/^(ev|eu|ec)(\d+)$/); if (m) act(+m[2], "save-edit"); e.target.blur(); }
+    if (e.key === "Escape") e.target.blur();
+    return;
+  }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "j" || e.key === "Enter") { setFocus(focus + 1); e.preventDefault(); }
+  else if (e.key === "k") setFocus(focus - 1);
+  else if (/^[1-9]$/.test(e.key)) pick(focus, +e.key - 1);
+  else if (e.key === "0") act(focus, "none");
+  else if (e.key === "e") { act(focus, "edit"); e.preventDefault(); }
+  else if (e.key === "n") act(focus, "na");
+  else if (e.key === "c") { act(focus, "comment"); e.preventDefault(); }
+});
+
+function download(name, text, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type}));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+}
+document.getElementById("export-json").onclick = () =>
+  download(DATA.id + "_answers.json", JSON.stringify({table: DATA.id, exported_at: new Date().toISOString(), answers}, null, 1), "application/json");
+document.getElementById("export-csv").onclick = () => {
+  const head = ["id", "company", "field", "period_type", "decision", "value_base", "currency", "raw", "unit", "comment"];
+  const lines = [head.join(",")].concat(DATA.rows.map(r => {
+    const a = answers[r.id] || {};
+    return [r.id, r.company, r.field, r.ptype, a.decision || "", a.value ?? "", a.currency || "", a.raw || "", a.unit || "", a.comment || ""]
+      .map(x => '"' + String(x).replace(/"/g, '""') + '"').join(",");
+  }));
+  download(DATA.id + "_answers.csv", "﻿" + lines.join("\n"), "text/csv");
+};
+document.getElementById("import-btn").onclick = () => document.getElementById("import").click();
+document.getElementById("import").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => { const d = JSON.parse(t); Object.assign(answers, d.answers || {}); save(); DATA.rows.forEach((r, i) => paint(i)); });
+};
+document.getElementById("next-todo").onclick = () => {
+  const i = DATA.rows.findIndex((r, j) => j > focus && !(answers[r.id] && answers[r.id].decision));
+  const k = i >= 0 ? i : DATA.rows.findIndex(r => !(answers[r.id] && answers[r.id].decision));
+  if (k >= 0) setFocus(k);
+};
+
+render();
+setFocus(0, false);
+</script>
+</body>
+</html>

@@ -36,6 +36,9 @@ PRICES = {
                        "offpeak": {"input_hit": 0.003, "input_miss": 0.15, "output": 0.60}},
     "deepseek-v4-pro": {"peak": {"input_hit": 0.044, "input_miss": 1.32, "output": 3.96},
                         "offpeak": {"input_hit": 0.022, "input_miss": 0.66, "output": 1.98}},
+    # Anthropic, checked 2026-10-06 on platform.claude.com/docs/en/about-claude/pricing (flat across 1M context)
+    "claude-fable-5-1": {"flat": {"input_hit": 0.25, "input_miss": 10.0, "output": 50.0}},
+    "claude-fable-5-1:batch": {"flat": {"input_hit": 0.125, "input_miss": 5.0, "output": 25.0}},
     "gemini-3.5-flash-lite": {"flat": {"input_hit": 0.03, "input_miss": 0.30, "output": 2.50}},
     "gemini-3.5-flash": {"flat": {"input_hit": 0.15, "input_miss": 1.50, "output": 9.00}},
     "gemini-3.8-flash": {"flat": {"input_hit": 0.075, "input_miss": 0.75, "output": 3.75}},
@@ -47,6 +50,10 @@ BROWSER_UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
+
+# Hard spending cap for evaluation runs (earnings_agent/budget.py)
+EVAL_BUDGET_USD = float(os.getenv("EVAL_BUDGET_USD", "20"))
+EVAL_LEDGER = ROOT / "data" / "eval" / "spend_ledger.jsonl"
 
 # Max characters of page text sent to the model per report.
 PAGE_CHAR_BUDGET = int(os.getenv("PAGE_CHAR_BUDGET", "90000"))

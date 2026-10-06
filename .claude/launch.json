@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {"name": "review-table", "runtimeExecutable": "/usr/bin/python3", "runtimeArgs": ["-m", "http.server", "8765", "--directory", "data/review"], "port": 8765}
+  ]
+}

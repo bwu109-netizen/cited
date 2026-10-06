@@ -7,3 +7,4 @@ data/raw/
 data/cache/
 data/output/
 .pytest_cache/
+data/eval/

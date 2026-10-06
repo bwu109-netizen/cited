@@ -1,0 +1,125 @@
+{
+ "seed": 20261007,
+ "subset": [
+  {
+   "market": "us",
+   "code": "MSFT",
+   "stratum": [
+    "general",
+    "USD"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "WFC",
+   "stratum": [
+    "bank",
+    "USD"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "PGR",
+   "stratum": [
+    "insurance",
+    "USD"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "PDD",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  },
+  {
+   "market": "us",
+   "code": "UBER",
+   "stratum": [
+    "general",
+    "USD"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "002594",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "000001",
+   "stratum": [
+    "bank",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "601628",
+   "stratum": [
+    "insurance",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "601857",
+   "stratum": [
+    "general",
+    "CNY"
+   ]
+  },
+  {
+   "market": "a",
+   "code": "002142",
+   "stratum": [
+    "bank",
+    "CNY"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "00002",
+   "stratum": [
+    "general",
+    "HKD"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "02328",
+   "stratum": [
+    "insurance",
+    "CNY"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "02888",
+   "stratum": [
+    "bank",
+    "USD"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "00992",
+   "stratum": [
+    "general",
+    "USD"
+   ]
+  },
+  {
+   "market": "hk",
+   "code": "02378",
+   "stratum": [
+    "insurance",
+    "USD"
+   ]
+  }
+ ]
+}

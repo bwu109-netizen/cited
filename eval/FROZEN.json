@@ -58,6 +58,20 @@
     "docs/eval_design.md"
    ],
    "commit": "7c11143f23177ade0c56a9322bc859113d0b0423"
+  },
+  {
+   "at": "2026-10-07T01:54:39.835984+00:00",
+   "reason": "R4 \u7f8e\u80a1\u5355\u72ec dollars \u8bc6\u522b\u4e3a USD\uff1bR5 \u5408\u7406\u6027\u68c0\u67e5 S5 \u53d6\u4e0a\u5b63\u672b\u7d2f\u8ba1\u65f6\u6392\u9664 TTM\uff08\u4e0e R1 \u540c\u56e0\uff09\u3002\u5747\u4e3a\u770b\u8fc7\u51bb\u7ed3\u7248\u8bef\u62a5\u5206\u6790\u540e\u7ecf\u6279\u51c6\u767b\u8bb0\uff1b\u4ee5\u7559\u51fa\u96c6\u4e3a\u51c6\u3002\u4fee\u8ba2\u7248\u91cd\u65b0\u51bb\u7ed3\u4e3a FROZEN_REV2\uff08\u53d6\u4ee3 REV1\uff09",
+   "changed": [
+    "earnings_agent/direct.py",
+    "earnings_agent/verify.py",
+    "earnings_agent/units.py",
+    "earnings_agent/benchmark.py",
+    "eval/score_eval.py",
+    "eval/run_eval.py",
+    "docs/eval_design.md"
+   ],
+   "commit": "8be826851e6078964ed633e0602300222bbbd289"
   }
  ]
 }

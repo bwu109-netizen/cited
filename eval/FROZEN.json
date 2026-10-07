@@ -44,6 +44,20 @@
     "docs/eval_design.md"
    ],
    "commit": "886f98b1586184ecb80fdf88b0b55b89f3703404"
+  },
+  {
+   "at": "2026-10-07T01:38:46.346775+00:00",
+   "reason": "\u66f4\u6b63\uff1a\u64a4\u56de\u7b2c\u4e00\u7248\u4fee\u8ba2\u51bb\u7ed3\uff08886f98b\uff09\u4e2d R2 \u9644\u5e26\u7684\u201c\u7f8e\u80a1\u5355\u72ec dollars=USD\u201d\uff0c\u5b83\u8d85\u51fa\u6388\u6743\u8303\u56f4\uff08\u4f1a\u6539\u53d8\u6240\u6709\u7f8e\u80a1\u91d1\u989d\u5b57\u6bb5\u7684 C3\uff0c\u6d88\u6389 21 \u6761\u8bef\u62a5\u4e2d\u7684 17 \u6761\uff09\u3002\u5728\u7559\u51fa\u96c6\u8fd0\u884c\u524d\u64a4\u56de\u5e76\u91cd\u65b0\u51bb\u7ed3\uff1b\u7528 886f98b \u8dd1\u51fa\u7684 eval1_rev1 \u4f5c\u5e9f\u91cd\u8dd1",
+   "changed": [
+    "earnings_agent/direct.py",
+    "earnings_agent/verify.py",
+    "earnings_agent/units.py",
+    "earnings_agent/benchmark.py",
+    "eval/score_eval.py",
+    "eval/run_eval.py",
+    "docs/eval_design.md"
+   ],
+   "commit": "7c11143f23177ade0c56a9322bc859113d0b0423"
   }
  ]
 }

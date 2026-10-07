@@ -1,6 +1,6 @@
 {
- "commit": "886f98b1586184ecb80fdf88b0b55b89f3703404",
- "frozen_at": "2026-10-07T01:36:39.144365+00:00",
+ "commit": "7c11143f23177ade0c56a9322bc859113d0b0423",
+ "frozen_at": "2026-10-07T01:38:46.403385+00:00",
  "files": {
   "eval/config.json": "aa84fbb4da2551960fb391450c21616f453fd4f28070c997126817a484bf12e4",
   "eval/fable_subset.json": "179c50092db42219fba02397599de4f6a236e5eb0b2364f64e78c008a051e2ab",
@@ -13,7 +13,7 @@
   "earnings_agent/direct_verify.py": "78ddd1d08b18d253f920b9b5ce071d9f970c33dd6aae14d185dfbe64dc270dd1",
   "earnings_agent/verify.py": "95c3e0e0ac493bdf6205c464d9cd625baffc56a5f58fd4e3e5747a6e3fad49ff",
   "earnings_agent/sanity.py": "d9f1bc3570789e1bcceffa469c9a7354144a9b05a91b325ece7113d1dbf0f258",
-  "earnings_agent/units.py": "e3c215c6bc72e388978b2bef34709e359907567bf11d495d28597fba47bb2bbe",
+  "earnings_agent/units.py": "6178894ccf8c58fbdf8d6efbc835c8cb1822197fb93befdd39cdbace380a9d40",
   "earnings_agent/textnorm.py": "1bbe8c228f04ac7d56e185dd95f7db7eb1bb33cffb9fb2405294361c82a64f49",
   "earnings_agent/periods.py": "b6693d9ae8a7471c6e55eb1950f987cf4443bc9a3cb924222ec201c57eaad1c1",
   "earnings_agent/templates.py": "ceeaaf20d75abed5f30d6d8d681017a527cd05b43a130bd80958d7e6aaecb710",
@@ -30,7 +30,7 @@
   "eval/score_eval.py": "6016ff68df1f7ec85378e3fb79d94ab91d79b2152ae4f10ab245643c166f3cc6",
   "eval/run_eval.py": "5bd12362ecf0ad119099436dff6bfc4b333175fc2731d9c0782c98d6d7c8f4dd",
   "docs/metrics_spec.md": "6fa57ea58da1b346325bd4ded6774076154252a73cb0e03ff78460edf105057e",
-  "docs/eval_design.md": "a010f57b99dc89852073ae4c5373134993a1cd2735fcf9809220a00e27be29f0"
+  "docs/eval_design.md": "361e09cef468379de7e7747c2fb58f313964b67af4fbf94b52823aa67e9e359d"
  },
  "revisions": []
 }

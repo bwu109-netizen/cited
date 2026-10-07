@@ -546,7 +546,7 @@ Fable 5.1 的价格（Anthropic 官方定价页，2026-10-06 查询）：
 | 编号 | 改了什么 | 为什么改 | 由哪些条目触发 | 文件 |
 |---|---|---|---|---|
 | R1 | 美股标准答案：非年报（10-Q）里 12 个月期间的 XBRL 事实是滚动 12 个月（TTM）数，不再当作 FY 条目 | 冻结版把 AMZN 10-Q 现金流量表里的 TTM 列当成了 FY 标准答案，于是 FY 成了“应有期间”，三档都被判漏答或漏抽 | AMZN 2026Q2：归母净利润 FY、经营现金流 FY，三档各 2 条 | `earnings_agent/benchmark.py` |
-| R2 | 每股指标（EPS）不继承表头的金额单位（百万/千），倍数固定为 1。这类表头的写法有 “in millions, except per share amounts”“Dollars and Shares in Millions”，以及只抄到 “Except Per Share Amounts” 的情况。“per common share” 也识别为每股单位。附带一处：美股表头里单独的 “dollars” 识别为 USD（和 A 股单独的“元” = CNY 同理），因为 AIG 的 EPS 只修单位倍数仍会因币种无法识别而失败。仙、美分等真正的每股单位仍须能单独解析，不会被当成 1 倍 | 冻结版流水线把 EPS 当成“百万美元”，换算后差 10⁶ 倍或被判单位无法解析 | INTC、BAC、WFC、USB、AIG 的 EPS Q 和 H，共 10 条，全部是流水线 | `earnings_agent/units.py`、`verify.py`、`direct.py`（解析时同样按每股处理） |
+| R2 | 每股指标（EPS）不继承表头的金额单位（百万/千），倍数固定为 1。这类表头的写法有 “in millions, except per share amounts”“Dollars and Shares in Millions”，以及只抄到 “Except Per Share Amounts” 的情况。“per common share” 也识别为每股单位。（第一版修订冻结 `886f98b` 曾附带“美股表头里单独的 dollars 识别为 USD”。误报分析显示，它会同时消掉流水线 21 条误报里的 17 条，影响的远不止 EPS，超出了这次授权的范围，所以在留出集运行之前撤回，见 §10.2 末尾。）仙、美分等真正的每股单位仍须能单独解析，不会被当成 1 倍 | 冻结版流水线把 EPS 当成“百万美元”，换算后差 10⁶ 倍或被判单位无法解析 | INTC、BAC、WFC、USB、AIG 的 EPS Q 和 H，共 10 条，全部是流水线 | `earnings_agent/units.py`、`verify.py`、`direct.py`（解析时同样按每股处理） |
 | R3 | **新增一档“专业直接问 + 核验层”**（只跑 DeepSeek）：<br>① 提示词就是专业直接问的提示词，末尾加一句，要求每个数字给出页码和原文句子；如果是算出来的，给出所用原文数字的页码和原文。<br>② 解析器多抄三项：页码、原文句子、是否为计算值及其组成项。<br>③ 解析结果交给流水线**同一套**核验 `verify_report`（C1–C4 + 合理性检查 + 应有期间/漏抽），❌ 即标记。<br>④ 不补问。<br>⑤ 计分用的仍是回答给出的数字，核验层只负责加标记。计算值的组成项重算后与回答不一致的，标 ❌ | 看到“专业直接问准确率高，但没有标记机制”后提出的新设计 | ——（新设计，不是由具体条目触发） | `earnings_agent/direct.py`（`build_verified_prompt` 等）、`earnings_agent/direct_verify.py` |
 
 **R3 是看到评估结果后才提出的新设计，单独标注**，不能当作冻结时就计划好的一档。
@@ -558,6 +558,9 @@ Fable 5.1 的价格（Anthropic 官方定价页，2026-10-06 查询）：
 - 评分条目集合仍由冻结的三档决定（`score_eval.item_set` 只看三档），所以修订版和冻结版比的是同一组条目，只是 R1 去掉了 AMZN 那几条。
 
 **发现但未修订的问题**（不在本次登记的修订范围内，留待决定）：
+
+- **单独的 “dollars” 不识别为币种**（候选修订，未授权）：美股表头写 “Millions of dollars”“Dollars in millions” 时，币种无法识别，C3 判 ❌，而数字本身是对的。冻结版流水线的 21 条误报里有 17 条是这个原因（CVX、BAC、AIG）。R2 修好 AIG、USB、WFC 的 EPS 倍数以后，AIG 的 EPS 仍会因为币种被标 ❌，变成“答对但被标记”。
+  - 撤回经过：曾作为 R2 的附带修改，进入第一版修订冻结 `886f98b`。在留出集运行之前撤回，重新冻结；用第一版冻结跑出的 eval1_rev1 结果作废重跑（只是重新核验，不花钱）。
 
 - 港股 EPS 用“仙”或“美仙/美分”列示时，单位无法解析，流水线判 C3 ❌。R2 有意不碰它，因为“仙”是 0.01 倍，不能当 1 倍处理。
 - “分人民幣”被当成 1 倍，冻结版就是这样。

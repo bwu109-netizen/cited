@@ -102,8 +102,6 @@ _CURRENCIES = [
 ]
 # Bare "元" means the listing market's home currency (A-share reports: CNY).
 _MARKET_DEFAULT_YUAN = {"a": "CNY", "hk": None, "us": None}
-# Revision R2: bare "dollars" in a US filing's table header ("dollars in millions, ...") means USD.
-_MARKET_DEFAULT_DOLLAR = {"us": "USD"}
 
 
 def currency_code(raw_currency, raw_unit="", market=""):
@@ -116,9 +114,6 @@ def currency_code(raw_currency, raw_unit="", market=""):
     for text in (raw_currency, raw_unit):
         if "元" in nfkc(text or "") and _MARKET_DEFAULT_YUAN.get(market):
             return _MARKET_DEFAULT_YUAN[market]
-    for text in (raw_currency, raw_unit):
-        if re.search(r"\bdollars?\b", nfkc(text or "").lower()) and _MARKET_DEFAULT_DOLLAR.get(market):
-            return _MARKET_DEFAULT_DOLLAR[market]
     return None
 
 

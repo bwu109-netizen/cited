@@ -67,9 +67,10 @@ def test_r2_amounts_unchanged():
     assert to_value("2.02", "in millions")[0] == 2_020_000
 
 
-def test_r2_bare_dollars_in_us_filing():
-    assert currency_code("", "dollars in millions, except per common share data", "us") == "USD"
-    assert currency_code("", "dollars", "hk") is None
+def test_r2_does_not_touch_currency():
+    # "dollars" -> USD was briefly bundled into R2 and withdrawn as out of scope (eval_design §10.2):
+    # bare "dollars" stays unrecognised, as in the frozen rules
+    assert currency_code("", "dollars in millions, except per common share data", "us") is None
 
 
 def test_r2_eps_item_passes_c3():

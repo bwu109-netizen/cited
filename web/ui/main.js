@@ -118,7 +118,6 @@
     sb_collapse: ["收起侧栏", "Collapse sidebar"], sb_expand: ["展开侧栏", "Expand sidebar"],
     key_none: ["未填写 API key", "No API key entered"], key_set: ["{p} key 已填 · 刷新页面即清空", "{p} key entered · cleared on reload"],
     a_q: ["分析哪一份财报？", "Which filing should we check?"],
-    a_model_line: ["模型：{p} · {m}", "Model: {p} · {m}"],
     run_main: ["正在分析，结果会显示在这里。", "Analyzing; the result will appear here."], run_show: ["查看进度", "Show progress"],
     pn_checks: ["本次做的检查", "Checks in this run"], pn_hk_c4: ["港股没有可靠的结构化数据，这一项不做。", "HK has no reliable structured data; skipped."],
     h_saved: ["保存在本机浏览器 · {t}", "Saved in this browser · {t}"],
@@ -147,7 +146,8 @@
     m_us: ["美股", "US"], m_a: ["A 股", "A-share"], m_hk: ["港股", "HK"],
     ph_us: ["例如 AAPL", "e.g. AAPL"], ph_a: ["例如 600519", "e.g. 600519"], ph_hk: ["例如 00700（自动补齐 5 位）", "e.g. 00700 (padded to 5 digits)"],
     period_help: ["报告期按公司自己的财年标注：例如 MSFT 的 2026FY 截至 2026 年 6 月，NVDA 的 2027Q2 截至 2026 年 7 月。", "Periods use the company's own fiscal year: MSFT 2026FY ends June 2026, NVDA 2027Q2 ends July 2026."],
-    key_where: ["去哪里申请", "Get a key"], key_note: ["只用于本次请求，不写入服务器文件。", "Used for this request only; not written to any file on the server."],
+    key_hint: ["支持 DeepSeek、OpenAI、Claude、Gemini 等 · key 只在本次使用，不保存", "Works with DeepSeek, OpenAI, Claude, Gemini and more · the key is used for this run only and never stored"],
+    key_how: ["如何获取 {p} key", "How to get a {p} key"], model_change: ["模型 {m} · 更换", "Model {m} · change"],
     model_default: ["默认：{m}", "Default: {m}"], model_need: ["这个服务商需要填写模型名", "This provider needs a model name"],
     start: ["开始分析", "Start"], err_code: ["请填代码", "Enter a ticker"], err_key: ["请填 API key", "Enter an API key"], err_base: ["请填 Base URL", "Enter the base URL"],
     // progress
@@ -554,7 +554,7 @@
     var focus = it ? '<div class="focus"><div class="row">' + stBadge(it.status) + '<b style="font-size:16px">' + esc(mname(it)) + '</b><span class="mono muted">' + ptype(it.ptype) + '</span><span class="mono" style="margin-left:auto;font-size:18px;font-weight:650">' + esc(it.raw) + " <small class='faint'>" + esc(it.unit || "") + "</small></span></div>" +
       ((S.lang === "zh" ? it.reason_zh : it.reason_en) ? '<div class="reason ' + stClass(it.status) + '">' + esc(S.lang === "zh" ? it.reason_zh : it.reason_en) + "</div>" : "") +
       (it.bench && it.bench.value != null ? '<div class="hint" style="margin-top:6px">' + t("r_bench") + "：" + esc(it.bench.source || "") + " " + esc(it.bench.field || "") + " = " + Number(it.bench.value).toLocaleString("en-US") + "</div>" : "") + "</div>" : "";
-    return '<div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint">' + esc(r.doc.name) + " · " + esc(r.doc.title) + "</div></div>" +
+    return '<div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint">' + esc(D.src === "job" && S.job.kind === "verify" && S.ver.pdfName ? S.ver.pdfName : r.doc.name + " · " + r.doc.title) + "</div></div>" +
       '<div class="pager"><button data-dpage="' + (prev || "") + '"' + (prev ? "" : " disabled") + ">" + ic("left", "sm") + "</button><span>" + t("d_page", { n: D.n, t: r.pages_total || "?" }) + '</span><button data-dpage="' + (next || "") + '"' + (next ? "" : " disabled") + ">" + ic("right", "sm") + "</button></div>" +
       (r.doc.url ? '<a class="round" href="' + esc(r.doc.url) + '" target="_blank" rel="noopener" title="' + t("d_open") + '">' + ic("ext", "sm") + "</a>" : "") +
       '<button class="round" data-act="close" aria-label="close">' + ic("close", "sm") + "</button></div>" +
@@ -600,16 +600,17 @@
     if (!p.model && !f.model.trim()) e.model = t("model_need");
     return e;
   }
-  function keyFields(f) { return provFields(f) + keyField(f); }
-  function provFields(f) {
+  // provider + key on one row; model (and base URL) only when the provider has no default, or on request
+  function keyFields(f) {
     var p = S.cfg.providers[f.provider] || {}, e = S.touched ? formErrors() : {};
-    return '<div class="grid2"><div class="field"><label>' + t("f_provider") + '</label><select class="input" id="f-provider">' + provOpts(f.provider) + "</select></div>" +
-      '<div class="field"><label>' + t("f_model") + '</label><input class="input' + (e.model ? " err" : "") + '" id="f-model" value="' + esc(f.model) + '" placeholder="' + esc(p.model ? t("model_default", { m: p.model }) : t("model_need")) + '"><div class="errtx">' + (e.model || "") + "</div></div></div>" +
-      (f.provider === "custom" ? '<div class="field"><label>' + t("f_base") + '</label><input class="input' + (e.base ? " err" : "") + '" id="f-base" value="' + esc(f.base_url) + '" placeholder="https://…/v1"><div class="errtx">' + (e.base || "") + "</div></div>" : "");
-  }
-  function keyField(f) {
-    var p = S.cfg.providers[f.provider] || {}, e = S.touched ? formErrors() : {};
-    return '<div class="field"><label>' + t("f_key") + (p.key_url ? '<a class="link" href="' + esc(p.key_url) + '" target="_blank" rel="noopener" style="letter-spacing:0">' + t("key_where") + " ↗</a>" : "") + '</label><div class="pw"><input class="input' + (e.key ? " err" : "") + '" id="f-key" type="' + (f.showKey ? "text" : "password") + '" value="' + esc(f.key) + '" placeholder="sk-…" autocomplete="off"><button data-act="eye" aria-label="show key">' + ic(f.showKey ? "eyeoff" : "eye") + '</button></div><div class="errtx">' + (e.key || "") + '</div><div class="note">' + ic("lock", "sm") + t("key_note") + "</div></div>";
+    var showModel = !p.model || f.provider === "custom" || S.provOpen || e.model || e.base;
+    return '<div class="keyrow"><div class="field"><label>' + t("f_provider") + '</label><select class="input" id="f-provider">' + provOpts(f.provider) + "</select></div>" +
+      '<div class="field"><label>' + t("f_key") + '</label><div class="pw"><input class="input' + (e.key ? " err" : "") + '" id="f-key" type="' + (f.showKey ? "text" : "password") + '" value="' + esc(f.key) + '" placeholder="sk-…" autocomplete="off"><button data-act="eye" aria-label="show key">' + ic(f.showKey ? "eyeoff" : "eye") + '</button></div><div class="errtx">' + (e.key || "") + "</div></div></div>" +
+      (showModel ? '<div class="keyrow"><div class="field"><label>' + t("f_model") + '</label><input class="input' + (e.model ? " err" : "") + '" id="f-model" value="' + esc(f.model) + '" placeholder="' + esc(p.model ? t("model_default", { m: p.model }) : t("model_need")) + '"><div class="errtx">' + (e.model || "") + "</div></div>" +
+        (f.provider === "custom" ? '<div class="field"><label>' + t("f_base") + '</label><input class="input' + (e.base ? " err" : "") + '" id="f-base" value="' + esc(f.base_url) + '" placeholder="https://…/v1"><div class="errtx">' + (e.base || "") + "</div></div>" : "<div></div>") + "</div>" : "") +
+      '<div class="keyhint"><span>' + ic("lock", "sm") + t("key_hint") + "</span><span class=\"kh-r\">" +
+      (p.model && !showModel ? '<button class="link" data-act="prov">' + t("model_change", { m: esc(p.model) }) + "</button>" : "") +
+      (p.key_url ? '<a class="link" href="' + esc(p.key_url) + '" target="_blank" rel="noopener">' + t("key_how", { p: esc(p.label) }) + " ↗</a>" : "") + "</span></div>";
   }
   function analyze() {
     var j = S.job;
@@ -624,15 +625,12 @@
       if (j.status === "error" || j.status === "stopped") return '<div class="wrap">' + runError() + "</div>";
       if (j.status === "done" && j.result) return '<div class="wrap">' + runbar(true) + result(j.result, "job") + "</div>";
     }
-    var f = S.form, e = S.touched ? formErrors() : {}, p = S.cfg.providers[f.provider] || {};
-    var provOpen = S.provOpen || e.model || e.base;
+    var f = S.form, e = S.touched ? formErrors() : {};
     return '<div class="stage"><h1 class="stage-title">' + t("a_q") + "</h1>" +
       '<div class="card stage-card"><div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-market="' + m + '" class="' + (f.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
       '<div class="grid2"><div class="field"><label>' + t("f_code") + '</label><input class="input' + (e.code ? " err" : "") + '" id="f-code" value="' + esc(f.code) + '" placeholder="' + t("ph_" + f.market) + '" autocomplete="off"><div class="errtx">' + (e.code || "") + "</div></div>" +
       '<div class="field"><label>' + t("f_period") + '<span class="faint" title="' + esc(t("period_help")) + '">?</span></label><select class="input" id="f-period">' + PERIODS.map(function (x) { return '<option value="' + x + '"' + (x === f.period ? " selected" : "") + ">" + periodLabel(x) + "</option>"; }).join("") + "</select></div></div>" +
-      keyField(f) +
-      '<button class="prov-line" data-act="prov">' + t("a_model_line", { p: esc(p.label || f.provider), m: esc(f.model || p.model || "—") }) + " " + (provOpen ? "▴" : "▾") + "</button>" +
-      (provOpen ? provFields(f) : "") +
+      keyFields(f) +
       '<button class="btn primary block" data-act="start"' + (S.touched && Object.keys(formErrors()).length ? " disabled" : "") + ">" + ic("play") + t("start") + "</button>" +
       '<div class="hint">' + t("period_help") + "</div></div>" +
       '<div class="stage-links"><a class="stage-link" data-go="examples">' + t("nokey_cta") + ' →</a><a class="stage-link" data-go="verify">' + t("verify_cta") + " →</a></div></div>";
@@ -711,14 +709,11 @@
         '<input class="input" id="c-code-' + i + '" data-ccode="' + i + '" value="' + esc(r.code) + '" placeholder="' + t("ph_" + r.market) + '"><button class="round" data-cdel="' + i + '" aria-label="remove">' + ic("trash", "sm") + "</button></div>";
     }).join("");
     var ok = c.rows.some(function (r) { return r.code.trim(); }) && !e.key && !e.model && !e.base;
-    var p = S.cfg.providers[S.form.provider] || {}, provOpen = S.provOpen || e.model || e.base;
     return '<div class="stage"><h1 class="stage-title">' + t("c_q") + "</h1>" +
       '<div class="card stage-card"><div class="field"><label>' + t("c_rows") + '</label><div style="display:flex;flex-direction:column;gap:10px">' + rows + "</div>" +
       (c.rows.length < 10 ? '<button class="btn ghost sm" style="align-self:flex-start" data-act="cadd">' + ic("plus", "sm") + t("c_add") + "</button>" : "") + "</div>" +
       '<div class="field"><label>' + t("f_period") + '</label><select class="input" id="c-period">' + PERIODS.map(function (x) { return '<option value="' + x + '"' + (x === c.period ? " selected" : "") + ">" + periodLabel(x) + "</option>"; }).join("") + "</select></div>" +
-      keyField(S.form) +
-      '<button class="prov-line" data-act="prov">' + t("a_model_line", { p: esc(p.label || S.form.provider), m: esc(S.form.model || p.model || "—") }) + " " + (provOpen ? "▴" : "▾") + "</button>" +
-      (provOpen ? provFields(S.form) : "") +
+      keyFields(S.form) +
       '<button class="btn primary block" data-act="cmp-run"' + (S.touched && !ok ? " disabled" : "") + ">" + ic("play") + t("c_run") + "</button>" +
       '<div class="hint">' + t("c_lead") + " " + t("c_ccy_hint") + "</div></div></div>";
   }

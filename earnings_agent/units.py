@@ -76,14 +76,21 @@ _SCALE_WORDS = re.compile(r"十亿|亿|億|千万|千萬|百万|百萬|万|萬|�
                           r"'000|’000|\bin\b|\bof\b|\band\b|\bshares?\b|\bdata\b|\bamounts?\b|except\b|除外|[,，;；()（）]")
 
 
+# Revision R6 (eval_design §10, product only): per-share figures reported in cents. Checked before any other
+# per-share wording, so "每股（仙）" / "US cents per share" are 0.01 and never fall back to 1.
+_CENTS = re.compile(r"仙|美分|\bcents?\b|¢")
+
+
 def per_share_multiplier(raw_unit):
     """Revision R2 (eval_design §10): the unit of a per-share figure. Table headers such as
     "in millions, except per share amounts" or "Dollars and Shares in Millions" describe the table's
     amounts, not its per-share rows, so their amount scale is never inherited (multiplier 1).
-    Anything else (e.g. cents: 仙 / 美分) still has to parse on its own."""
+    Cents (仙 / 美分 / cents) are 0.01 of the currency unit (revision R6)."""
     u = nfkc(raw_unit or "").strip().lower()
     if not u:
         raise UnitError("empty unit")
+    if _CENTS.search(u):
+        return Decimal("0.01"), "per_share"
     if _PER_SHARE_WORDS.search(u):
         return Decimal(1), "per_share"
     rest = _SCALE_WORDS.sub(" ", u).strip()
@@ -93,8 +100,8 @@ def per_share_multiplier(raw_unit):
 
 
 _CURRENCIES = [
-    (r"港元|港币|港幣|hk\$|hkd", "HKD"),
-    (r"美元|us\$|usd|u\.s\. dollars?|\$", "USD"),
+    (r"港元|港币|港幣|港仙|hk\$|hkd|hk cents?", "HKD"),
+    (r"美元|美仙|美分|us\$|usd|u\.s\. dollars?|us cents?|\$", "USD"),
     (r"人民币|人民幣|rmb|cny|renminbi", "CNY"),
     (r"欧元|eur|€", "EUR"),
     (r"英镑|gbp|£", "GBP"),

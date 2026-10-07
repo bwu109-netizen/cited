@@ -72,6 +72,20 @@
     "docs/eval_design.md"
    ],
    "commit": "8be826851e6078964ed633e0602300222bbbd289"
+  },
+  {
+   "at": "2026-10-07T02:54:52.262882+00:00",
+   "reason": "R6\uff08\u4ea7\u54c1\u4e13\u7528\uff09\uff1a\u6bcf\u80a1\u6307\u6807\u4ed9/cents/\u7f8e\u5206\u6309 0.01 \u6362\u7b97\u3002\u770b\u5230\u8bc4\u4f30\u7ed3\u679c\u540e\u4fee\uff1b\u6e2f\u80a1\u65e0\u7559\u51fa\u96c6\uff0c\u672a\u7ecf\u9a8c\u8bc1\uff1b\u4e0d\u8fdb\u5165\u4efb\u4f55\u8bc4\u4f30\u6570\u5b57\u3002\u4fee\u8ba2\u7248\u8bc4\u4f30\u89c4\u5219\u4fdd\u5b58\u5728\u6807\u7b7e eval-revised-v2",
+   "changed": [
+    "earnings_agent/direct.py",
+    "earnings_agent/verify.py",
+    "earnings_agent/units.py",
+    "earnings_agent/benchmark.py",
+    "eval/score_eval.py",
+    "eval/run_eval.py",
+    "docs/eval_design.md"
+   ],
+   "commit": "22968a4e4b20eb2f73a48daad07d556bba87cf1c"
   }
  ]
 }

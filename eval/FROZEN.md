@@ -75,4 +75,5 @@
   跑完不再改。
 - 修订版冻结 commit：见 `eval/FROZEN_REV1.json` 的 `commit` 字段。
 - **第二次修订冻结（取代 REV1）**：登记 R4、R5 之后，修订版重新冻结在 `eval/FROZEN_REV2.json`，主目录的 `run_eval.py` 改认这份清单。`FROZEN_REV1.json` 保留作为记录。修订版 eval1 和留出集都用 REV2 的规则（R1–R5）。
+- **R6（产品专用，2026-10-06）**：仙 / 美分换算，提交在 REV2 之后。它不属于任何评估规则，主目录因此不再通过 REV2 检查。修订版评估的规则保存在标签 `eval-revised-v2`，冻结版保存在 `eval-frozen-v1`。
 

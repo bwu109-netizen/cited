@@ -1,5 +1,7 @@
 """Regression tests for the rule revisions logged after the frozen eval1 run (eval_design §10).
 Each case is the eval1 item that exposed the bug, cut down to what the rule needs."""
+from decimal import Decimal
+
 import pytest
 
 from earnings_agent import benchmark
@@ -57,10 +59,10 @@ def test_r2_per_share_never_inherits_the_amount_scale(unit):
 
 
 @pytest.mark.parametrize("unit", ["仙", "美分"])
-def test_r2_cents_still_unknown(unit):
-    # cents are a real per-share unit (×0.01): R2 must not silently read them as ×1
-    with pytest.raises(UnitError):
-        to_value("31.5", unit, per_share=True)
+def test_r2_cents_never_read_as_one(unit):
+    # cents are a real per-share unit (×0.01): R2 must never silently read them as ×1
+    # (until R6 they raised UnitError; since R6 they convert at 0.01)
+    assert to_value("31.5", unit, per_share=True)[1] != 1
 
 
 def test_r2_amounts_unchanged():
@@ -174,3 +176,26 @@ def test_verify_report_signature_unchanged():
     # the verified cell must use the pipeline's verification unchanged
     items, metrics, dropped, inv = verify_report([], [], PAGES, DOC, "general", [], [])
     assert all(i["category"] == "漏抽" for i in items)
+
+
+# ---------------------------------------------------------------- R6: per-share figures in cents (product only)
+
+@pytest.mark.parametrize("raw,unit,value,cur", [
+    ("70.40", "仙", 0.704, None),             # 02331: 70.40 仙 = 0.704 元
+    ("70.40", "每股（人民幣仙）", 0.704, "CNY"),
+    ("151.6", "美仙", 1.516, "USD"),          # 02888
+    ("41.21", "US cents", 0.4121, "USD"),     # 01299
+    ("37.9", "美分", 0.379, "USD"),           # 02378
+    ("(5.04)", "US cents per share", -0.0504, "USD"),  # 00992 loss
+    ("12.3", "港仙", 0.123, "HKD"),
+])
+def test_r6_cents(raw, unit, value, cur):
+    v, mult, kind, tol = to_value(raw, unit, per_share=True)
+    assert v == pytest.approx(value) and kind == "per_share" and mult == Decimal("0.01")
+    assert tol == pytest.approx(0.5 * 10 ** -len(raw.strip("()").split(".")[1]) * 0.01)
+    assert currency_code("", unit, "hk") == cur
+
+
+def test_r6_yuan_and_dollars_unchanged():
+    assert to_value("0.704", "元/股", per_share=True)[0] == 0.704
+    assert to_value("2.02", "per share", per_share=True)[0] == 2.02

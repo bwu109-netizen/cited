@@ -31,7 +31,7 @@
 
   // ------------------------------------------------------------------ state
   var S = {
-    cfg: null, job: { status: "idle" }, pageView: null, lang: "zh", view: "home", menu: false,
+    cfg: null, job: { status: "idle" }, pageView: null, lang: "zh", view: "analyze", menu: false,
     example: null,                       // key of the example being shown
     form: { market: "hk", code: "", period: "2026H1", provider: "deepseek", model: "", base_url: "", key: "", showKey: false },
     touched: false,
@@ -60,14 +60,11 @@
   var T = {
     brand: ["有据", "Cited"],
     theme_to_light: ["切换到浅色", "Switch to light mode"], theme_to_dark: ["切换到深色", "Switch to dark mode"],
-    nav_home: ["首页 / 示例", "Home"], nav_analyze: ["单家分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
+    nav_examples: ["示例", "Examples"], nav_analyze: ["分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
-    hero_eyebrow: ["美股 · A 股 · 港股定期报告", "US · A-SHARE · HK FILINGS"],
     hero_title: ["从财报里抄数，<br>每个数都带出处", "Numbers from filings,<br>each with its source"],
     hero_sub: ["美股、A 股、港股定期报告：抽取核心财务数字，附页码和原文，用代码核验，可疑的标红。",
       "US, A-share and HK filings: core figures with page and quote, checked by code, suspicious ones in red."],
-    cta_examples: ["看示例结果", "See examples"], cta_analyze: ["分析一份财报", "Analyze a filing"],
-    nokey: ["不需要 API key 也能看示例、用核验页。", "No API key needed for the examples or Verify."],
     ex_eyebrow: ["PRE-COMPUTED EXAMPLES", "PRE-COMPUTED EXAMPLES"], ex_title: ["示例结果", "Example results"],
     ex_note: ["示例为预跑结果：模型回复来自评估时的缓存，核验按当前规则重新运行。示例里的条数是结果表里的条数，不是评估指标。",
       "Pre-computed: model replies cached from the evaluation, checks re-run with the current rules. Counts are rows in the result table, not evaluation metrics."],
@@ -86,9 +83,11 @@
     eval_note: ["出处：docs/eval_results.md §3。专业写法的直接问在同一样本上严格正确率为 {d}，更高；流水线的不同在于每个数都有页码和原文，可疑的数会被标出。",
       "Source: docs/eval_results.md §3. A carefully worded direct question to the same model scored {d} strict accuracy on the same sample, higher; the pipeline differs in giving every number a page and a quote and flagging suspicious ones."],
     eval_link: ["方法与评估", "Method & evaluation"],
-    foot1: ["核验只能确认数字在原文里、单位对、和其他数自洽，不能确认它就是你要的指标。",
-      "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for."],
-    foot2: ["未标红不等于正确。", "Not flagged does not mean correct."],
+    caveat: ["核验只能确认数字在原文里、单位对、和其他数自洽，不能确认它就是你要的指标；未标红不等于正确。",
+      "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for. Not flagged does not mean correct."],
+    nokey_cta: ["没有 API key？看示例结果", "No API key? See example results"],
+    nokey_cta_d: ["预跑的美股 TSLA、A 股中国石油、港股小米，不需要 key", "Pre-computed US TSLA, A-share PetroChina and HK Xiaomi; no key needed"],
+    about_eyebrow: ["关于有据", "ABOUT CITED"],
     status_bad: ["需要复核", "Needs review"], status_warn: ["无可比数据", "No external figure"], status_ok: ["通过核验", "Passed checks"],
     col_status: ["状态", "Status"], col_metric: ["指标", "Metric"], col_value: ["数值", "Value"], col_unit: ["单位", "Unit"],
     col_period: ["期间", "Period"], col_page: ["页码", "Page"], col_quote: ["原文引用", "Quote"],
@@ -109,7 +108,7 @@
     d_loading: ["正在载入这一页……", "Loading this page…"], d_textonly: ["这一页只保留了解析出的文字。", "Only the parsed text of this page is kept."],
     d_open: ["打开原文", "Open source"],
     // analyze
-    a_eyebrow: ["P2 · 单家分析", "P2 · ANALYZE"], a_title: ["单家分析", "Analyze one filing"],
+    a_eyebrow: ["美股 · A 股 · 港股定期报告", "US · A-SHARE · HK FILINGS"], a_title: ["分析一份财报", "Analyze a filing"],
     a_lead: ["输入市场、代码和报告期，自动下载财报，抽取核心数字，附页码和原文，再用代码核验。", "Pick market, ticker and period: the filing is fetched, core figures are extracted with page and quote, then checked by code."],
     a_card: ["单家财报抽取与核验", "Extract and check one filing"],
     f_market: ["1. 市场", "1. MARKET"], f_code: ["2. 代码", "2. TICKER"], f_period: ["3. 报告期", "3. PERIOD"],
@@ -121,7 +120,6 @@
     model_default: ["默认：{m}", "Default: {m}"], model_need: ["这个服务商需要填写模型名", "This provider needs a model name"],
     start: ["开始分析", "Start"], err_code: ["请填代码", "Enter a ticker"], err_key: ["请填 API key", "Enter an API key"], err_base: ["请填 Base URL", "Enter the base URL"],
     a_side_t: ["没有 key？", "No key?"], a_side_d: ["示例和核验页都不需要 key。", "The examples and the Verify page need no key."],
-    a_side_ex: ["查看预跑示例", "Browse the examples"], a_side_ex_d: ["美股 TSLA · A 股中国石油 · 港股小米", "US TSLA · A-share PetroChina · HK Xiaomi"],
     a_side_ver: ["核验别的 AI 给的数", "Check figures from another AI"], a_side_ver_d: ["上传 PDF + 粘贴结果，纯代码检查", "Upload the PDF + paste the answer; code-only checks"],
     a_how: ["流水线做什么", "What the pipeline does"],
     a_how1: ["定位报表页", "Locate statement pages"], a_how1_d: ["按标题和表头找利润表、现金流量表，只把这些页送给模型。", "Finds the income and cash-flow statements by title and headers; only those pages go to the model."],
@@ -349,13 +347,13 @@
   function render() {
     if (!S.cfg) return;
     var v = S.view, html = nav();
-    if (v === "home") html += home();
+    if (v === "examples") html += examples();
     else if (v === "example") html += example();
     else if (v === "analyze") html += analyze();
     else if (v === "compare") html += compare();
     else if (v === "verify") html += verify();
     else if (v === "method") html += method();
-    html += disclaim() + foot();
+    html += foot();
     var app = document.getElementById("app");
     var keep = captureFocus();
     app.innerHTML = html;
@@ -378,10 +376,10 @@
 
   // ------------------------------------------------------------------ chrome
   function nav() {
-    var tabs = [["home", "nav_home"], ["analyze", "nav_analyze"], ["compare", "nav_compare"], ["verify", "nav_verify"], ["method", "nav_method"]];
-    var on = S.view === "example" ? "home" : S.view;
+    var tabs = [["analyze", "nav_analyze"], ["examples", "nav_examples"], ["compare", "nav_compare"], ["verify", "nav_verify"], ["method", "nav_method"]];
+    var on = S.view === "example" ? "examples" : S.view;
     return '<div class="nav"><div class="wrap">' +
-      '<a class="brand" data-go="home"><span class="logo">' + ic("shield") + "</span>" + t("brand") + '<span class="ver">v0.1</span></a>' +
+      '<a class="brand" data-go="analyze"><span class="logo">' + ic("shield") + "</span>" + t("brand") + '<span class="ver">v0.1</span></a>' +
       '<div class="tabs' + (S.menu ? " open" : "") + '">' + tabs.map(function (x) {
         return '<a data-go="' + x[0] + '" class="' + (on === x[0] ? "on" : "") + '">' + t(x[1]) + "</a>";
       }).join("") + (S.menu ? '<a href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">GitHub ↗</a>' : "") + "</div>" +
@@ -391,9 +389,7 @@
       '<button class="chip-btn menu-btn" data-act="menu" aria-label="menu">' + ic("menu", "sm") + "</button></div>" +
       "</div></div>";
   }
-  function disclaim() {
-    return '<div class="wrap"><div class="disclaim">' + ic("info") + "<div><p>" + t("foot1") + "</p><p>" + t("foot2") + "</p></div></div></div>";
-  }
+  function caveat() { return '<p class="caveat">' + t("caveat") + "</p>"; }
   function foot() {
     return '<div class="foot"><div class="wrap"><span><b>' + t("brand") + "</b> · " + L("代码与评估开源", "Open-source code and evaluation") + " · MIT</span>" +
       '<span><a data-go="method">' + t("nav_method") + '</a> · <a href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">GitHub</a></span></div></div>';
@@ -410,8 +406,7 @@
     });
     return out;
   }
-  function home() {
-    var ev = S.cfg.eval, h = ev.holdout.tiers, p = h.ds_pipeline;
+  function examples() {
     var cards = exKeys().map(function (k) {
       var r = S.cfg.examples[k], d = r.doc;
       var auxBad = r.items.filter(function (i) { return i.aux && i.status === "❌"; })[0];
@@ -428,11 +423,15 @@
         }).join("") + "</div>" +
         '<button class="btn ghost sm" style="width:100%">' + t("ex_open") + " " + ic("arrow", "sm") + "</button></div>";
     }).join("");
-    return '<div class="wrap"><section class="hero"><div class="eyebrow"><span class="dot"></span>' + t("hero_eyebrow") + "</div>" +
-      "<h1>" + t("hero_title") + '</h1><p class="lead">' + t("hero_sub") + "</p>" +
-      '<div class="cta"><button class="btn primary" data-act="scroll-ex">' + t("cta_examples") + " " + ic("down", "sm") + '</button><button class="btn ghost" data-go="analyze">' + t("cta_analyze") + '</button><span class="hint">' + t("nokey") + "</span></div></section>" +
-      '<section class="section" id="examples"><div class="section-head"><div><div class="eyebrow">' + t("ex_eyebrow") + "</div><h2>" + t("ex_title") + '</h2></div><p class="hint" style="max-width:520px;margin:0">' + t("ex_note") + "</p></div>" +
-      '<div class="grid3">' + cards + "</div></section>" +
+    return '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("ex_eyebrow") + '</div><h1 class="page">' + t("ex_title") + '</h1><p class="lead">' + t("ex_note") + "</p>" +
+      '<div class="grid3" style="margin-top:36px">' + cards + "</div></div>";
+  }
+  // former home page, now the lower part of the analyze form page
+  // the former home page, now below the analyze form
+  function about() {
+    var ev = S.cfg.eval, h = ev.holdout.tiers, p = h.ds_pipeline;
+    return '<section class="section about"><div class="eyebrow"><span class="dot"></span>' + t("about_eyebrow") + "</div>" +
+      '<h2 class="about-title">' + t("hero_title") + '</h2><p class="lead">' + t("hero_sub") + "</p></section>" +
       '<section class="section"><div class="section-head"><div><div class="eyebrow">PIPELINE</div><h2>' + t("how_title") + "</h2></div></div>" +
       '<div class="steps3"><div><div class="n">01</div><h3>' + t("how1_t") + "</h3><p>" + t("how1_d") + '</p></div><div><div class="n">02</div><h3>' + t("how2_t") + "</h3><p>" + t("how2_d") + '</p></div><div><div class="n">03</div><h3>' + t("how3_t") + "</h3><p>" + t("how3_d") + "</p></div></div></section>" +
       '<section class="section"><div class="card" style="padding:36px"><div class="section-head"><div><div class="eyebrow">' + esc(L(ev.holdout.label_zh, ev.holdout.label_en)) + "</div><h2>" + t("eval_title") + '</h2></div><a class="link" data-go="method">' + t("eval_link") + " →</a></div>" +
@@ -441,7 +440,7 @@
       '<div><div class="big">' + p.silent + '<span style="font-size:22px;color:var(--muted)"> / ' + p.items + '</span></div><div class="kpi-cap">' + t("eval_silent") + '</div><div class="hint">' + (function () { var hk = ev.recall_by_market.hk, e = hk.errors, u = e - Math.round((hk.recall || 0) * e);
         return L("美股 + A 股留出集；港股 " + e + " 个错误中 " + u + ' 个未被标出，见<a class="link" data-go="method">方法页</a>',
                  "US + A-share holdout; in HK, " + u + " of " + e + ' errors were not flagged; see <a class="link" data-go="method">Method</a>'); })() + "</div></div></div>" +
-      '<p class="src">' + t("eval_note", { d: pct(h.ds_direct.strict_acc) }) + "</p></div></section></div>";
+      '<p class="src">' + t("eval_note", { d: pct(h.ds_direct.strict_acc) }) + "</p></div></section>";
   }
 
   // ------------------------------------------------------------------ result component (R0 / R1 / R2)
@@ -461,7 +460,7 @@
     var table = '<div class="tbl-card"><div class="tbl-head"><div><h2>' + t("r_core") + '</h2><div class="hint">' + t("r_core_sub") + "</div></div>" +
       (fu ? '<span class="badge warn">' + t("r_followup", { n: fu }) + "</span>" : "") + "</div>" + rtable(core, src) +
       (aux.length ? '<button class="aux-toggle" data-act="aux"><span><b style="color:var(--text)">' + t("r_aux") + "</b> · " + t("r_aux_sub") + (r.aux_bad ? ' · <span class="tx-bad">' + t("r_aux_bad", { n: r.aux_bad }) + "</span>" : "") + "</span><span>" + (S.auxOpen ? t("r_less") : t("r_more")) + "</span></button>" +
-        (S.auxOpen ? rtable(aux, src) : "") : "") + "</div>";
+        (S.auxOpen ? rtable(aux, src) : "") : "") + "</div>" + caveat();
     var m = (r.metrics || []).length ? '<section class="section"><div class="section-head"><div><h2 style="font-size:22px">' + t("r_metrics") + '</h2><div class="hint">' + t("r_metrics_sub") + '</div></div></div><div class="metric-grid">' +
       r.metrics.map(function (x) {
         return '<div class="metric"><div style="display:flex;justify-content:space-between;gap:8px"><span class="lbl" style="letter-spacing:.02em">' + esc(mtext(x, "name")) + "</span>" + stBadge(x.status) + '</div><div class="v">' + esc(x.raw) + "<small>" + esc(x.unit || "") + '</small></div><div class="hint">' + esc(mtext(x, "rationale")) + "</div>" +
@@ -534,7 +533,7 @@
 
   function example() {
     var r = S.cfg.examples[S.example];
-    if (!r) { S.view = "home"; return home(); }
+    if (!r) { S.view = "examples"; return examples(); }
     return '<div class="wrap">' + result(r, "example") + "</div>";
   }
 
@@ -576,18 +575,18 @@
     }
     var f = S.form, e = S.touched ? formErrors() : {};
     return '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("a_eyebrow") + '</div><h1 class="page">' + t("a_title") + '</h1><p class="lead">' + t("a_lead") + "</p>" +
-      '<div class="split" style="margin-top:36px"><div class="card" style="padding:36px;display:flex;flex-direction:column;gap:22px"><h2>' + t("a_card") + "</h2>" +
+      '<a class="nokey-cta" data-go="examples">' + ic("grid") + '<div><b>' + t("nokey_cta") + " →</b><span>" + t("nokey_cta_d") + "</span></div></a>" +
+      '<div class="split" style="margin-top:24px"><div class="card" style="padding:36px;display:flex;flex-direction:column;gap:22px"><h2>' + t("a_card") + "</h2>" +
       '<div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-market="' + m + '" class="' + (f.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
       '<div class="grid2"><div class="field"><label>' + t("f_code") + '</label><input class="input' + (e.code ? " err" : "") + '" id="f-code" value="' + esc(f.code) + '" placeholder="' + t("ph_" + f.market) + '" autocomplete="off"><div class="errtx">' + (e.code || "") + "</div></div>" +
       '<div class="field"><label>' + t("f_period") + '<span class="faint" title="' + esc(t("period_help")) + '">?</span></label><select class="input" id="f-period">' + PERIODS.map(function (p) { return '<option value="' + p + '"' + (p === f.period ? " selected" : "") + ">" + periodLabel(p) + "</option>"; }).join("") + '</select><div class="hint">' + t("period_help") + "</div></div></div>" +
       keyFields(f) +
       '<button class="btn primary block" data-act="start"' + (S.touched && Object.keys(formErrors()).length ? " disabled" : "") + ">" + ic("play") + t("start") + "</button></div>" +
       '<div style="display:flex;flex-direction:column;gap:20px"><div class="card"><h2>' + t("a_side_t") + '</h2><p class="muted" style="margin:0 0 16px">' + t("a_side_d") + "</p>" +
-      '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px" data-go="home">' + ic("grid") + '<div style="flex:1"><b>' + t("a_side_ex") + '</b><div class="hint">' + t("a_side_ex_d") + "</div></div>" + ic("arrow") + "</a>" +
-      '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px;margin-top:12px" data-go="verify">' + ic("term") + '<div style="flex:1"><b>' + t("a_side_ver") + '</b><div class="hint">' + t("a_side_ver_d") + "</div></div>" + ic("arrow") + "</a></div>" +
+      '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px" data-go="verify">' + ic("term") + '<div style="flex:1"><b>' + t("a_side_ver") + '</b><div class="hint">' + t("a_side_ver_d") + "</div></div>" + ic("arrow") + "</a></div>" +
       '<div class="card"><div class="lbl" style="margin-bottom:14px">' + t("a_how") + "</div>" + [1, 2, 3].map(function (n) {
         return '<div class="step" style="margin-top:' + (n > 1 ? 10 : 0) + 'px"><span class="ring mono" style="color:var(--accent-text)">0' + n + "</span><div><h4>" + t("a_how" + n) + "</h4><p>" + t("a_how" + n + "_d") + "</p></div></div>";
-      }).join("") + "</div></div></div></div>";
+      }).join("") + "</div></div></div>" + about() + "</div>";
   }
   function runbar(done) {
     var j = S.job, q = j.query || {}, m = j.meta || {};
@@ -689,7 +688,7 @@
       '<button data-ccy="orig" class="' + (c.ccy === "orig" ? "on" : "") + '">' + t("c_ccy_orig") + '</button><button data-ccy="local" class="' + (c.ccy === "local" ? "on" : "") + '">' + t("c_ccy_local") + "</button></div>" +
       '<div style="display:flex;gap:10px">' + (running ? '<button class="btn ghost sm" data-act="stop">' + ic("stop", "sm") + t("run_stop") + "</button>" : '<button class="btn ghost sm" data-act="cmp-csv">' + t("r_export_csv") + '</button><button class="btn ghost sm" data-act="reset">' + t("run_edit") + "</button>") + "</div></div>" +
       '<div class="fxstrip">' + ic("info", "sm") + (c.ccy === "orig" ? t("c_fx_none") : fxs || t("c_fx_none")) + "</div>" +
-      '<div class="tbl-card"><div class="scrollx"><table class="cmp"><thead><tr><th>' + t("c_col_co") + "</th>" + CMP_FIELDS.map(function (f) { return "<th>" + L(CMP_NAMES[f][0], CMP_NAMES[f][1]) + "</th>"; }).join("") + "<th>" + t("c_col_status") + "</th></tr></thead><tbody>" + body + '</tbody></table></div><p class="hint" style="padding:0 16px">' + t("c_click") + " " + L("每格显示累计期（与报告期一致）的数。", "Each cell shows the cumulative period of the chosen report.") + "</p></div>";
+      '<div class="tbl-card"><div class="scrollx"><table class="cmp"><thead><tr><th>' + t("c_col_co") + "</th>" + CMP_FIELDS.map(function (f) { return "<th>" + L(CMP_NAMES[f][0], CMP_NAMES[f][1]) + "</th>"; }).join("") + "<th>" + t("c_col_status") + "</th></tr></thead><tbody>" + body + '</tbody></table></div><p class="hint" style="padding:0 16px">' + t("c_click") + " " + L("每格显示累计期（与报告期一致）的数。", "Each cell shows the cumulative period of the chosen report.") + "</p></div>" + caveat();
   }
 
   // ------------------------------------------------------------------ P4 verify
@@ -737,7 +736,7 @@
         return '<div class="sumcard ' + x[0] + '"><div class="ic">' + ic(x[2]) + '</div><div><div class="lab">' + t("status_" + x[0]) + '</div><div class="num">' + c[x[1]] + "</div></div></div>";
       }).join("") + '<div class="sumcard"><div class="ic" style="background:var(--surface-2);color:var(--muted)">' + ic("warn") + '</div><div><div class="lab muted">' + t("v_unparsed") + '</div><div class="num">' + bad.length + "</div></div></div></div>" +
       (bad.length ? '<div class="alert" style="margin-top:20px"><span class="ic" style="background:var(--warn-soft);color:var(--warn)">' + ic("warn") + "</span><div><h3>" + t("v_badrows", { l: bad.map(function (b) { return b.line; }).join(", ") }) + "</h3>" + bad.map(function (b) { return '<p class="mono" style="font-size:12px">#' + b.line + " · " + esc(b.why) + (b.text ? " · " + esc(b.text) : "") + "</p>"; }).join("") + "</div></div>" : "") +
-      '<div class="tbl-card"><div class="tbl-head"><h2>' + t("r_core") + '</h2><span class="hint">' + t("r_core_sub") + "</span></div>" + rtable(r.items, "job") + "</div>";
+      '<div class="tbl-card"><div class="tbl-head"><h2>' + t("r_core") + '</h2><span class="hint">' + t("r_core_sub") + "</span></div>" + rtable(r.items, "job") + "</div>" + caveat();
   }
 
   // ------------------------------------------------------------------ P5 method
@@ -874,7 +873,6 @@
     }
     if (a === "lang") { S.lang = S.lang === "zh" ? "en" : "zh"; send("lang", { lang: S.lang }); render(); }
     else if (a === "menu") { S.menu = !S.menu; render(); }
-    else if (a === "scroll-ex") { var x = document.getElementById("examples"); if (x) x.scrollIntoView({ behavior: "smooth" }); }
     else if (a === "eye") { S.form.showKey = !S.form.showKey; render(); }
     else if (a === "start") {
       S.touched = true;

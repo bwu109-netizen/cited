@@ -121,10 +121,14 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .note { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--muted); }
 .note .icon { color: var(--accent-text); margin-top: 1px; }
 
-/* ---------- home ---------- */
-.hero { padding: 64px 0 8px; }
-.hero h1 { font-size: 64px; line-height: 1.08; margin: 18px 0 18px; font-weight: 800; letter-spacing: -.03em; }
-.hero .cta { display: flex; gap: 14px; align-items: center; margin-top: 30px; flex-wrap: wrap; }
+/* ---------- analyze landing: no-key entry, about section (former home) ---------- */
+.nokey-cta { display: flex; gap: 14px; align-items: center; margin-top: 24px; padding: 16px 20px; border-radius: var(--r-card); background: var(--accent-soft); border: 1px solid var(--accent); color: var(--text); cursor: pointer; transition: background .12s; }
+.nokey-cta:hover { background: var(--surface-2); }
+.nokey-cta .icon { color: var(--accent-text); flex: none; }
+.nokey-cta b { display: block; font-size: 16px; color: var(--accent-text); }
+.nokey-cta span { font-size: 13px; color: var(--muted); }
+.about { margin-top: 88px; padding-top: 48px; border-top: 1px solid var(--line); }
+.about-title { font-size: 44px; line-height: 1.1; margin: 18px 0 16px; font-weight: 800; letter-spacing: -.03em; }
 .ex-card { background: var(--surface); border-radius: var(--r-card); padding: 24px; display: flex; flex-direction: column; gap: 16px; cursor: pointer; transition: background .12s; }
 .ex-card:hover { background: var(--surface-2); }
 .ex-card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
@@ -188,10 +192,7 @@ table.res td.num .conv { font-size: 11.5px; color: var(--faint); }
 .metric { background: var(--surface); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
 .metric .v { font-family: var(--mono); font-size: 26px; font-weight: 650; letter-spacing: -.01em; }
 .metric .v small { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 6px; }
-.disclaim { background: var(--surface); border-radius: var(--r-card); padding: 26px 30px; display: flex; gap: 16px; margin-top: 56px; }
-.disclaim .icon { color: var(--bad); margin-top: 2px; }
-.disclaim p { margin: 0; }
-.disclaim p + p { color: var(--bad); margin-top: 4px; }
+.caveat { font-size: 12.5px; color: var(--muted); margin: 12px 2px 0; }
 
 /* drawer */
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; }
@@ -295,7 +296,7 @@ table.mtx tr:last-child td { border-bottom: 0; }
   .tabs.open { display: flex; position: absolute; top: 70px; left: 16px; right: 16px; flex-direction: column; border-radius: 20px; padding: 8px; }
   .tabs.open a { padding: 12px 16px; }
   .menu-btn { display: grid; }
-  .hero h1 { font-size: 40px; }
+  .about-title { font-size: 32px; }
   h1.page, .r0 h1 { font-size: 32px; }
   .grid2, .grid3, .grid4, .split, .steps3, .sumcards, .lim { grid-template-columns: 1fr; }
   .steps3 > div { border-left: 0; border-top: 1px solid var(--line); }
@@ -329,5 +330,5 @@ table.mtx tr:last-child td { border-bottom: 0; }
 }
 
 /* light mode: white cards need an outline on the light-grey page */
-.card, .ex-card, .sumcard, .tbl-card, .metric, .mod, .disclaim, .runbar, .alert, .fxstrip, .steps3, .tabs, .chip-btn { box-shadow: var(--card-ring); }
+.card, .ex-card, .sumcard, .tbl-card, .metric, .mod, .runbar, .alert, .fxstrip, .steps3, .tabs, .chip-btn { box-shadow: var(--card-ring); }
 html[data-theme="light"] .pageimg { box-shadow: 0 0 0 1px var(--line); }

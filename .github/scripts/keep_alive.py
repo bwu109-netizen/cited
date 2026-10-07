@@ -33,7 +33,7 @@ def main():
     if not URL:
         sys.exit("APP_URL is empty: set the repository variable APP_URL (Settings → Secrets and variables → Actions → Variables)")
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(channel="chrome")  # Google Chrome preinstalled on GitHub's Ubuntu runners
         page = browser.new_page(viewport={"width": 1280, "height": 900})
         page.goto(URL, wait_until="domcontentloaded", timeout=120_000)
         print("opened", page.url)

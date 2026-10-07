@@ -21,10 +21,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # Only the Python package: the script drives the Google Chrome that ships with the runner image,
+      # so no browser download and no apt step (apt mirrors on the runner can hang).
       - name: Install Playwright
-        run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
+        timeout-minutes: 3
+        run: pip install playwright
       - name: Open the app (wake it if asleep)
         env:
           APP_URL: ${{ vars.APP_URL }}

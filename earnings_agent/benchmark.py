@@ -185,6 +185,9 @@ def _months_back(iso, months):
 
 def us_prior(doc, template):
     """Cumulative values ending at the previous quarter, sharing this filing's cumulative start date."""
+    # revision R5 (eval_design §10): as in R1, a 12-month fact in a quarterly filing is trailing-twelve-month,
+    # so it must not set the cumulative start date
+    annual = cumulative_type(parse_period(doc["period"])[1]) == "FY"
     cf = sec_companyfacts(doc["extra"]["cik"])
     ug = cf["facts"].get("us-gaap", {})
     accn, end = doc["extra"]["accession"], doc["period_end"]
@@ -194,7 +197,8 @@ def us_prior(doc, template):
         for tag in tags.get(field, []):
             facts = [(u, f) for u, fs in ug.get(tag, {}).get("units", {}).items() for f in fs if "start" in f]
             cum = [f for _, f in facts if f.get("accn") == accn and f["end"] == end
-                   and type_from_days((date.fromisoformat(f["end"]) - date.fromisoformat(f["start"])).days) != "Q"]
+                   and type_from_days((date.fromisoformat(f["end"]) - date.fromisoformat(f["start"])).days)
+                   not in (("Q",) if annual else ("Q", "FY"))]
             if not cum:
                 continue
             start = cum[0]["start"]

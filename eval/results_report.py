@@ -205,7 +205,7 @@ def section_revisions():
     manifest = json.loads((ROOT / "eval" / "FROZEN.json").read_text())
     log = "\n".join(f"- {r['at'][:19]} UTC，commit `{r['commit'][:10]}`：{r['reason']}（改动文件 {len(r['changed'])} 个）"
                     for r in manifest.get("revisions", []))
-    rev1 = json.loads((ROOT / "eval" / "FROZEN_REV1.json").read_text()) if (ROOT / "eval" / "FROZEN_REV1.json").exists() else {}
+    rev1 = json.loads((ROOT / "eval" / "FROZEN_REV2.json").read_text()) if (ROOT / "eval" / "FROZEN_REV2.json").exists() else {}
     body = f"""## 2. 修订记录（看过冻结版结果之后）
 
 下面的内容摘自 eval_design §10.2，是那里的原文。
@@ -215,14 +215,12 @@ def section_revisions():
 
 {log or '（尚未登记）'}
 
-修订版规则冻结于 commit `{(rev1.get('commit') or '—')[:10]}`（`eval/FROZEN_REV1.json`，{(rev1.get('frozen_at') or '')[:19]} UTC）。
+修订版规则冻结于 commit `{(rev1.get('commit') or '—')[:10]}`（`eval/FROZEN_REV2.json`，{(rev1.get('frozen_at') or '')[:19]} UTC）。
 
 **修订过程中的更正**：第一版修订冻结 `886f98b` 在 R2 里附带了“美股单独 dollars=USD”。这条超出了授权范围：它会改变全部美股金额字段的 C3，消掉冻结版 21 条误报中的 17 条。所以在留出集运行之前撤回，重新冻结（`7c11143`）。用第一版冻结跑出的 eval1_rev1 已作废重跑。
 
-**误报分析中新发现、未修订的问题**（只记录，不改规则）：
+**误报分析中新发现的问题**：后来经批准登记为 R4（单独的 dollars 识别为 USD，对应 17/21 条误报）和 R5（S5 取上季末累计时排除 TTM，对应 AMZN 的 4 条误报），都在 REV2 冻结里。
 
-- 单独的 “dollars” 不识别为币种：冻结版误报的主因（17/21），见上文。
-- AMZN 的 4 条 S5 误报（“单季 + 上季末累计 ≈ 累计”）。原因与 R1 相同：`benchmark.us_prior` 从 10-Q 里取累计期起点时，取到了 TTM 事实的起点，于是“上季末累计”用错了期间。R1 只授权修正标准答案（评分），没有覆盖合理性检查的取数，所以这 4 条在修订版里仍然是误报。
 - R1 的附带影响：AMZN 去掉 FY 条目后，评分器认定的“累计期间”变成 H。直接问给出的 AMZN 毛利（H）因此进入评分条目；AMZN 没有毛利的 XBRL，所以这一条记为待核对，不评分。
 """
     if rv:
@@ -233,7 +231,7 @@ def section_revisions():
 
 {main_table(fz, "eval1", ["ds_simple", "ds_direct", "ds_pipeline"])}
 
-修订版（R1 + R2；R3 新档只有修订版）：
+修订版（R1、R2、R4、R5；R3 新档只有修订版）：
 
 {main_table(rv, "eval1_rev1", ORDER)}
 
@@ -257,7 +255,7 @@ def section_holdout():
     cfg = json.loads((ROOT / "eval" / "holdout_config.json").read_text())
     return f"""## 3. 留出集结果（四档，DeepSeek，修订版规则）
 
-60 家公司各自的上一期报告（`eval/holdout_config.json`）。规则在运行前冻结（`eval/FROZEN_REV1.json`），跑完没有再改。**只评美股和 A 股**（{len(sc['detail'])} 份），用自动标准答案；港股照跑但不评分。美股和 A 股里没有自动答案的条目（{sc['summary']['pending_review']} 条）也不评。
+60 家公司各自的上一期报告（`eval/holdout_config.json`）。规则在运行前冻结（`eval/FROZEN_REV2.json`，R1–R5），跑完没有再改。**只评美股和 A 股**（{len(sc['detail'])} 份），用自动标准答案；港股照跑但不评分。美股和 A 股里没有自动答案的条目（{sc['summary']['pending_review']} 条）也不评。
 
 {main_table(sc, "hold1", ORDER)}
 

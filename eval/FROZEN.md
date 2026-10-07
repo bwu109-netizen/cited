@@ -74,4 +74,5 @@
   - `hold1`：留出集四档。
   跑完不再改。
 - 修订版冻结 commit：见 `eval/FROZEN_REV1.json` 的 `commit` 字段。
+- **第二次修订冻结（取代 REV1）**：登记 R4、R5 之后，修订版重新冻结在 `eval/FROZEN_REV2.json`，主目录的 `run_eval.py` 改认这份清单。`FROZEN_REV1.json` 保留作为记录。修订版 eval1 和留出集都用 REV2 的规则（R1–R5）。
 

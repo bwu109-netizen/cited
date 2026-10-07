@@ -6,7 +6,7 @@
   python eval/run_eval.py fable --cell pipeline                # Fable pipeline batch (+ follow-up batch)
   python eval/run_eval.py score --run eval1                    # score against the automatic answer key
 
-Revised rules (eval_design §10, manifest eval/FROZEN_REV1.json; the frozen v1 rules run from the git tag
+Revised rules (eval_design §10, manifest eval/FROZEN_REV2.json; the frozen v1 rules run from the git tag
 eval-frozen-v1, see eval/FROZEN.md):
   python eval/run_eval.py ds --run eval1_rev1 --salt eval1     # re-verify eval1 replies (cache) + new cell
   python eval/run_eval.py ds --run hold1 --config eval/holdout_config.json   # holdout: previous periods
@@ -41,7 +41,7 @@ from earnings_agent.llm_client import cached_complete_json, cached_complete_text
 from earnings_agent.pipeline import finish, followup_prompt, missing_after, prepare  # noqa: E402
 
 CFG = json.loads((ROOT / "eval" / "config.json").read_text())
-MANIFEST = "eval/FROZEN_REV1.json"
+MANIFEST = "eval/FROZEN_REV2.json"
 DS_CELLS = ["ds_pipeline", "ds_direct", "ds_simple", "ds_verified"]
 DS = ["deepseek"]
 OUT = ROOT / "data" / "eval"

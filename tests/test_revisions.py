@@ -67,10 +67,32 @@ def test_r2_amounts_unchanged():
     assert to_value("2.02", "in millions")[0] == 2_020_000
 
 
-def test_r2_does_not_touch_currency():
-    # "dollars" -> USD was briefly bundled into R2 and withdrawn as out of scope (eval_design §10.2):
-    # bare "dollars" stays unrecognised, as in the frozen rules
-    assert currency_code("", "dollars in millions, except per common share data", "us") is None
+# ---------------------------------------------------------------- R4: bare "dollars" in US filings
+
+@pytest.mark.parametrize("unit", ["Millions of dollars", "Dollars in millions", "dollars in millions, except per share"])
+def test_r4_bare_dollars_is_usd_in_us_filings(unit):  # CVX, BAC, AIG
+    assert currency_code("dollars", unit, "us") == "USD"
+
+
+def test_r4_only_us_market():
+    assert currency_code("dollars", "dollars", "hk") is None and currency_code("", "dollars", "a") is None
+
+
+# ---------------------------------------------------------------- R5: S5 prior ignores TTM
+
+def test_r5_prior_start_ignores_trailing_twelve_months(monkeypatch):
+    accn, end = "A2", "2026-06-30"
+    facts = {"facts": {"us-gaap": {"NetIncomeLoss": {"units": {"USD": [
+        {"accn": accn, "end": end, "start": "2025-07-01", "val": 135_281},   # TTM listed first (AMZN)
+        {"accn": accn, "end": end, "start": "2026-01-01", "val": 35_000},    # six months
+        {"accn": accn, "end": end, "start": "2026-04-01", "val": 18_000},
+        {"accn": "A1", "end": "2026-03-31", "start": "2026-01-01", "val": 17_000},   # Q1 = prior cumulative
+        {"accn": "A0", "end": "2025-09-30", "start": "2025-07-01", "val": 21_187},   # wrong prior via TTM start
+    ]}}}}}
+    monkeypatch.setattr(benchmark, "sec_companyfacts", lambda cik: facts)
+    doc = {"market": "us", "code": "AMZN", "period": "2026Q2", "period_end": end, "extra": {"cik": "x", "accession": accn}}
+    prior = benchmark.us_prior(doc, "general")
+    assert [(p["field"], p["period_end"], p["value"]) for p in prior] == [("net_income_parent", "2026-03-31", 17_000)]
 
 
 def test_r2_eps_item_passes_c3():

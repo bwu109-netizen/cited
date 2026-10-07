@@ -1,28 +1,195 @@
 {
- "note": "commit ids before -> after the pre-publication history rewrite (eval/FROZEN.md \u00a77)",
+ "note": "commit ids: original -> rewrite 1 (excluded files removed) -> rewrite 2 (author = Boxiao Wu); see eval/FROZEN.md §7. 'map' is original -> final.",
+ "chain": [
+  {
+   "original": "9ed1abdda7f4f95005aeb6b20701d7ea069763d6",
+   "rewrite1": "9ed1abdda7f4f95005aeb6b20701d7ea069763d6",
+   "rewrite2": "7ca721a870ef72b1b1c24685a66a3324874fd73e",
+   "subject": "Phase 0: data source feasibility scripts and findings"
+  },
+  {
+   "original": "50e41a11bba7eaabed96d75d2c241071452c9209",
+   "rewrite1": "50e41a11bba7eaabed96d75d2c241071452c9209",
+   "rewrite2": "d43d989497676898f9e29064f9e9d98321f2c72c",
+   "subject": "Phase 1/1.5: extraction pipeline, verification layer, sanity checks"
+  },
+  {
+   "original": "bdcd278aa5547c303a1a1079688e5795dae5fda7",
+   "rewrite1": "bdcd278aa5547c303a1a1079688e5795dae5fda7",
+   "rewrite2": "aae91973e4f14af673d2f5a1096b5b5a8ce92ebf",
+   "subject": "Phase 2 design: eval_design.md, 60-company candidate check, fetch/locate fixes"
+  },
+  {
+   "original": "75ef327343285edad752af7b864e550a1881eac2",
+   "rewrite1": "e150e5e561b59f99ed8bbc75c1a5de0e1a793a0b",
+   "rewrite2": "9e74cd30881c41e83220f99724591ca2a69df876",
+   "subject": "Phase 2 prep: budget plan, frozen subsets, spend cap, HK review table"
+  },
+  {
+   "original": "cc96dd7c7d965103e281a62865fefcaa2c644181",
+   "rewrite1": "a4964b094a0ff2d591f6a5f8c3c54f9e3916f081",
+   "rewrite2": "4b4e9c7ac3d712abd4e74be6554c25d6b44c73bf",
+   "subject": "Remove unused preview launch config"
+  },
+  {
+   "original": "33562e45405d5141ead57cc53b6212be2356cbf7",
+   "rewrite1": "f5d24910e67f200bba0d411696e876686ded655a",
+   "rewrite2": "eca6ac4389b47b4313547671e09cc6edb2783ed7",
+   "subject": "Direct-ask cell, answer parser, scorer, Anthropic batch client; dev validation"
+  },
+  {
+   "original": "b282e43235b9e9055bce40e05461543b25494345",
+   "rewrite1": "d560e2c3d22f4879335733aba06d0e787b21f8f3",
+   "rewrite2": "e8bff8270618889e8231efed436e0069298e71b6",
+   "subject": "Eval runner: simple direct-ask cell, three-tier DeepSeek, Fable split by cell; freeze prep"
+  },
+  {
+   "original": "e7bced29fd0b61dccdea59be86a6bbc4b0147ec7",
+   "rewrite1": "8b742a776568e897fd9ff7a26a7fa61e412c3421",
+   "rewrite2": "b33e0a656d5ca4f4998a33a735e5ccd85614f412",
+   "subject": "Freeze evaluation rules (eval/FROZEN.json)"
+  },
+  {
+   "original": "cba5dba353119cc33f7060f8d811ec023d442823",
+   "rewrite1": "7856b696522b65cdbb5a598d58a706bcb2f2eebd",
+   "rewrite2": "f4a187ec3accbe399d3e1c6a7238ffe0aae04966",
+   "subject": "Review table: show revenue/cost components for code-derived gross profit; dispute/pending tags"
+  },
+  {
+   "original": "886f98b1586184ecb80fdf88b0b55b89f3703404",
+   "rewrite1": "327c3c79612e8f8609cce115f460f290dfd9cd9d",
+   "rewrite2": "eb778f550164f79d292ad30a0f0e613d8468d902",
+   "subject": "Revisions R1-R3 after frozen eval1 (eval_design §10); holdout list; analysis and report scripts"
+  },
+  {
+   "original": "36edcd6b7a3a4e6c7cfaa07709bf1bf45e637099",
+   "rewrite1": "1e224c3ec24cb13b8a797019de1f8603871fe606",
+   "rewrite2": "a18de16707f24284396d895b45df3a10bdd8f570",
+   "subject": "Log revisions R1-R3 against frozen v1; freeze revised rules (eval/FROZEN_REV1.json)"
+  },
+  {
+   "original": "7c11143f23177ade0c56a9322bc859113d0b0423",
+   "rewrite1": "fb426a93ce90b7b9be72e1a98ada7ee47cb8405f",
+   "rewrite2": "c62e2cf5c283fc5d21e002cc0484e7936651e979",
+   "subject": "R2: withdraw bundled 'dollars'=USD rule (out of the approved scope); re-freeze before any holdout run"
+  },
+  {
+   "original": "ef602c5b08744841558f5bcf0c09801a6132ffd1",
+   "rewrite1": "7df562116fa8bf02eee7506ca2de672f3184788f",
+   "rewrite2": "6eacfb0b316ca67ac46e640ecc549f1938d1d81a",
+   "subject": "Re-freeze revised rules after withdrawing the out-of-scope R2 add-on"
+  },
+  {
+   "original": "0ec1d14fd0de0f0cf93a84dd66367cc4e64944db",
+   "rewrite1": "ec57ec8ae1d7a235700cbf4e7994b76064bdac28",
+   "rewrite2": "6e261b79d1065dfc44094c1c9a382a85f3a4cde1",
+   "subject": "Draft docs/eval_results.md: frozen results with new metrics, false-alarm analysis, stability, eval1 frozen vs revised"
+  },
+  {
+   "original": "8be826851e6078964ed633e0602300222bbbd289",
+   "rewrite1": "ade3814cca2012173795d8d3bde00a009d9c0033",
+   "rewrite2": "3f2c7ac84da763854184cde31b12033221dc6dbc",
+   "subject": "Revisions R4 (bare 'dollars' = USD in US filings) and R5 (S5 prior ignores TTM), approved after the false-alarm analysis"
+  },
+  {
+   "original": "3b8ffee47b500158e7004cc572b5dca66b597f29",
+   "rewrite1": "1aa691216d2223029e123366be61ab34e7030591",
+   "rewrite2": "4ba384e2c6544d16f7b0bb3e5bbd8dfc0cbd2540",
+   "subject": "Freeze revised rules R1-R5 (eval/FROZEN_REV2.json)"
+  },
+  {
+   "original": "f7fe10a9f4b8700712aee70c4376c977d205ddba",
+   "rewrite1": "4b0241e6b1aa92bad092ae9f5355215e98b41329",
+   "rewrite2": "168d3c549e20d976329e4b692ab59b67536ef967",
+   "subject": "eval_results.md: Fable costs, revised eval1 (R1-R5 + R3 cell), holdout four cells, dispute supplement"
+  },
+  {
+   "original": "b171cc7c462f86df84f1c0e177073cd3226c59bf",
+   "rewrite1": "029ba5066a0a4282579fb8d7aeacce39749f86b2",
+   "rewrite2": "11491d4b497a10bc17c72ab38e3a3c0251bba205",
+   "subject": "Manual answer key from the review export (128 pick, 6 edit, 12 na)"
+  },
+  {
+   "original": "22968a4e4b20eb2f73a48daad07d556bba87cf1c",
+   "rewrite1": "6210498d0b1146de781fb6b147fccb0acb959ff2",
+   "rewrite2": "6f910047b55709a7a3b1faf575f8239fb60118cd",
+   "subject": "eval_results.md: full three-market eval1 (frozen + revised) with HK manual key, flag recall by market, Fable scores, 原文没有 items"
+  },
+  {
+   "original": "58ce693ecaf9f0fca7c8e97e4f4a0a0602ffe19e",
+   "rewrite1": "bbe59f3fdcca246816098ec18c105ab320d12846",
+   "rewrite2": "61965b9eff1834c0463cdae274cb4a15a5f3f334",
+   "subject": "R6 (product only): per-share figures in 仙 / cents / 美分 convert at 0.01; limitation on metric-existence checks"
+  },
+  {
+   "original": "235fab5929b549f174219ee3c88af86f26550334",
+   "rewrite1": "1d0b737b5ce3d7e0dd105d9702569ec9d13a86bf",
+   "rewrite2": "1a25532ef99ffd359fc34360ff401f25a6ffc347",
+   "subject": "PRD draft: verification page (no key, no model calls)"
+  },
+  {
+   "original": "16c1e49acb2745aa5ad37f0ffd58a5ff097c6423",
+   "rewrite1": "ee615293ddd36a3b6de7989ad3354a657234d714",
+   "rewrite2": "f835029bc25a3235743c6ed31cece44847ec9c73",
+   "subject": "PRD_web.md (5 pages, verify page merged); web/CLAUDE.md with Ponytail rules summary (MIT)"
+  },
+  {
+   "original": "730c344a453c539595559b43481cd0377e770c49",
+   "rewrite1": "702020621c03bc22bfa9f2683233c6b85da387b5",
+   "rewrite2": "d83bd1834f265ae438f7139823545b6716b25fad",
+   "subject": "PRD_web: visual tokens from the Stitch reference (visual only), general Stitch prompt; docs/stitch/DESIGN.md"
+  },
+  {
+   "original": "c633e5e11e2bdc3c5a0e46cc138c24f847789c1b",
+   "rewrite1": "314dcf0bbc8170928336d3d9ff96b5afaa7fdd05",
+   "rewrite2": "e79cbd8dfadb282a086f028f2adacdeb82b8dcdd",
+   "subject": "Web app (phase 4): Streamlit custom component, 5 pages, examples, eval numbers, verify-page parser, FX"
+  },
+  {
+   "original": "d472046d8c02727c774fdb21b6a8157f817a65ec",
+   "rewrite1": "6d071d91574b53d64dfd732ae6151f76df1285b3",
+   "rewrite2": "a828416f4588e2789f3556f7baddbc429ec3fbf5",
+   "subject": "Web: plain-language fetch-failure reasons"
+  },
+  {
+   "original": "395f8a5706e8d6120ea771af199cb25d5693f1f7",
+   "rewrite1": "58c51b5127a701de2e8a36c961e15b52e4a52378",
+   "rewrite2": "6174ea219b2aa91ab179b4c7e2e2565b8b0af3d0",
+   "subject": "Rename to 有据 / Cited; HK unflagged note on home; industry metrics in the interface language; README, LICENSE; stop tracking Stitch screenshots and HK demo table"
+  },
+  {
+   "original": null,
+   "rewrite1": "e97a0fb919503dd54b8c3ed7417c7acc2ce79d02",
+   "rewrite2": "3fdc06da90bbaea1cdc3a6bc8f7c8c522a3a6643",
+   "subject": "Record the pre-publication history rewrite: old->new commit table (eval/FROZEN.md §7), rewritten ids next to every cited old id"
+  }
+ ],
  "map": {
-  "75ef327343285edad752af7b864e550a1881eac2": "e150e5e561b59f99ed8bbc75c1a5de0e1a793a0b",
-  "cc96dd7c7d965103e281a62865fefcaa2c644181": "a4964b094a0ff2d591f6a5f8c3c54f9e3916f081",
-  "33562e45405d5141ead57cc53b6212be2356cbf7": "f5d24910e67f200bba0d411696e876686ded655a",
-  "b282e43235b9e9055bce40e05461543b25494345": "d560e2c3d22f4879335733aba06d0e787b21f8f3",
-  "e7bced29fd0b61dccdea59be86a6bbc4b0147ec7": "8b742a776568e897fd9ff7a26a7fa61e412c3421",
-  "cba5dba353119cc33f7060f8d811ec023d442823": "7856b696522b65cdbb5a598d58a706bcb2f2eebd",
-  "886f98b1586184ecb80fdf88b0b55b89f3703404": "327c3c79612e8f8609cce115f460f290dfd9cd9d",
-  "36edcd6b7a3a4e6c7cfaa07709bf1bf45e637099": "1e224c3ec24cb13b8a797019de1f8603871fe606",
-  "7c11143f23177ade0c56a9322bc859113d0b0423": "fb426a93ce90b7b9be72e1a98ada7ee47cb8405f",
-  "ef602c5b08744841558f5bcf0c09801a6132ffd1": "7df562116fa8bf02eee7506ca2de672f3184788f",
-  "0ec1d14fd0de0f0cf93a84dd66367cc4e64944db": "ec57ec8ae1d7a235700cbf4e7994b76064bdac28",
-  "8be826851e6078964ed633e0602300222bbbd289": "ade3814cca2012173795d8d3bde00a009d9c0033",
-  "3b8ffee47b500158e7004cc572b5dca66b597f29": "1aa691216d2223029e123366be61ab34e7030591",
-  "f7fe10a9f4b8700712aee70c4376c977d205ddba": "4b0241e6b1aa92bad092ae9f5355215e98b41329",
-  "b171cc7c462f86df84f1c0e177073cd3226c59bf": "029ba5066a0a4282579fb8d7aeacce39749f86b2",
-  "22968a4e4b20eb2f73a48daad07d556bba87cf1c": "6210498d0b1146de781fb6b147fccb0acb959ff2",
-  "58ce693ecaf9f0fca7c8e97e4f4a0a0602ffe19e": "bbe59f3fdcca246816098ec18c105ab320d12846",
-  "235fab5929b549f174219ee3c88af86f26550334": "1d0b737b5ce3d7e0dd105d9702569ec9d13a86bf",
-  "16c1e49acb2745aa5ad37f0ffd58a5ff097c6423": "ee615293ddd36a3b6de7989ad3354a657234d714",
-  "730c344a453c539595559b43481cd0377e770c49": "702020621c03bc22bfa9f2683233c6b85da387b5",
-  "c633e5e11e2bdc3c5a0e46cc138c24f847789c1b": "314dcf0bbc8170928336d3d9ff96b5afaa7fdd05",
-  "d472046d8c02727c774fdb21b6a8157f817a65ec": "6d071d91574b53d64dfd732ae6151f76df1285b3",
-  "395f8a5706e8d6120ea771af199cb25d5693f1f7": "58c51b5127a701de2e8a36c961e15b52e4a52378"
+  "9ed1abdda7f4f95005aeb6b20701d7ea069763d6": "7ca721a870ef72b1b1c24685a66a3324874fd73e",
+  "50e41a11bba7eaabed96d75d2c241071452c9209": "d43d989497676898f9e29064f9e9d98321f2c72c",
+  "bdcd278aa5547c303a1a1079688e5795dae5fda7": "aae91973e4f14af673d2f5a1096b5b5a8ce92ebf",
+  "75ef327343285edad752af7b864e550a1881eac2": "9e74cd30881c41e83220f99724591ca2a69df876",
+  "cc96dd7c7d965103e281a62865fefcaa2c644181": "4b4e9c7ac3d712abd4e74be6554c25d6b44c73bf",
+  "33562e45405d5141ead57cc53b6212be2356cbf7": "eca6ac4389b47b4313547671e09cc6edb2783ed7",
+  "b282e43235b9e9055bce40e05461543b25494345": "e8bff8270618889e8231efed436e0069298e71b6",
+  "e7bced29fd0b61dccdea59be86a6bbc4b0147ec7": "b33e0a656d5ca4f4998a33a735e5ccd85614f412",
+  "cba5dba353119cc33f7060f8d811ec023d442823": "f4a187ec3accbe399d3e1c6a7238ffe0aae04966",
+  "886f98b1586184ecb80fdf88b0b55b89f3703404": "eb778f550164f79d292ad30a0f0e613d8468d902",
+  "36edcd6b7a3a4e6c7cfaa07709bf1bf45e637099": "a18de16707f24284396d895b45df3a10bdd8f570",
+  "7c11143f23177ade0c56a9322bc859113d0b0423": "c62e2cf5c283fc5d21e002cc0484e7936651e979",
+  "ef602c5b08744841558f5bcf0c09801a6132ffd1": "6eacfb0b316ca67ac46e640ecc549f1938d1d81a",
+  "0ec1d14fd0de0f0cf93a84dd66367cc4e64944db": "6e261b79d1065dfc44094c1c9a382a85f3a4cde1",
+  "8be826851e6078964ed633e0602300222bbbd289": "3f2c7ac84da763854184cde31b12033221dc6dbc",
+  "3b8ffee47b500158e7004cc572b5dca66b597f29": "4ba384e2c6544d16f7b0bb3e5bbd8dfc0cbd2540",
+  "f7fe10a9f4b8700712aee70c4376c977d205ddba": "168d3c549e20d976329e4b692ab59b67536ef967",
+  "b171cc7c462f86df84f1c0e177073cd3226c59bf": "11491d4b497a10bc17c72ab38e3a3c0251bba205",
+  "22968a4e4b20eb2f73a48daad07d556bba87cf1c": "6f910047b55709a7a3b1faf575f8239fb60118cd",
+  "58ce693ecaf9f0fca7c8e97e4f4a0a0602ffe19e": "61965b9eff1834c0463cdae274cb4a15a5f3f334",
+  "235fab5929b549f174219ee3c88af86f26550334": "1a25532ef99ffd359fc34360ff401f25a6ffc347",
+  "16c1e49acb2745aa5ad37f0ffd58a5ff097c6423": "f835029bc25a3235743c6ed31cece44847ec9c73",
+  "730c344a453c539595559b43481cd0377e770c49": "d83bd1834f265ae438f7139823545b6716b25fad",
+  "c633e5e11e2bdc3c5a0e46cc138c24f847789c1b": "e79cbd8dfadb282a086f028f2adacdeb82b8dcdd",
+  "d472046d8c02727c774fdb21b6a8157f817a65ec": "a828416f4588e2789f3556f7baddbc429ec3fbf5",
+  "395f8a5706e8d6120ea771af199cb25d5693f1f7": "6174ea219b2aa91ab179b4c7e2e2565b8b0af3d0"
  }
 }

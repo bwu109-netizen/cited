@@ -3,7 +3,7 @@
 > 状态：见 `eval/FROZEN.json`（由 `python eval/check_frozen.py --write` 生成，记录 git commit 号和每个文件的 sha256）。
 > 之后每次运行评估前，都先执行 `python eval/check_frozen.py`。任何一个冻结文件变了就拒绝运行。规则修订后重跑，必须用 `--revision "原因"` 显式登记，并按 eval_design §7.2 同时报告修订前后两套结果。
 
-- 冻结 commit：`b282e43`（重写后 `d560e2c`）（清单 `eval/FROZEN.json` 提交于 `e7bced2`（重写后 `8b742a7`）；git 标签 `eval-frozen-v1` 指向 `cba5dba`（重写后 `7856b69`），它只多改了核对表的展示，冻结文件与 `b282e43`（重写后 `d560e2c`） 相同）
+- 冻结 commit：`b282e43`（重写后 `e8bff82`）（清单 `eval/FROZEN.json` 提交于 `e7bced2`（重写后 `b33e0a6`）；git 标签 `eval-frozen-v1` 指向 `cba5dba`（重写后 `f4a187e`），它只多改了核对表的展示，冻结文件与 `b282e43`（重写后 `e8bff82`） 相同）
 - 冻结时间：2026-10-06 22:23 UTC
 - 冻结版的运行位置：工作树 `.worktrees/frozen-v1`（`git worktree add --detach .worktrees/frozen-v1 eval-frozen-v1`；`data/` 下的 cache、eval、raw、output 用软链接指回主目录，共用缓存和同一本 $20 账本）。主目录已经包含修订（§6），**冻结版的 Fable 两批和港股核对后的冻结版评分都必须在这个工作树里跑**。
 
@@ -95,34 +95,42 @@
 - 文档里引用的旧哈希都注明了“重写后”的新哈希。
 - JSON 冻结清单保留原 `commit` 字段，另加 `commit_rewritten` 字段。
 
-### 7.3 新旧哈希对照
+### 7.3 第二次改写（2026-10-07，提交作者）
 
-| 旧 | 新 | 提交说明 |
-|---|---|---|
-| `9ed1abd` | `9ed1abd` | Phase 0: data source feasibility scripts and findings |
-| `50e41a1` | `50e41a1` | Phase 1/1.5: extraction pipeline, verification layer, sanity checks |
-| `bdcd278` | `bdcd278` | Phase 2 design: eval_design.md, 60-company candidate check, fetch/locate fixes |
-| `75ef327` | `e150e5e` | Phase 2 prep: budget plan, frozen subsets, spend cap, HK review table |
-| `cc96dd7` | `a4964b0` | Remove unused preview launch config |
-| `33562e4` | `f5d2491` | Direct-ask cell, answer parser, scorer, Anthropic batch client; dev validation |
-| `b282e43` | `d560e2c` | Eval runner: simple direct-ask cell, three-tier DeepSeek, Fable split by cell; f |
-| `e7bced2` | `8b742a7` | Freeze evaluation rules (eval/FROZEN.json) |
-| `cba5dba` | `7856b69` | Review table: show revenue/cost components for code-derived gross profit; disput |
-| `886f98b` | `327c3c7` | Revisions R1-R3 after frozen eval1 (eval_design §10); holdout list; analysis and |
-| `36edcd6` | `1e224c3` | Log revisions R1-R3 against frozen v1; freeze revised rules (eval/FROZEN_REV1.js |
-| `7c11143` | `fb426a9` | R2: withdraw bundled 'dollars'=USD rule (out of the approved scope); re-freeze b |
-| `ef602c5` | `7df5621` | Re-freeze revised rules after withdrawing the out-of-scope R2 add-on |
-| `0ec1d14` | `ec57ec8` | Draft docs/eval_results.md: frozen results with new metrics, false-alarm analysi |
-| `8be8268` | `ade3814` | Revisions R4 (bare 'dollars' = USD in US filings) and R5 (S5 prior ignores TTM), |
-| `3b8ffee` | `1aa6912` | Freeze revised rules R1-R5 (eval/FROZEN_REV2.json) |
-| `f7fe10a` | `4b0241e` | eval_results.md: Fable costs, revised eval1 (R1-R5 + R3 cell), holdout four cell |
-| `b171cc7` | `029ba50` | Manual answer key from the review export (128 pick, 6 edit, 12 na) |
-| `22968a4` | `6210498` | eval_results.md: full three-market eval1 (frozen + revised) with HK manual key,  |
-| `58ce693` | `bbe59f3` | R6 (product only): per-share figures in 仙 / cents / 美分 convert at 0.01; limitati |
-| `235fab5` | `1d0b737` | PRD draft: verification page (no key, no model calls) |
-| `16c1e49` | `ee61529` | PRD_web.md (5 pages, verify page merged); web/CLAUDE.md with Ponytail rules summ |
-| `730c344` | `7020206` | PRD_web: visual tokens from the Stitch reference (visual only), general Stitch p |
-| `c633e5e` | `314dcf0` | Web app (phase 4): Streamlit custom component, 5 pages, examples, eval numbers,  |
-| `d472046` | `6d071d9` | Web: plain-language fetch-failure reasons |
-| `395f8a5` | `58c51b5` | Rename to 有据 / Cited; HK unflagged note on home; industry metrics in the interfa |
+- 本地 git 用户原来是机器名，GitHub 无法关联到账号。现在把全部提交的作者和提交者改为 Boxiao Wu（GitHub noreply 地址，关联到 bwu109-netizen），每个提交信息末尾统一为一行 `Co-authored-by: Claude <noreply@anthropic.com>`。
+- 文件内容没有任何变化，所以哈希再次全部改变。
+- 两个标签都已移到新提交，并以新作者重新签注。
+- 文档里的“重写后”和 JSON 里的 `commit_rewritten` 都已更新为最终哈希。
+
+### 7.4 哈希对照（原始 → 第一次改写 → 第二次改写 = 当前）
+
+| 原始 | 第一次改写 | 当前 | 提交说明 |
+|---|---|---|---|
+| `9ed1abd` | `9ed1abd` | `7ca721a` | Phase 0: data source feasibility scripts and findings |
+| `50e41a1` | `50e41a1` | `d43d989` | Phase 1/1.5: extraction pipeline, verification layer, sanity checks |
+| `bdcd278` | `bdcd278` | `aae9197` | Phase 2 design: eval_design.md, 60-company candidate check, fetch/locate |
+| `75ef327` | `e150e5e` | `9e74cd3` | Phase 2 prep: budget plan, frozen subsets, spend cap, HK review table |
+| `cc96dd7` | `a4964b0` | `4b4e9c7` | Remove unused preview launch config |
+| `33562e4` | `f5d2491` | `eca6ac4` | Direct-ask cell, answer parser, scorer, Anthropic batch client; dev vali |
+| `b282e43` | `d560e2c` | `e8bff82` | Eval runner: simple direct-ask cell, three-tier DeepSeek, Fable split by |
+| `e7bced2` | `8b742a7` | `b33e0a6` | Freeze evaluation rules (eval/FROZEN.json) |
+| `cba5dba` | `7856b69` | `f4a187e` | Review table: show revenue/cost components for code-derived gross profit |
+| `886f98b` | `327c3c7` | `eb778f5` | Revisions R1-R3 after frozen eval1 (eval_design §10); holdout list; anal |
+| `36edcd6` | `1e224c3` | `a18de16` | Log revisions R1-R3 against frozen v1; freeze revised rules (eval/FROZEN |
+| `7c11143` | `fb426a9` | `c62e2cf` | R2: withdraw bundled 'dollars'=USD rule (out of the approved scope); re- |
+| `ef602c5` | `7df5621` | `6eacfb0` | Re-freeze revised rules after withdrawing the out-of-scope R2 add-on |
+| `0ec1d14` | `ec57ec8` | `6e261b7` | Draft docs/eval_results.md: frozen results with new metrics, false-alarm |
+| `8be8268` | `ade3814` | `3f2c7ac` | Revisions R4 (bare 'dollars' = USD in US filings) and R5 (S5 prior ignor |
+| `3b8ffee` | `1aa6912` | `4ba384e` | Freeze revised rules R1-R5 (eval/FROZEN_REV2.json) |
+| `f7fe10a` | `4b0241e` | `168d3c5` | eval_results.md: Fable costs, revised eval1 (R1-R5 + R3 cell), holdout f |
+| `b171cc7` | `029ba50` | `11491d4` | Manual answer key from the review export (128 pick, 6 edit, 12 na) |
+| `22968a4` | `6210498` | `6f91004` | eval_results.md: full three-market eval1 (frozen + revised) with HK manu |
+| `58ce693` | `bbe59f3` | `61965b9` | R6 (product only): per-share figures in 仙 / cents / 美分 convert at 0.01;  |
+| `235fab5` | `1d0b737` | `1a25532` | PRD draft: verification page (no key, no model calls) |
+| `16c1e49` | `ee61529` | `f835029` | PRD_web.md (5 pages, verify page merged); web/CLAUDE.md with Ponytail ru |
+| `730c344` | `7020206` | `d83bd18` | PRD_web: visual tokens from the Stitch reference (visual only), general  |
+| `c633e5e` | `314dcf0` | `e79cbd8` | Web app (phase 4): Streamlit custom component, 5 pages, examples, eval n |
+| `d472046` | `6d071d9` | `a828416` | Web: plain-language fetch-failure reasons |
+| `395f8a5` | `58c51b5` | `6174ea2` | Rename to 有据 / Cited; HK unflagged note on home; industry metrics in the |
+| `—` | `e97a0fb` | `3fdc06d` | Record the pre-publication history rewrite: old->new commit table (eval/ |
 

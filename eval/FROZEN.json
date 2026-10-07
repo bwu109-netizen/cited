@@ -44,7 +44,7 @@
     "docs/eval_design.md"
    ],
    "commit": "886f98b1586184ecb80fdf88b0b55b89f3703404",
-   "commit_rewritten": "327c3c79612e8f8609cce115f460f290dfd9cd9d"
+   "commit_rewritten": "eb778f550164f79d292ad30a0f0e613d8468d902"
   },
   {
    "at": "2026-10-07T01:38:46.346775+00:00",
@@ -59,7 +59,7 @@
     "docs/eval_design.md"
    ],
    "commit": "7c11143f23177ade0c56a9322bc859113d0b0423",
-   "commit_rewritten": "fb426a93ce90b7b9be72e1a98ada7ee47cb8405f"
+   "commit_rewritten": "c62e2cf5c283fc5d21e002cc0484e7936651e979"
   },
   {
    "at": "2026-10-07T01:54:39.835984+00:00",
@@ -74,7 +74,7 @@
     "docs/eval_design.md"
    ],
    "commit": "8be826851e6078964ed633e0602300222bbbd289",
-   "commit_rewritten": "ade3814cca2012173795d8d3bde00a009d9c0033"
+   "commit_rewritten": "3f2c7ac84da763854184cde31b12033221dc6dbc"
   },
   {
    "at": "2026-10-07T02:54:52.262882+00:00",
@@ -89,8 +89,8 @@
     "docs/eval_design.md"
    ],
    "commit": "22968a4e4b20eb2f73a48daad07d556bba87cf1c",
-   "commit_rewritten": "6210498d0b1146de781fb6b147fccb0acb959ff2"
+   "commit_rewritten": "6f910047b55709a7a3b1faf575f8239fb60118cd"
   }
  ],
- "commit_rewritten": "d560e2c3d22f4879335733aba06d0e787b21f8f3"
+ "commit_rewritten": "e8bff8270618889e8231efed436e0069298e71b6"
 }

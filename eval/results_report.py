@@ -149,7 +149,7 @@ def stability_section():
                  else f"— / {'、'.join(str(v) for v in s['unanswered_by_run'].values())}")
         lines.append(f"| {NAMES[c]} | {s['reports']} | {s['items']} | {pct(s['value_agreement'])} "
                      f"| {' / '.join(str(v) for v in s['strict_by_run'].values())} | {s['correctness_flips']} | {extra} |")
-    return "\n".join(lines) + ("\n\n只比较三次都有标准答案的条目（目前是美股和 A 股的自动答案；港股核对后补上）。"
+    return "\n".join(lines) + ("\n\n只比较三次都有标准答案的条目（美股和 A 股用自动答案，港股和其余条目用人工核对答案）。"
                                "稳定性只在冻结版规则下测。")
 
 
@@ -163,8 +163,77 @@ def fable_section():
         return "尚未运行。"
     return ("已用冻结版规则在 `.worktrees/frozen-v1` 中跑完，共两批（先直接问，结算后再提交流水线；流水线另有 1 份补问，单独一批）。"
             "每批提交前都精确核算过：直接问最坏情况 $14.42，当时剩余 $17.64；流水线最坏情况 $7.99，当时剩余 $10.13。"
-            "**评分等港股答案导出后再做**，所以这里只列成本。\n\n| 格 | 份数 | 合计 | 每份（均值 / 中位 / 最大） |\n|---|---|---|---|\n"
+            "评分在港股答案导出后用冻结版评分器完成，见下表。\n\n| 格 | 份数 | 合计 | 每份（均值 / 中位 / 最大） |\n|---|---|---|---|\n"
             + "\n".join(rows) + "\n\n直接问的成本几乎全部是输入：全文最长约 30 万 tokens，按 Batch 价 $5/M 计。")
+
+
+def flags_by_market(sc, cells):
+    """Flag recall etc. split HK vs US/A: HK has no reliable C4 (its automatic source is unusable), so its
+    recall is what the verification layer achieves without the answer key."""
+    lines = ["| 档 | 市场 | 条目 | 错误 | 被标记的错误 | 标记召回率（含 C4 / 去 C4） | 静默错误 | 复核工作量 | ❌ 中误报占比 |",
+             "|---|---|---|---|---|---|---|---|---|"]
+    for c in cells:
+        if not has_flags(c):
+            continue
+        for mk, label in (({"hk"}, "港股"), ({"us", "a"}, "美股 + A 股")):
+            rows = rows_of(sc, c, mk)
+            if not rows:
+                continue
+            m = three_metrics(rows, True)
+            fw = sum(1 for r in rows if not r["strict"] and r.get("flagged"))
+            lines.append(f"| {NAMES[c]} | {label} | {m['items']} | {m['errors']} | {fw} | {pct(m['flag_recall'])} / "
+                         f"{pct(m['flag_recall_no_c4'])} | {m['silent']} | {m['flagged']}（{pct(m['workload'])}） "
+                         f"| {pct(m['false_alarm_share'])} |")
+    return "\n".join(lines)
+
+
+def na_section():
+    """Items the reviewer marked 原文没有/不适用: excluded from scoring (eval_design §6); here we count how often
+    each tier still produced a number for them."""
+    from score_eval import cell_preds
+    manual = json.loads((ROOT / "eval" / "answer_key_manual.json").read_text())
+    na = [(rep, e) for rep, es in manual.items() if rep != "_source" for e in es if e.get("na")]
+    cells = [("eval1", "ds_simple"), ("eval1", "ds_direct"), ("eval1", "ds_pipeline"), ("eval1_rev1", "ds_verified"),
+             ]  # the 9-report Fable subset contains none of these items
+    head = "| 报告 | 指标 | 核对意见 | " + " | ".join(NAMES[c] + ("（修订版）" if r != "eval1" else "") for r, c in cells) + " |"
+    lines = [head, "|---" * (3 + len(cells)) + "|"]
+    gave = {c: [0, 0, 0] for _, c in cells}  # gave a number, asked, of which flagged ❌
+    for rep, e in na:
+        m, code, _ = rep.split(":")
+        cols = []
+        for run, c in cells:
+            pth = OUT / run / c / f"{m}_{code}.json"
+            if not pth.exists():
+                cols.append("—")
+                continue
+            pr = cell_preds(c, json.loads(pth.read_text())).get((e["field"], e["ptype"]), {})
+            v = pr.get("value")
+            gave[c][1] += 1
+            if v is not None:
+                gave[c][0] += 1
+                gave[c][2] += bool(pr.get("flagged"))
+                flag = " ❌" if pr.get("flagged") else ""
+                cols.append(f"**给了 {v:,.4g}**{flag}")
+            else:
+                cols.append("未给（标 ❌ 漏抽）" if pr.get("category") == "漏抽" else (pr.get("status") or "未给"))
+        lines.append(f"| {rep} | {e['field']} {e['ptype']} | {(e.get('note') or '')[:60]} | " + " | ".join(cols) + " |")
+    tot = "| **给出数字的次数**（其中被标 ❌） | | | " + " | ".join(
+        f"**{gave[c][0]}/{gave[c][1]}**" + (f"（{gave[c][2]}）" if has_flags(c) else "") for _, c in cells) + " |"
+    return "\n".join(lines + [tot]) + ("\n\n按冻结规则，这 12 项不进入评分集合 S，不算对也不算错。流水线和核验档给出的数如果被标了 ❌，表中注明。"
+                                      "模型在原文没有的指标上硬给出数字，例如把营业利润当毛利、把保险收入当总收入，"
+                                      "这类答案在评分里看不到，在这里单独记录。Fable 的 9 份子集不含这 12 项。")
+
+
+def fable_scored():
+    p = OUT / "eval1" / "scores_fable.json"
+    if not p.exists():
+        return ""
+    sc = json.loads(p.read_text())
+    cells = ["ds_simple", "ds_direct", "ds_pipeline", "fable_direct", "fable_pipeline"]
+    pend = sc["summary"]["pending_review"]
+    return (f"同一 9 份报告、同一组评分条目（冻结版评分器，`eval/score_fable.py`）上，Fable 两档与 DeepSeek 三档并列。"
+            f"**样本只有 9 份，只作补充参考。**DeepSeek 各档的“每份成本”一列是全部 60 份的平均，不是这 9 份。另有 {pend} 条只有 Fable 作答、未经核对的可选条目（601628 保险服务业绩 H），不评分。\n\n"
+            + main_table(sc, "eval1", cells) + "\n\n" + errors_list(sc, ["fable_direct", "fable_pipeline"]))
 
 
 def section_frozen():
@@ -173,7 +242,7 @@ def section_frozen():
     reports = [tuple(d["report"].split(":")) for d in sc["detail"]]
     return f"""## 1. 冻结版主结果（DeepSeek，60 份）
 
-> **暂定**：港股核对表尚未导回，目前只评了有自动标准答案的条目（美股和 A 股）。待人工核对的条目有 {pend} 条，争议行有 {sc['summary']['disputes']} 条（NIO）。港股核对完成后，冻结版评分会在冻结工作树里重跑，本节随之更新。Fable 9 份尚未运行（§1.5）。
+> 全量三地。港股和美股/A 股的无自动答案条目来自人工核对表（`data/review/answer_key_eval1_answers.json`：146 行，选候选 128、改值 6、标“原文没有” 12），转换为 `eval/answer_key_manual.json`（`eval/make_manual_key.py`）后在冻结工作树里重新评分。标“原文没有”的 {pend} 条按冻结规则不进入评分集合（§1.7）。NIO 的争议行按核对结果取 −14,960,821 千元（归属于 NIO Inc. 的总额），与自动答案一致。
 
 指标定义见 eval_design §6 和 §10.1：
 
@@ -191,6 +260,12 @@ def section_frozen():
 
 {by_market(sc, ["ds_simple", "ds_direct", "ds_pipeline"])}
 
+### 1.2b 标记召回率分市场（港股没有可靠的 C4）
+
+港股的自动数据源（东财）不可用作答案，C4 在港股基本不起作用，所以港股的召回率就是不依赖标准答案的核验能做到的水平。美股和 A 股的“含 C4”召回率有循环。
+
+{flags_by_market(sc, ["ds_pipeline"])}
+
 ### 1.3 流水线 ❌ 误报分析（只分析，不改规则）
 
 {fa_section("eval1", sc, "ds_pipeline")}
@@ -207,9 +282,15 @@ def section_frozen():
 
 {fable_section()}
 
+{fable_scored()}
+
 ### 1.6 全部错误条目（冻结版）
 
 {errors_list(sc, ["ds_simple", "ds_direct", "ds_pipeline"])}
+
+### 1.7 标“原文没有”的 12 项：各档给出数字的次数
+
+{na_section()}
 """
 
 
@@ -251,6 +332,10 @@ def section_revisions():
 {main_table(rv, "eval1_rev1", ORDER)}
 
 > **R3 那一档是看过结果之后设计的新档，单独标注。** 它在 eval1 上的数字不能用来证明修订有效，要看 §3 的留出集。
+
+修订版标记召回率分市场：
+
+{flags_by_market(rv, ["ds_pipeline", "ds_verified"])}
 
 修订版流水线的误报：
 
@@ -343,10 +428,17 @@ def dispute_section(run, sc, cfg_path, cells):
     lines += [f"- {k[0]} {k[1]} {k[2]}：自动答案 {d['truth']:,.0f}（全文无此数），报告印 {d['majority']:,.0f}" for k, d in adj.items()]
     others = [x for rep in sc["detail"] for x in rep["disputes"]
               if (rep["report"], x["item"][0], x["item"][1]) not in adj]
-    if others:
-        lines.append(f"- 另有 {len(others)} 条争议无法用全文自动判定，仍按自动答案计（待人工裁决）。")
+    for x in others:
+        if x["item"][0] == "net_income_parent" and abs(x["truth"] + 22310176000) < 1:
+            lines.append("- us:NIO net_income_parent FY：**自动答案正确**（−22,310,176 千元）。按与 eval1 相同的口径，取归属于 NIO Inc. 的总额，"
+                         "不取普通股股东行。合并利润表（第 193 页）净亏损 (22,401,709)，非控股权益分得 +91,533，两者相加即 −22,310,176。"
+                         "这个数在股东权益变动表 NIO Inc. 一栏（第 196 页）和母公司简要利润表（第 249 页）上都有列示。"
+                         "各档给的 (22,657,692) 是“Net loss attributable to ordinary shareholders of NIO Inc.”，"
+                         "也就是再扣掉可赎回非控股权益增值 347,516 之后的普通股股东口径，按规则判错。")
+        else:
+            lines.append(f"- {x['item']}：无法用全文自动判定，仍按自动答案计（待人工裁决）。")
     lines += ["", "**补充（不替代冻结规则下的评分）**：如果上述争议按报告原文裁决，严格正确为：", "",
-              "| 档 | 按规则评分 | 按原文裁决争议后 |", "|---|---|---|"]
+              "| 档 | 按规则评分 | 按原文裁决争议后（NIO 维持自动答案） |", "|---|---|---|"]
     for c in cells:
         rows = rows_of(sc, c)
         if rows:
@@ -364,6 +456,7 @@ LIMITS = """## 4. 局限
 - **修订是看过结果之后做的**：R1、R2 是针对 eval1 暴露的问题改的，R3 是看到结果后提出的新设计。它们在 eval1 上的改善是自证的，只有留出集的结果才算证据。
 - **美股和 A 股的 C4 存在循环**：C4 用的就是作为标准答案的 XBRL/AKShare，所以同时报告了去 C4 的标记召回率。
 - 稳定性只测了 DeepSeek，15 份，每份共 3 次。
+- **港股以“仙/美分”列示的 EPS 没有修订**：所有档都解析不了这个单位（直接问是解析失败，流水线和核验档是 C3 ❌），港股的 EPS 错误主要来自这里。这是已知问题，未授权修订。
 - **每份成本受 DeepSeek 前缀缓存影响**：同一份报告的几档提问共用同一段全文前缀，后跑的档会命中服务商缓存、价格更低。所以简单直接问、核验档的每份成本比专业直接问低，并不全是提示词本身的差别。账本按实际计费记录。
 - **自动标准答案本身也会出错**：留出集有 4 条争议，东财的单季数在报告全文中找不到，而各档答案与报告印的数一致。按冻结规则，这些仍按自动答案评分，另附按原文裁决的补充数字。
 """

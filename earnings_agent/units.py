@@ -71,6 +71,27 @@ def unit_multiplier(raw_unit):
     raise UnitError(f"unknown unit {raw_unit!r}")
 
 
+_PER_SHARE_WORDS = re.compile(r"/股|每股|per[ -](?:common |ordinary )?(?:share|ads)|/share|/ads")
+_SCALE_WORDS = re.compile(r"十亿|亿|億|千万|千萬|百万|百萬|万|萬|千|billions?|millions?|thousands?|\bbn\b|\bmn\b|\bmm\b|"
+                          r"'000|’000|\bin\b|\bof\b|\band\b|\bshares?\b|\bdata\b|\bamounts?\b|except\b|除外|[,，;；()（）]")
+
+
+def per_share_multiplier(raw_unit):
+    """Revision R2 (eval_design §10): the unit of a per-share figure. Table headers such as
+    "in millions, except per share amounts" or "Dollars and Shares in Millions" describe the table's
+    amounts, not its per-share rows, so their amount scale is never inherited (multiplier 1).
+    Anything else (e.g. cents: 仙 / 美分) still has to parse on its own."""
+    u = nfkc(raw_unit or "").strip().lower()
+    if not u:
+        raise UnitError("empty unit")
+    if _PER_SHARE_WORDS.search(u):
+        return Decimal(1), "per_share"
+    rest = _SCALE_WORDS.sub(" ", u).strip()
+    if not rest or _BASE.search(rest) or currency_code(rest, "", "us") or currency_code(rest, "", "a"):
+        return Decimal(1), "per_share"
+    raise UnitError(f"unknown per-share unit {raw_unit!r}")
+
+
 _CURRENCIES = [
     (r"港元|港币|港幣|hk\$|hkd", "HKD"),
     (r"美元|us\$|usd|u\.s\. dollars?|\$", "USD"),
@@ -81,6 +102,8 @@ _CURRENCIES = [
 ]
 # Bare "元" means the listing market's home currency (A-share reports: CNY).
 _MARKET_DEFAULT_YUAN = {"a": "CNY", "hk": None, "us": None}
+# Revision R2: bare "dollars" in a US filing's table header ("dollars in millions, ...") means USD.
+_MARKET_DEFAULT_DOLLAR = {"us": "USD"}
 
 
 def currency_code(raw_currency, raw_unit="", market=""):
@@ -93,12 +116,16 @@ def currency_code(raw_currency, raw_unit="", market=""):
     for text in (raw_currency, raw_unit):
         if "元" in nfkc(text or "") and _MARKET_DEFAULT_YUAN.get(market):
             return _MARKET_DEFAULT_YUAN[market]
+    for text in (raw_currency, raw_unit):
+        if re.search(r"\bdollars?\b", nfkc(text or "").lower()) and _MARKET_DEFAULT_DOLLAR.get(market):
+            return _MARKET_DEFAULT_DOLLAR[market]
     return None
 
 
-def to_value(raw_value, raw_unit):
-    """Return (value as float in base units, multiplier, kind, tolerance in base units)."""
-    mult, kind = unit_multiplier(raw_unit)
+def to_value(raw_value, raw_unit, per_share=False):
+    """Return (value as float in base units, multiplier, kind, tolerance in base units).
+    per_share=True for per-share fields (EPS): see per_share_multiplier (revision R2)."""
+    mult, kind = per_share_multiplier(raw_unit) if per_share else unit_multiplier(raw_unit)
     v = parse_raw_value(raw_value)
     tol = Decimal(5) * Decimal(10) ** (-(decimals_of(raw_value) + 1)) * mult
     return float(v * mult), mult, kind, float(tol)

@@ -9,3 +9,4 @@ data/output/
 .pytest_cache/
 data/eval/
 .claude/
+.worktrees/

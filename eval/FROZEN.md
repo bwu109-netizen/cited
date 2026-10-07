@@ -3,8 +3,9 @@
 > 状态：见 `eval/FROZEN.json`（由 `python eval/check_frozen.py --write` 生成，记录 git commit 号和每个文件的 sha256）。
 > 之后每次运行评估前，都先执行 `python eval/check_frozen.py`。任何一个冻结文件变了就拒绝运行。规则修订后重跑，必须用 `--revision "原因"` 显式登记，并按 eval_design §7.2 同时报告修订前后两套结果。
 
-- 冻结 commit：`（冻结时填写）`
-- 冻结时间：`（冻结时填写）`
+- 冻结 commit：`b282e43`（清单 `eval/FROZEN.json` 提交于 `e7bced2`；git 标签 `eval-frozen-v1` 指向 `cba5dba`，它只多改了核对表的展示，冻结文件与 `b282e43` 相同）
+- 冻结时间：2026-10-06 22:23 UTC
+- 冻结版的运行位置：工作树 `.worktrees/frozen-v1`（`git worktree add --detach .worktrees/frozen-v1 eval-frozen-v1`；`data/` 下的 cache、eval、raw、output 用软链接指回主目录，共用缓存和同一本 $20 账本）。主目录已经包含修订（§6），**冻结版的 Fable 两批和港股核对后的冻结版评分都必须在这个工作树里跑**。
 
 ## 1. 冻结的文件
 
@@ -60,3 +61,17 @@
 - [x] 加简单直接问第三档
 - [x] Fable max_tokens 32k，按格分两批
 - [x] `eval/config.json` 里 60 份的目标期间和上一期
+
+## 6. 修订版冻结（eval_design §10）
+
+- 看过冻结版结果之后登记了三处修订 R1–R3，见 `docs/eval_design.md` §10.2。登记方式：在主目录运行 `python eval/check_frozen.py --revision "…"`，修订会追加到 `eval/FROZEN.json` 的 `revisions` 里。
+- 修订后的规则另外冻结在 `eval/FROZEN_REV1.json`（`python eval/check_frozen.py --manifest eval/FROZEN_REV1.json --write`）。主目录的 `eval/run_eval.py` 只认这份清单。
+- 修订版新增的冻结文件：
+  - `eval/holdout_config.json`：留出集名单；
+  - `earnings_agent/direct_verify.py`：R3 的核验层接口。
+- 修订版冻结之后跑的：
+  - `eval1_rev1`：复用 eval1 的回复，重新核验和评分，并跑 R3 新档；
+  - `hold1`：留出集四档。
+  跑完不再改。
+- 修订版冻结 commit：见 `eval/FROZEN_REV1.json` 的 `commit` 字段。
+

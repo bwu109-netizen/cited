@@ -33,6 +33,13 @@ def us_benchmark(doc, template):
     ug = cf["facts"].get("us-gaap", {})
     accn, end = doc["extra"]["accession"], doc["period_end"]
     tags = dict(US_TAGS["_all"], **US_TAGS.get(template, {}))
+    # revision R1 (eval_design §10): a 12-month fact inside a quarterly filing is a trailing-twelve-month
+    # figure (e.g. Amazon's 10-Q cash-flow columns), not a fiscal-year item
+    annual = cumulative_type(parse_period(doc["period"])[1]) == "FY"
+
+    def wanted(days):
+        return annual or type_from_days(days) != "FY"
+
     out = []
     for field, cands in tags.items():
         for tag in cands:
@@ -41,6 +48,8 @@ def us_benchmark(doc, template):
                 for f in facts:
                     if f.get("accn") == accn and f["end"] == end and "start" in f:
                         days = (date.fromisoformat(f["end"]) - date.fromisoformat(f["start"])).days
+                        if not wanted(days):
+                            continue
                         rows.append({"field": field, "period_type": type_from_days(days), "period_end": end,
                                      "value": float(f["val"]), "currency": unit.split("/")[0],
                                      "source": "SEC companyfacts", "source_field": tag, "note": None})
@@ -60,6 +69,8 @@ def us_benchmark(doc, template):
         for (unit, start), v in total.items():
             if (unit, start) in nci:
                 days = (date.fromisoformat(end) - date.fromisoformat(start)).days
+                if not wanted(days):
+                    continue
                 out.append({"field": "net_income_parent", "period_type": type_from_days(days), "period_end": end,
                             "value": v - nci[(unit, start)], "currency": unit.split("/")[0],
                             "source": "SEC companyfacts",

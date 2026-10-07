@@ -23,7 +23,8 @@ from score import answer_key, direct_preds, pipeline_preds, score_items, summari
 
 OUT = ROOT / "data" / "eval"
 MANUAL = ROOT / "eval" / "answer_key_manual.json"
-DS_CELLS = ["ds_simple", "ds_direct", "ds_pipeline"]
+DS_CELLS = ["ds_simple", "ds_direct", "ds_pipeline"]  # the three frozen tiers: disputes are judged on these
+FLAGGED_CELLS = ("pipeline", "verified")  # cells whose output carries verified items with ❌ flags
 OPTIONAL = {"gross_profit", "insurance_revenue", "insurance_service_result"}
 
 
@@ -35,7 +36,7 @@ def load(run, cell, market, code):
 def cell_preds(cell, obj):
     if obj is None:
         return {}
-    return pipeline_preds(obj) if "pipeline" in cell else direct_preds(obj["parsed"])
+    return pipeline_preds(obj) if any(k in cell for k in FLAGGED_CELLS) else direct_preds(obj["parsed"])
 
 
 def item_set(ctx, outputs, key):
@@ -45,6 +46,8 @@ def item_set(ctx, outputs, key):
     items |= {(k["field"], k["ptype"]) for k in key}
     cum = next((p for f, p in items if p != "Q"), None)
     for cell, obj in outputs.items():
+        if cell not in DS_CELLS:  # the item set is defined by the three frozen tiers only
+            continue
         for (f, p), pr in cell_preds(cell, obj).items():
             if f in OPTIONAL and f in FIELDS[tpl] and p in (cum, "Q") and pr.get("value") is not None:
                 if p == "Q" and (f, "Q") not in items and ("revenue", "Q") not in items:
@@ -58,6 +61,7 @@ def same(a, b, tol):
 
 
 def analyse(run, cfg_reports, cells=DS_CELLS):
+    cells = list(cells)
     manual = json.loads(MANUAL.read_text()) if MANUAL.exists() else {}
     per_report = []
     for r in cfg_reports:
@@ -75,7 +79,7 @@ def analyse(run, cfg_reports, cells=DS_CELLS):
             if k is None:
                 pending.append(it)
                 continue
-            vals = [preds[c].get(it, {}).get("value") for c in cells]
+            vals = [preds[c].get(it, {}).get("value") for c in cells if c in DS_CELLS]
             for v in vals:
                 if v is not None and not same(v, k["value"], k["tol"]) and \
                         sum(same(w, v, k["tol"]) for w in vals) >= 2 and "人工" not in k["source"]:
@@ -88,18 +92,19 @@ def analyse(run, cfg_reports, cells=DS_CELLS):
     return per_report
 
 
-def score_run(run, cfg_reports=None):
+def score_run(run, cfg_reports=None, cells=DS_CELLS):
     cfg = json.loads((ROOT / "eval" / "config.json").read_text())
-    reps = analyse(run, cfg_reports or cfg["reports"])
+    cells = [c for c in cells if (OUT / run / c).exists()]
+    reps = analyse(run, cfg_reports or cfg["reports"], cells)
     summary = {"run": run, "reports": len(reps),
                "pending_review": sum(len(x["pending"]) for x in reps),
                "disputes": sum(len(x["disputes"]) for x in reps), "cells": {}}
-    for c in DS_CELLS:
+    for c in cells:
         rows = [row for x in reps for row in x["rows"][c]]
-        summary["cells"][c] = summarize(rows, pipeline="pipeline" in c)
+        summary["cells"][c] = summarize(rows, pipeline=any(k in c for k in FLAGGED_CELLS))
     detail = [{"report": f"{x['report']['market']}:{x['report']['code']}", "items": x["items"],
                "pending": x["pending"], "disputes": x["disputes"],
-               "rows": {c: x["rows"][c] for c in DS_CELLS}} for x in reps]
+               "rows": {c: x["rows"][c] for c in cells}} for x in reps]
     (OUT / run / "scores.json").write_text(json.dumps({"summary": summary, "detail": detail}, ensure_ascii=False,
                                                        indent=1, default=str))
     print(json.dumps(summary, ensure_ascii=False, indent=1, default=str))

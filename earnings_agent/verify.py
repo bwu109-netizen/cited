@@ -105,7 +105,7 @@ def check_number(item, pages, market):
 
     # C3 units first (needed for value)
     try:
-        value, mult, kind, tol = to_value(raw, item.get("raw_unit"))
+        value, mult, kind, tol = to_value(raw, item.get("raw_unit"), per_share=item.get("field") in PER_SHARE_FIELDS)
         res.update(value=value, multiplier=mult, unit_kind=kind, tolerance=tol, c3=True)
         cur = currency_code(item.get("raw_currency"), item.get("raw_unit"), market)
         res["currency"] = cur

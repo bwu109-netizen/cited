@@ -130,7 +130,8 @@ def interpret_parsed(parsed, answer, market):
                     rec["problems"].append("解析出的数字不在回答文本里")
                     rec["status"] = "parser_error"
                 else:
-                    value, mult, kind, tol = to_value(raw, it.get("raw_unit") or it.get("raw_currency") or "元")
+                    value, mult, kind, tol = to_value(raw, it.get("raw_unit") or it.get("raw_currency") or "元",
+                                                       per_share=it.get("field") == "eps_basic")
                     if it.get("negative") and value > 0:
                         value = -value
                     rec["value"], rec["tolerance"] = value, tol
@@ -140,3 +141,84 @@ def interpret_parsed(parsed, answer, market):
                 rec["status"] = "parser_error"
         out.append(rec)
     return out
+
+
+# ---------------------------------------------------------------- revision R3: direct ask + verification layer
+# A new cell designed after the frozen results were seen (eval_design §10). Same question as the professional
+# direct ask, plus one closing sentence asking for the page and the source line of every number; the parsed
+# answer then goes through the pipeline's own verification (C1–C4 + sanity checks + flag rule).
+
+SOURCE_REQUEST = ("每个数字请同时给出它在报告中的页码（即 [PAGE n] 里的 n）和包含这个数字的原文句子或表格行（逐字照抄）；"
+                  "如果某个数是你计算出来的，请说明用了哪几个原文数字，并分别给出它们的页码和原文。")
+
+
+def build_verified_prompt(doc, template, pages):
+    system, user = build_direct_prompt(doc, template, pages)
+    return system, user + SOURCE_REQUEST
+
+
+PARSER_SYSTEM_VERIFIED = PARSER_SYSTEM.replace("只输出一个 JSON 对象。", """7. page：回答为这个数字给出的页码（整数）；没给就填 0。
+8. source_quote：回答为这个数字给出的“报告原文”句子或表格行，逐字照抄回答里的这段文字；没给就留空。
+9. computed：回答是否说明这个数是自己计算出来的（例如“营业收入减营业成本”）。是的话，把回答里列出的
+   每个计算用到的原文数字放进 components（name、sign：加为 1、减为 -1、raw_value、raw_unit、raw_currency、page、source_quote，
+   同样逐字照抄回答）。
+只输出一个 JSON 对象。""")
+
+
+def build_verified_parser_prompt(answer, doc, template):
+    _, user = build_parser_prompt(answer, doc, template)
+    user = user.replace(
+        '"raw_value": "", "raw_unit": "", "raw_currency": "", "negative": false, "quote": ""}]}',
+        '"raw_value": "", "raw_unit": "", "raw_currency": "", "negative": false, "quote": "",\n'
+        '  "page": 0, "source_quote": "", "computed": false,\n'
+        '  "components": [{"name": "", "sign": 1, "raw_value": "", "raw_unit": "", "raw_currency": "", "page": 0,'
+        ' "source_quote": ""}]}]}')
+    return PARSER_SYSTEM_VERIFIED, user
+
+
+def _int(x):
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _signed(raw, negative):
+    raw = nfkc(str(raw or "")).strip()
+    if negative and raw and not re.match(r"^[(\-−–—]", raw):
+        return "-" + raw
+    return raw
+
+
+def verified_raw_items(parsed, answer, doc):
+    """Parser output -> raw items in the pipeline's extraction format, ready for verify.verify_report.
+    Only numbers that really are in the answer pass (as in interpret_parsed). Page and source line come from
+    the answer; the verification layer then checks them against the report itself."""
+    items, notes = [], []
+    for it in (parsed or {}).get("items") or []:
+        if (it.get("status") or "answered") != "answered":
+            continue
+        raw = _signed(it.get("raw_value"), it.get("negative"))
+        try:
+            if not raw or not _in_answer(raw, answer):
+                notes.append(f"{it.get('field')}/{it.get('period_type')}：解析出的数字不在回答文本里，丢弃")
+                continue
+        except UnitError:
+            notes.append(f"{it.get('field')}/{it.get('period_type')}：数字无法解析，丢弃")
+            continue
+        base = {"field": it.get("field"), "period_type": it.get("period_type"), "period_start": None,
+                "period_end": doc["period_end"], "raw_value": raw,
+                "raw_unit": it.get("raw_unit") or it.get("raw_currency") or "",
+                "raw_currency": it.get("raw_currency") or "", "page": _int(it.get("page")),
+                "quote": it.get("source_quote") or "", "derivation": "reported", "answer_quote": it.get("quote")}
+        comps = [c for c in it.get("components") or [] if c.get("raw_value")]
+        if it.get("computed") and comps:
+            base.update(derivation="derived", value_as_answered=raw, components=[
+                {"name": c.get("name"), "sign": c.get("sign", 1), "raw_value": nfkc(str(c.get("raw_value"))),
+                 "raw_unit": c.get("raw_unit") or base["raw_unit"],
+                 "raw_currency": c.get("raw_currency") or base["raw_currency"],
+                 "page": _int(c.get("page")), "quote": c.get("source_quote") or ""} for c in comps])
+        elif it.get("computed"):
+            base["computed_without_inputs"] = True
+        items.append(base)
+    return items, notes

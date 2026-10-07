@@ -1,0 +1,1879 @@
+{
+ "_source": {
+  "file": "answer_key_eval1_answers.json",
+  "table": "answer-key-eval1",
+  "exported_at": "2026-10-07T02:40:07.006588Z",
+  "rows": 146
+ },
+ "a:000001:2026Q1": [
+  {
+   "field": "ppop",
+   "ptype": "Q",
+   "raw": "25368000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "25368 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "a:002142:2026H1": [
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "29740000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "29740 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "a:601318:2026H1": [
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "279255000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "279255 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "na": true,
+   "note": "Candidate is life and health insurance service result and other, not the explicitly reported consolidated IFRS 17 result.",
+   "decision": "na"
+  }
+ ],
+ "a:601398:2025FY": [
+  {
+   "field": "ppop",
+   "ptype": "FY",
+   "raw": "558971000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 2794855.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "a:601601:2026H1": [
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "143296000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "143296 × 1e+06",
+    "1432.96 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "na": true,
+   "note": "Consolidated insurance service result is not explicitly reported. Do not substitute a computed sum for a reported metric.",
+   "decision": "na"
+  }
+ ],
+ "a:601628:2026H1": [
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "112525000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "112525 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00001:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "7",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 0.005,
+   "printed_as": [
+    "7.00 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "78468000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 392340.00000000006,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "26801000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "26801000000 × 1",
+    "26801 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "32991000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "32991 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "136485000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "136485 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00002:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "2.37",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 0.005,
+   "printed_as": [
+    "2.37 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "na": true,
+   "note": "Expenses presented by nature; no gross profit or complete cost of sales line.",
+   "decision": "na"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "5997000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "5997 × 1e+06"
+   ],
+   "note": "Subsidiary perpetual capital securities are non-controlling interests. Parent shareholder profit remains HKD5,997 million.",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "na": true,
+   "note": "Operating cash flow is not disclosed in the specified results announcement.",
+   "decision": "na"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "42856000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "42856 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00016:2026FY": [
+  {
+   "field": "eps_basic",
+   "ptype": "FY",
+   "raw": "7.39",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 0.005,
+   "printed_as": [
+    "7.39 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "FY",
+   "raw": "32112000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 160560.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "FY",
+   "raw": "21426000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "21426 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "FY",
+   "na": true,
+   "note": "Operating cash flow is not disclosed in the specified annual results announcement.",
+   "decision": "na"
+  },
+  {
+   "field": "revenue",
+   "ptype": "FY",
+   "raw": "94194000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "94194 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00388:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "8.36",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 0.05,
+   "printed_as": [
+    "8.4 × 1",
+    "8.36 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "10568000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "10568 × 1e+06",
+    "105.68 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "11480000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "11480 × 1e+06"
+   ],
+   "note": "Use HKAS 7 operating cash flow of HKD11,480 million, not non-HKFRS principal operating cash flow of 10,626 million.",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "13980000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "13980 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00941:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "3.64",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "3.6 × 1",
+    "3.64 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "na": true,
+   "note": "78,256 is operating profit. No gross profit or complete group cost of sales line.",
+   "decision": "na"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "78934000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "78934 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "114854000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000000.0,
+   "printed_as": [
+    "114854 × 1e+06",
+    "1149 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "538035000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000000.0,
+   "printed_as": [
+    "538035 × 1e+06",
+    "5380 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:00992:2027Q1": [
+  {
+   "field": "eps_basic",
+   "ptype": "Q",
+   "raw": "-0.0504",
+   "unit": "每股（元）",
+   "currency": "USD",
+   "decision": "edit"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "4451969000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "4451969 × 1000",
+    "4452 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "Q",
+   "raw": "-608600000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500.0,
+   "printed_as": [
+    "608600 × 1000"
+   ],
+   "note": "核对表候选 1",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "Q",
+   "raw": "382301000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500.0,
+   "printed_as": [
+    "382301 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "Q",
+   "raw": "26942766000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "26942766 × 1000",
+    "26943 × 1e+06",
+    "269.43 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:01024:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "1.4",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "1.4 × 1",
+    "1.40 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "eps_basic",
+   "ptype": "Q",
+   "raw": "0.73",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.73 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "35577000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "35577 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "18328000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "18328 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "6049000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "6049 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "Q",
+   "raw": "3146000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "3146 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "9044000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "9044 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "69251000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "69251 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "Q",
+   "raw": "35535000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "35535 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:01299:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.4121",
+   "unit": "每股（元）",
+   "currency": "USD",
+   "note": "Basic EPS 41.21 US cents = USD0.4121, using the more precise note disclosure.",
+   "decision": "edit"
+  },
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "11686000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "11686 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "raw": "4177000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "4177 × 1e+06"
+   ],
+   "note": "Use consolidated IFRS 17 insurance service result USD4,177 million, not operating segment measure 4,039 million.",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "4294000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "4294 × 1e+06",
+    "42.94 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "2823000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "2823 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "na": true,
+   "note": "No total revenue line in the income statement; 11,686 is insurance revenue.",
+   "decision": "na"
+  }
+ ],
+ "hk:01810:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.55",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.55 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "eps_basic",
+   "ptype": "Q",
+   "raw": "0.37",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.37 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "43419038000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000.0,
+   "printed_as": [
+    "43419038 × 1000",
+    "43419.0 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "21608918000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000.0,
+   "printed_as": [
+    "21608918 × 1000",
+    "21608.9 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "14185525000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "14185525 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "Q",
+   "raw": "9462405000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "9462405 × 1000"
+   ],
+   "note": "核对表候选 1",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "2050234000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "2050234 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "208063227000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000.0,
+   "printed_as": [
+    "208063227 × 1000",
+    "208063.2 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "Q",
+   "raw": "108921609000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000000.0,
+   "printed_as": [
+    "108921609 × 1000",
+    "108921.6 × 1e+06",
+    "1089 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:01910:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.066",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 0.0005,
+   "printed_as": [
+    "0.066 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "1016700000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 50000.0,
+   "printed_as": [
+    "1016.7 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "90900000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 454.50000000000006,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "207500000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 50000.0,
+   "printed_as": [
+    "207.5 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "1680600000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 50000.0,
+   "printed_as": [
+    "1680.6 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:02328:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "1.452",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "1.5 × 1",
+    "1.452 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "254617000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "254617 × 1e+06",
+    "2546.17 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "raw": "19074000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "19074 × 1e+06",
+    "190.74 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "32296000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "32296 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "27577000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "27577 × 1e+06",
+    "275.77 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "na": true,
+   "note": "254,617 is insurance revenue, not a total revenue line.",
+   "decision": "na"
+  }
+ ],
+ "hk:02331:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.704",
+   "unit": "每股（元）",
+   "currency": "CNY",
+   "decision": "edit"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "7750727000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "7750727 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "1816185000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "1816185000 × 1",
+    "1816185 × 1000",
+    "18.16 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "953760000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "953760000 × 1",
+    "953760 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "15235250000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "15235250000 × 1",
+    "15235250 × 1000",
+    "152.35 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:02378:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.379",
+   "unit": "每股（元）",
+   "currency": "USD",
+   "decision": "edit"
+  },
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "5904000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "5904 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "raw": "1376000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "1376 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "954000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 4770.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "26000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 130.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "14939000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "14939 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:02388:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "2.2453",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 5e-05,
+   "printed_as": [
+    "2.2453 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "23739000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "23739 × 1e+06",
+    "237.39 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_interest_income",
+   "ptype": "H",
+   "raw": "28182000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "28182 × 1e+06",
+    "281.82 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "116814000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "116814 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "30923000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "30923 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "39903000000",
+   "unit": "元",
+   "currency": "HKD",
+   "tol": 500000.0,
+   "printed_as": [
+    "39903 × 1e+06",
+    "399.03 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:02888:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "1.516",
+   "unit": "每股（元）",
+   "currency": "USD",
+   "decision": "edit"
+  },
+  {
+   "field": "eps_basic",
+   "ptype": "Q",
+   "raw": "0.774",
+   "unit": "每股（元）",
+   "currency": "USD",
+   "decision": "edit"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "3653000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "3653 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "Q",
+   "raw": "1753000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 8765.0,
+   "printed_as": [],
+   "note": "Q2 parent profit: 1,761 minus NCI 8 = USD1,753 million; also common profit 1,708 plus preference/AT1 distributions 45.",
+   "decision": "pick"
+  },
+  {
+   "field": "net_interest_income",
+   "ptype": "H",
+   "raw": "3001000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "3001 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "3337000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "3337 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "5268000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "5268 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "11604000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "11604 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "Q",
+   "raw": "5702000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "5702 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:03328:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.52",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.52 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "47874000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "47874 × 1e+06",
+    "478.74 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_interest_income",
+   "ptype": "H",
+   "raw": "92592000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "92592 × 1e+06",
+    "925.92 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "94943000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "94943 × 1e+06",
+    "949.43 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "89029000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 445145.00000000006,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "142540000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "142540 × 1e+06",
+    "1425.40 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:06060:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.92",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.92 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_revenue",
+   "ptype": "H",
+   "raw": "16988705000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "16988705 × 1000",
+    "169.89 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "insurance_service_result",
+   "ptype": "H",
+   "raw": "816192000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "816192 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "1549964000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "1549964 × 1000",
+    "15.50 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "860367000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "860367 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "na": true,
+   "note": "18,966,391 is management discussion aggregate income; no total revenue line in the income statement.",
+   "decision": "na"
+  }
+ ],
+ "hk:09618:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "4.5",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "4.5 × 1",
+    "4.50 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "eps_basic",
+   "ptype": "Q",
+   "raw": "2.65",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "2.6 × 1",
+    "2.65 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "112334000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 561670.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "59307000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 296535.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "12231000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "12231 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "Q",
+   "raw": "7129000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "7129 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "38273000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "38273 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "662095000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500000.0,
+   "printed_as": [
+    "662095 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "Q",
+   "raw": "346401000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000000.0,
+   "printed_as": [
+    "346401 × 1e+06",
+    "3464 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:09660:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "0.27",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "0.27 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "1356137000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000.0,
+   "printed_as": [
+    "1356137 × 1000",
+    "1356.1 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "3784345000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "3784345 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "na": true,
+   "note": "Operating cash flow is not disclosed in the specified results announcement.",
+   "decision": "na"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "2054984000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 50000.0,
+   "printed_as": [
+    "2054984 × 1000",
+    "2055.0 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "hk:09868:2026H1": [
+  {
+   "field": "eps_basic",
+   "ptype": "H",
+   "raw": "-1.63",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.005,
+   "printed_as": [
+    "1.63 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "6766075000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "6766075 × 1000"
+   ],
+   "note": "核对表候选 1",
+   "decision": "pick"
+  },
+  {
+   "field": "net_income_parent",
+   "ptype": "H",
+   "raw": "-3121164000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "3121164 × 1000"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "operating_cash_flow",
+   "ptype": "H",
+   "raw": "-11720000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 5000000.0,
+   "printed_as": [
+    "117.2 × 1e+08"
+   ],
+   "note": "The specified report discloses approximately RMB11.72 billion net cash used in operating activities; preserve the negative sign and reported precision.",
+   "decision": "pick"
+  },
+  {
+   "field": "revenue",
+   "ptype": "H",
+   "raw": "32777374000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 5000000.0,
+   "printed_as": [
+    "32777374 × 1000",
+    "327.8 × 1e+08"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:AMZN:2026Q2": [
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "198884000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 994420.0000000001,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "104828000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 524140.00000000006,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:BAC:2026Q2": [
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "24672000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 123360.00000000001,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:BIDU:2025FY": [
+  {
+   "field": "eps_basic",
+   "ptype": "FY",
+   "raw": "1.71",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 0.05,
+   "printed_as": [
+    "1.7 × 1",
+    "1.71 × 1"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "FY",
+   "raw": "56643000000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 283215.0,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:CVX:2026Q2": [
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "na": true,
+   "note": "No gross profit or complete cost of sales line in the specified report.",
+   "decision": "na"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "na": true,
+   "note": "No gross profit or complete cost of sales line in the specified report.",
+   "decision": "na"
+  }
+ ],
+ "us:NIO:2025FY": [
+  {
+   "field": "net_income_parent",
+   "ptype": "FY",
+   "raw": "-14960821000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 500.0,
+   "printed_as": [
+    "14960821 × 1000"
+   ],
+   "note": "核对表候选 1",
+   "decision": "pick"
+  }
+ ],
+ "us:PDD:2025FY": [
+  {
+   "field": "gross_profit",
+   "ptype": "FY",
+   "raw": "243043960000",
+   "unit": "元",
+   "currency": "CNY",
+   "tol": 1215219.8,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:PFE:2026Q2": [
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "21844000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 109220.00000000001,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "10942000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 54710.00000000001,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:SNAP:2026Q2": [
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "1794658000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 8973.29,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "931108000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 4655.54,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:UBER:2026Q2": [
+  {
+   "field": "gross_profit",
+   "ptype": "H",
+   "raw": "12321000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 61605.00000000001,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  },
+  {
+   "field": "gross_profit",
+   "ptype": "Q",
+   "raw": "6376000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 31880.000000000004,
+   "printed_as": [],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:USB:2026Q2": [
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "6307000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "6307 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ],
+ "us:WFC:2026Q2": [
+  {
+   "field": "ppop",
+   "ptype": "H",
+   "raw": "16077000000",
+   "unit": "元",
+   "currency": "USD",
+   "tol": 500000.0,
+   "printed_as": [
+    "16077 × 1e+06"
+   ],
+   "note": "核对表候选 0",
+   "decision": "pick"
+  }
+ ]
+}

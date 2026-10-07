@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "eval"))
+sys.path.insert(0, str(ROOT))
 
 from analysis import all_flag_triggers, false_alarms, has_flags, stability, three_metrics  # noqa: E402
 
@@ -152,6 +153,20 @@ def stability_section():
                                "稳定性只在冻结版规则下测。")
 
 
+def fable_section():
+    rows = []
+    for c in ("fable_direct", "fable_pipeline"):
+        cost = cell_cost("eval1", c)
+        if cost:
+            rows.append(f"| {NAMES[c]} | {cost['n']} | ${cost['mean'] * cost['n']:.2f} | ${cost['mean']:.3f} / ${cost['median']:.3f} / ${cost['max']:.3f} |")
+    if not rows:
+        return "尚未运行。"
+    return ("已用冻结版规则在 `.worktrees/frozen-v1` 中跑完，共两批（先直接问，结算后再提交流水线；流水线另有 1 份补问，单独一批）。"
+            "每批提交前都精确核算过：直接问最坏情况 $14.42，当时剩余 $17.64；流水线最坏情况 $7.99，当时剩余 $10.13。"
+            "**评分等港股答案导出后再做**，所以这里只列成本。\n\n| 格 | 份数 | 合计 | 每份（均值 / 中位 / 最大） |\n|---|---|---|---|\n"
+            + "\n".join(rows) + "\n\n直接问的成本几乎全部是输入：全文最长约 30 万 tokens，按 Batch 价 $5/M 计。")
+
+
 def section_frozen():
     sc = load("eval1")
     pend = sc["summary"]["pending_review"]
@@ -190,7 +205,7 @@ def section_frozen():
 
 ### 1.5 Fable 5.1（9 份小样本，补充参考）
 
-尚未运行。按决定，等港股核对完成后用冻结版规则分两批提交（先直接问，结算后再提交流水线），每批提交前精确核算剩余预算。
+{fable_section()}
 
 ### 1.6 全部错误条目（冻结版）
 
@@ -263,6 +278,8 @@ def section_holdout():
 
 {by_market(sc, ORDER)}
 
+{dispute_section("hold1", sc, "eval/holdout_config.json", ORDER)}
+
 流水线（修订版）的误报：
 
 {fa_section("hold1", sc, "ds_pipeline")}
@@ -285,6 +302,60 @@ def section_holdout():
 """
 
 
+def dispute_adjusted(run, sc, cfg_path, cells):
+    """Supplementary only (never replaces the frozen-rule score): for each dispute where the automatic truth
+    is NOT printed anywhere in the report but the majority value IS, count answers equal to the majority value
+    as correct. Returns (per-cell strict counts, list of adjusted items)."""
+    from score import _doc_numbers, printed_tolerances
+    from earnings_agent.pipeline import prepare
+    cfg = {(r["market"], r["code"]): r for r in json.loads((ROOT / cfg_path).read_text())["reports"]}
+    adjusted = {}
+    for rep in sc["detail"]:
+        for dsp in rep["disputes"]:
+            m, c = rep["report"].split(":")
+            ctx = prepare(m, c, cfg[(m, c)]["period"])
+            nums = _doc_numbers(ctx["pages"])
+            f = dsp["item"][0]
+            if not printed_tolerances(dsp["truth"], f, nums) and printed_tolerances(dsp["majority"], f, nums):
+                adjusted[(rep["report"], f, dsp["item"][1])] = dsp
+    counts = {}
+    for c in cells:
+        n = ok = 0
+        for rep in sc["detail"]:
+            for r in rep["rows"].get(c, []):
+                n += 1
+                d = adjusted.get((rep["report"], r["field"], r["ptype"]))
+                if d:
+                    ok += r["pred"] is not None and abs(r["pred"] - d["majority"]) <= r["strict_tol"] + 1e-9 * abs(d["majority"])
+                else:
+                    ok += r["strict"]
+        counts[c] = (ok, n)
+    return counts, adjusted
+
+
+def dispute_section(run, sc, cfg_path, cells):
+    if not sc["summary"]["disputes"]:
+        return ""
+    counts, adj = dispute_adjusted(run, sc, cfg_path, cells)
+    lines = [f"**争议行**（自动答案与至少两档的一致结果不同）：{sc['summary']['disputes']} 条。"
+             f"其中 {len(adj)} 条的自动答案在报告全文里找不到，而多数答案是报告上印的数，判断为自动答案的问题"
+             "（例如东财单季数经过追溯调整或推导）："]
+    lines += [f"- {k[0]} {k[1]} {k[2]}：自动答案 {d['truth']:,.0f}（全文无此数），报告印 {d['majority']:,.0f}" for k, d in adj.items()]
+    others = [x for rep in sc["detail"] for x in rep["disputes"]
+              if (rep["report"], x["item"][0], x["item"][1]) not in adj]
+    if others:
+        lines.append(f"- 另有 {len(others)} 条争议无法用全文自动判定，仍按自动答案计（待人工裁决）。")
+    lines += ["", "**补充（不替代冻结规则下的评分）**：如果上述争议按报告原文裁决，严格正确为：", "",
+              "| 档 | 按规则评分 | 按原文裁决争议后 |", "|---|---|---|"]
+    for c in cells:
+        rows = rows_of(sc, c)
+        if rows:
+            ok, n = counts[c]
+            lines.append(f"| {NAMES[c]} | {sum(r['strict'] for r in rows)}/{len(rows)}（{pct(sum(r['strict'] for r in rows) / len(rows))}） | {ok}/{n}（{pct(ok / n)}） |")
+    lines.append("\n裁决后，流水线和核验档里被 C4 标 ❌ 的这几条就变成“答对但被标记”，这正是 C4 循环问题的反面：标准答案本身出错时，C4 产生误报。")
+    return "\n".join(lines)
+
+
 LIMITS = """## 4. 局限
 
 - **以 DeepSeek 为主**：主结论基于 DeepSeek 的 60 份。Fable 只有 9 份，是小样本补充，不能单独下结论。
@@ -293,6 +364,8 @@ LIMITS = """## 4. 局限
 - **修订是看过结果之后做的**：R1、R2 是针对 eval1 暴露的问题改的，R3 是看到结果后提出的新设计。它们在 eval1 上的改善是自证的，只有留出集的结果才算证据。
 - **美股和 A 股的 C4 存在循环**：C4 用的就是作为标准答案的 XBRL/AKShare，所以同时报告了去 C4 的标记召回率。
 - 稳定性只测了 DeepSeek，15 份，每份共 3 次。
+- **每份成本受 DeepSeek 前缀缓存影响**：同一份报告的几档提问共用同一段全文前缀，后跑的档会命中服务商缓存、价格更低。所以简单直接问、核验档的每份成本比专业直接问低，并不全是提示词本身的差别。账本按实际计费记录。
+- **自动标准答案本身也会出错**：留出集有 4 条争议，东财的单季数在报告全文中找不到，而各档答案与报告印的数一致。按冻结规则，这些仍按自动答案评分，另附按原文裁决的补充数字。
 """
 
 

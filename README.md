@@ -4,7 +4,7 @@
 
 Core figures from US, A-share and HK filings, each with its page and verbatim quote, checked by code; suspicious ones are flagged in red.
 
-- 线上地址：部署后填写（Streamlit Community Cloud）
+- 线上地址：https://boxiao-cited.streamlit.app/
 - 示例和核验页不需要 API key；单家分析和批量对比用你自己的 key（默认 DeepSeek，支持多家服务商）
 
 ## 它做什么，不做什么

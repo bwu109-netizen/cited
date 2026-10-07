@@ -124,6 +124,9 @@
     run_log: ["运行记录", "Run log"], run_log_note: ["时间为本机时间；只记录真实发生的步骤。", "Local time; only steps that actually happened."],
     // failures
     ff_title: ["没有拿到这份报告", "Couldn't fetch this report"], ff_reason: ["原因：{r}", "Reason: {r}"],
+    ff_not_found: ["在 {src} 没有找到这一期定期报告。可能是代码或报告期不对，或者这一期还没披露。", "No periodic report for this period was found on {src}. The ticker or period may be wrong, or it isn't published yet."],
+    ff_network: ["访问 {src} 失败，可能被限速或拒绝（网站部署在海外服务器上）。", "Couldn't reach {src}; it may be throttling or refusing the server (the site runs overseas)."],
+    ff_detail: ["技术信息：{d}", "Technical detail: {d}"],
     ff_retry: ["重新获取", "Try again"], ff_drop: ["把财报 PDF 拖到这里，或点击选择文件", "Drop the filing PDF here, or click to choose"],
     ff_drop_sub: ["上传后从“解析与定位”继续；文件只用于本次分析，解析后删除临时文件。", "Continues from \"parse and locate\"; the file is used for this analysis only and the temp file is deleted after parsing."],
     ff_choose: ["选择 PDF", "Choose PDF"], ff_go: ["用这个 PDF 继续", "Continue with this PDF"],
@@ -594,7 +597,7 @@
     var j = S.job, q = j.query || {};
     if (j.error_kind === "scanned") return runbar(true) + '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("scanned") + '</h3></div><button class="btn ghost sm act" data-act="reset">' + t("e_again") + "</button></div>";
     var up = S.upload;
-    return '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("ff_title") + "：" + mkName(q.market) + " " + esc(q.code) + " " + esc(q.period) + "</h3><p>" + t("ff_reason", { r: esc(j.error || "") }) + '</p></div><button class="btn ghost sm act" data-act="retry">' + ic("refresh", "sm") + t("ff_retry") + "</button></div>" +
+    return '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("ff_title") + "：" + mkName(q.market) + " " + esc(q.code) + " " + esc(q.period) + "</h3><p>" + (function () { var e = String(j.error || ""), k = e.split("|")[0], d = e.indexOf("|") >= 0 ? e.slice(e.indexOf("|") + 1) : e; return (T["ff_" + k] ? t("ff_" + k, { src: srcName(q.market) }) : t("ff_reason", { r: esc(d) })) + '<br><span class="mono faint" style="font-size:11.5px">' + t("ff_detail", { d: esc(d) }) + "</span>"; })() + '</p></div><button class="btn ghost sm act" data-act="retry">' + ic("refresh", "sm") + t("ff_retry") + "</button></div>" +
       '<div class="split" style="margin-top:24px"><div class="card"><div class="drop" id="drop1">' + '<div class="circle">' + ic("upload") + "</div><h3 style='font-size:20px'>" + (up ? esc(up.name) : t("ff_drop")) + '</h3><p class="hint" style="max-width:460px;margin:8px auto 18px">' + t("ff_drop_sub") + "</p>" +
       '<input type="file" id="file1" accept="application/pdf" class="hidden"><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" data-act="pick1">' + ic("file", "sm") + t("ff_choose") + '</button><button class="btn primary" data-act="upload"' + (up ? "" : " disabled") + ">" + t("ff_go") + "</button></div></div>" +
       (S.form.key ? "" : '<div style="margin-top:20px">' + keyFields(S.form) + "</div>") + "</div>" +
@@ -643,7 +646,7 @@
       var name = '<div class="co"><span class="av">' + esc(row.name && !/^\d/.test(row.name) ? row.name.slice(0, 1) : mkName(row.market).slice(0, 1)) + '</span><div><b>' + esc(row.name || row.code) + '</b><div class="faint mono" style="font-size:11px">' + esc(row.code) + " · " + mkName(row.market) + (row.template ? " · " + tplName(row.template) : "") + "</div></div></div>";
       if (row.status !== "done") {
         var msg = row.status === "running" ? '<span class="pill"><span class="live" style="width:7px;height:7px"></span>' + t("st_now") + "</span>" : row.status === "queued" ? '<span class="pill">' + t("c_queued") + "</span>" :
-          row.status === "fetch_failed" ? '<span class="tx-bad">' + t("c_failed", { r: esc(row.error || "") }) + '</span> <input type="file" accept="application/pdf" class="hidden" id="cf-' + i + '"><button class="btn ghost sm" data-cup="' + i + '">' + ic("upload", "sm") + t("c_upload_row") + "</button>" :
+          row.status === "fetch_failed" ? '<span class="tx-bad">' + t("c_failed", { r: esc(String(row.error || "").split("|").pop()) }) + '</span> <input type="file" accept="application/pdf" class="hidden" id="cf-' + i + '"><button class="btn ghost sm" data-cup="' + i + '">' + ic("upload", "sm") + t("c_upload_row") + "</button>" :
           row.status === "skipped" ? '<span class="faint">' + L("未运行（同一个 key 已被拒绝）", "Not run (the same key was rejected)") + "</span>" :
           '<span class="tx-bad">' + esc(row.status === "stopped" ? t("e_stopped") : (T["e_" + row.error_kind] ? t("e_" + row.error_kind) : t("e_general") + " " + (row.error || ""))) + "</span>";
         return "<tr><td>" + name + '</td><td colspan="6">' + msg + "</td></tr>";

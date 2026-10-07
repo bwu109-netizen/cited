@@ -64,11 +64,17 @@ def _ctx(doc, pages):
 
 
 def fetch_ctx(market, code, period):
+    import requests
+
     try:
         doc = fetch_report(market, code, period)
         pages = load_doc_pages(doc)
-    except Exception as e:  # noqa: BLE001
-        raise FetchError(str(e)[:300])
+    except requests.RequestException as e:
+        raise FetchError("network|" + str(e)[:200])
+    except Exception as e:  # noqa: BLE001  (source had no matching filing, or an unexpected listing format)
+        msg = str(e)[:200]
+        kind = "network" if any(k in msg for k in ("403", "429", "Timeout", "timed out", "Connection")) else "not_found"
+        raise FetchError(f"{kind}|{type(e).__name__}: {msg}")
     return _ctx(doc, pages)
 
 

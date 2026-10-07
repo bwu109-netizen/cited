@@ -145,10 +145,19 @@ def call(client, system, user, job):
     raise last
 
 
-def run_pipeline(ctx, client, job):
-    """extract -> verify -> one follow-up for missing periods -> verify. Returns the finish() result."""
+LANG_NOTE = {
+    "zh": "\n\n另外：industry_metrics 的 name 和 rationale 请用中文写（raw_value、raw_unit、quote 仍逐字照抄原文）。",
+    "en": "\n\nAlso: write the industry_metrics name and rationale in English (raw_value, raw_unit and quote are still "
+          "copied verbatim from the page).",
+}
+
+
+def run_pipeline(ctx, client, job, lang="zh"):
+    """extract -> verify -> one follow-up for missing periods -> verify. Returns the finish() result.
+    The only web-side prompt change: industry-metric names and rationales in the interface language."""
     job["stage"] = 3
-    rec = call(client, ctx["system"], ctx["user"], job)
+    rec = call(client, ctx["system"], ctx["user"] + LANG_NOTE.get(lang, ""), job)
+    rec["lang"] = lang
     job["stage"] = 4
     data = rec.get("data") or {}
     items, _, _, _ = verify_report(list(data.get("items") or []), data.get("industry_metrics") or [], ctx["pages"],
@@ -164,6 +173,7 @@ def run_pipeline(ctx, client, job):
         from pathlib import Path
         res = finish(ctx, rec, fu, missing, Path(out))
         res["_pages"] = ctx["pages"]
+        res["_lang"] = lang
     finally:
         try:
             os.remove(out)
@@ -264,7 +274,8 @@ def payload(res, pages_texts=True):
     items = [_item(i, market) for i in res["items"]]
     items.sort(key=lambda x: (ORDER.get(x["status"], 3), x["aux"],
                               core.index(x["field"]) if x["field"] in core else 99, x["ptype"] != "Q"))
-    metrics = [{"name": m.get("name"), "rationale": m.get("rationale"), "raw": m.get("raw_value"),
+    lang = (res.get("llm") or {}).get("lang") or res.get("_lang")
+    metrics = [{"name": m.get("name"), "rationale": m.get("rationale"), "lang": lang, "raw": m.get("raw_value"),
                 "unit": m.get("raw_unit"), "ptype": m.get("period_type"), "page": m.get("page_used") or m.get("page"),
                 "quote": m.get("quote"), "status": m.get("status"),
                 "reason_zh": (m.get("reasons") or [""])[0]} for m in res.get("industry_metrics") or []]

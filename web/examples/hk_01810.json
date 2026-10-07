@@ -367,57 +367,82 @@
   {
    "name": "智能手機出貨量",
    "rationale": "智能手機為手機×AIoT分部核心收入來源，出貨量是衡量其市場份額與規模的關鍵營運指標。",
+   "lang": null,
    "raw": "31.2",
    "unit": "百萬台",
    "ptype": "Q",
    "page": 2,
    "quote": "2026年第二季度,我們的智能手機出貨量為31.2百萬台。根據Omdia數據,我們全球",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "智能手機出貨量",
+   "rationale_zh": "智能手機為手機×AIoT分部核心收入來源，出貨量是衡量其市場份額與規模的關鍵營運指標。",
+   "name_en": "Smartphone shipment volume",
+   "rationale_en": "Smartphones are the core revenue source of the smartphone × AIoT segment, and shipment volume is a key operating metric for measuring its market share and scale."
   },
   {
    "name": "AIoT平台已連接IoT設備數",
    "rationale": "IoT設備連接量決定互聯網服務與生態產品的變現基礎，是手機×AIoT生態規模的核心指標。",
+   "lang": null,
    "raw": "1,160.8",
    "unit": "百萬",
    "ptype": "PIT",
    "page": 2,
    "quote": "已連接的IoT設備數(不包括智能手機和平板)達到1,160.8百萬,同比增長17.4%,創歷",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "AIoT平台已連接IoT設備數",
+   "rationale_zh": "IoT設備連接量決定互聯網服務與生態產品的變現基礎，是手機×AIoT生態規模的核心指標。",
+   "name_en": "Number of IoT devices connected to the AIoT platform",
+   "rationale_en": "IoT device connection volume determines the monetization foundation of internet services and ecosystem products, and is a core metric of the scale of the smartphone × AIoT ecosystem."
   },
   {
    "name": "全球月活躍用戶數",
    "rationale": "月活躍用戶數直接支撐互聯網服務（廣告、遊戲等）的高毛利變現能力。",
+   "lang": null,
    "raw": "766.5",
    "unit": "百萬",
    "ptype": "PIT",
    "page": 2,
    "quote": "史新高。2026年6月,我們全球月活躍用戶數2達到766.5百萬,同比增長4.8%,創歷史",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "全球月活躍用戶數",
+   "rationale_zh": "月活躍用戶數直接支撐互聯網服務（廣告、遊戲等）的高毛利變現能力。",
+   "name_en": "Global monthly active users",
+   "rationale_en": "Monthly active users directly support the high-margin monetization capability of internet services (advertising, gaming, etc.)."
   },
   {
    "name": "智能電動汽車新車交付量",
    "rationale": "智能電動汽車及AI等創新業務為集團第二增長曲線，交付量是其收入與規模效應的核心驅動。",
+   "lang": null,
    "raw": "104,199",
    "unit": "輛",
    "ptype": "Q",
    "page": 2,
    "quote": "2026年第二季度,我們的新車交付量達到104,199輛,同比增長28.2%。",
    "status": "❌",
-   "reason_zh": "单位/数字无法解析：unknown unit '輛'"
+   "reason_zh": "单位/数字无法解析：unknown unit '輛'",
+   "name_zh": "智能電動汽車新車交付量",
+   "rationale_zh": "智能電動汽車及AI等創新業務為集團第二增長曲線，交付量是其收入與規模效應的核心驅動。",
+   "name_en": "Smart electric vehicle new vehicle delivery volume",
+   "rationale_en": "Smart electric vehicles and AI, among other innovative businesses, are the Group's second growth curve, and delivery volume is the core driver of its revenue and scale effects."
   },
   {
    "name": "研發開支",
    "rationale": "公司以底層核心技術（含AI、汽車）為戰略投入方向，研發開支反映其硬核科技投入力度。",
+   "lang": null,
    "raw": "9,231,284",
    "unit": "人民幣千元",
    "ptype": "Q",
    "page": 30,
    "quote": "研發開支 3 (9,231,284) (7,763,377) (18,185,665) (14,475,085)",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "研發開支",
+   "rationale_zh": "公司以底層核心技術（含AI、汽車）為戰略投入方向，研發開支反映其硬核科技投入力度。",
+   "name_en": "R&D expenditure",
+   "rationale_en": "The company takes core underlying technologies (including AI and automobiles) as its strategic investment direction, and R&D expenditure reflects the intensity of its hardcore technology investment."
   }
  ],
  "pages": {
@@ -427,6 +452,10 @@
   "38": "4 所得稅費用\n截至2026年及2025年6月30日止三個月及六個月本集團的所得稅費用分析如下:\n截至6月30日止三個月 截至6月30日止六個月\n2026年 2025年 2026年 2025年\n人民幣千元 人民幣千元 人民幣千元 人民幣千元\n(未經審核) (未經審核) (未經審核) (未經審核)\n當期所得稅 1,838,167 1,883,675 3,079,056 4,052,189\n遞延所得稅 263,788 645,945 17,029 752,653\n所得稅費用 2,101,955 2,529,620 3,096,085 4,804,842\n5 每股盈利\n(a) 基本\n截至2026年及2025年6月30日止三個月及六個月,每股基本盈利乃以期間本公司擁有人應佔利潤除以已\n發行在外普通股的加權平均數計算。\n截至6月30日止三個月 截至6月30日止六個月\n2026年 2025年 2026年 2025年\n(未經審核) (未經審核) (未經審核) (未經審核)\n本公司擁有人應佔淨利潤(人民幣千元) 9,462,405 11,904,405 14,185,525 22,828,726\n已發行在外普通股的加權平均數(千股) 25,723,924 25,843,221 25,748,943 25,405,288\n每股基本盈利(以每股人民幣元列示) 0.37 0.46 0.55 0.90\n38"
  },
  "cum": "H",
+ "metrics_translated": {
+  "model": "deepseek-flash",
+  "note": "name / rationale only; numbers and quotes untouched"
+ },
  "example": true,
  "from_cache": true
 }

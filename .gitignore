@@ -10,3 +10,8 @@ data/output/
 data/eval/
 .claude/
 .worktrees/
+# Stitch prototype screenshots contain invented figures: keep only docs/stitch/DESIGN.md in git
+docs/stitch/*.png
+docs/stitch/*.html
+docs/web_shots/
+data/review/

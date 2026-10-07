@@ -27,10 +27,10 @@ from earnings_agent.verify import verify_report  # noqa: E402
 from . import core, fx, paste  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-_component = components.declare_component("earnings_checker", path=str(HERE / "ui"))
+_component = components.declare_component("cited", path=str(HERE / "ui"))
 EXAMPLES = {p.stem: json.loads(p.read_text()) for p in sorted((HERE / "examples").glob("*.json"))}
 EVAL = json.loads((HERE / "eval_numbers.json").read_text())
-GITHUB = "https://github.com/"  # set at deploy time (PRD §14: repo name confirmed before pushing)
+GITHUB = "https://github.com/bwu109-netizen/cited"
 
 PAGE_CSS = """<style>
 header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], footer {display:none !important;}
@@ -100,7 +100,7 @@ def _single(job, ev, pdf_bytes=None):
                        "selected": len(ctx["selected"]), "template": ctx["template"]}
         job["_ctx"] = ctx
         client = core.client_for(ev)
-        res = core.run_pipeline(ctx, client, job)
+        res = core.run_pipeline(ctx, client, job, ev.get("lang", "zh"))
         job["result"] = core.payload(res)
         job["status"] = "done"
     except core.FetchError as e:
@@ -119,7 +119,7 @@ def _compare_row(job, row, ev, pdf_bytes=None):
     try:
         ctx = (core.upload_ctx(row["market"], row["code"], ev["period"], pdf_bytes) if pdf_bytes
                else core.fetch_ctx(row["market"], row["code"], ev["period"]))
-        res = core.run_pipeline(ctx, core.client_for(ev), job)
+        res = core.run_pipeline(ctx, core.client_for(ev), job, ev.get("lang", "zh"))
         pl = core.payload(res)
         cum = cumulative_type(parse_period(ev["period"])[1])
         cells = {}
@@ -259,7 +259,7 @@ def main():
         public = {k: v for k, v in job.items() if not k.startswith("_") and k not in ("t0",)}
         public["elapsed"] = round(time.time() - job["t0"], 1) if job.get("t0") else None
         ev = _component(cfg=cfg, job=public, page_view=ss.page_view, handled=ss.handled, lang=ss.lang,
-                        key="earnings_checker", default=None)
+                        key="cited", default=None)
         if _handle(ev) or (running and job.get("status") != "running"):
             st.rerun()
 

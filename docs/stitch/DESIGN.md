@@ -1,9 +1,9 @@
 ---
-name: Earnings Checker — Terminal Ledger
+name: Cited — Terminal Ledger
 source: visual tokens adapted from the user's Stitch project "Financial Trading Dashboard UI" (design system "Institutional Terminal Precision"); content rules from docs/PRD_web.md
 ---
 
-# Earnings Checker — design system
+# Cited — design system
 
 A dark, dense, hairline-framed workspace for checking figures copied out of company filings. Visual language borrowed from the reference trading-terminal design (palette, Inter + JetBrains Mono, 1px hairlines, 4px corners, compact tables, status badges). **Content is not borrowed**: no candlestick charts, price tickers, % change, live quotes, order books or market data of any kind. The core of every screen is a metrics table with status badges, page numbers and verbatim quotes from the filing.
 

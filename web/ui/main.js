@@ -1,4 +1,4 @@
-/* Earnings Checker — single-page UI inside one Streamlit component.
+/* Cited — single-page UI inside one Streamlit component.
    Layout and visuals follow docs/stitch (dark screens); every number and claim comes from the job result,
    the pre-computed examples or eval_numbers.json (docs/eval_results.md). PRD: docs/PRD_web.md. */
 (function () {
@@ -45,7 +45,7 @@
 
   // ------------------------------------------------------------------ i18n
   var T = {
-    brand: ["财报核对助手", "Earnings Checker"],
+    brand: ["有据", "Cited"],
     nav_home: ["首页 / 示例", "Home"], nav_analyze: ["单家分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
     hero_eyebrow: ["美股 · A 股 · 港股定期报告", "US · A-SHARE · HK FILINGS"],
@@ -270,6 +270,7 @@
   function isPerShare(f) { return f === "eps_basic" || f === "eps_basic_per_ads"; }
   function ptype(p) { return T["p_" + p] ? t("p_" + p) : (p || ""); }
   function tplName(x) { return T["t_" + x] ? t("t_" + x) : x; }
+  function mtext(x, k) { return (S.lang === "zh" ? x[k + "_zh"] : x[k + "_en"]) || x[k] || ""; }
   function mname(it) { return S.lang === "zh" ? it.name_zh : it.name_en; }
   function stClass(s) { return s === "❌" ? "bad" : s === "⚠️" ? "warn" : s === "✅" ? "ok" : "grey"; }
   function stBadge(s) {
@@ -420,7 +421,9 @@
       '<section class="section"><div class="card" style="padding:36px"><div class="section-head"><div><div class="eyebrow">' + esc(L(ev.holdout.label_zh, ev.holdout.label_en)) + "</div><h2>" + t("eval_title") + '</h2></div><a class="link" data-go="method">' + t("eval_link") + " →</a></div>" +
       '<div class="grid3"><div><div class="big ok">' + pct(p.strict_acc) + '</div><div class="kpi-cap">' + t("eval_strict") + '</div></div>' +
       '<div><div class="big">' + pct(p.workload) + '</div><div class="kpi-cap">' + t("eval_work") + "</div></div>" +
-      '<div><div class="big">' + p.silent + '<span style="font-size:22px;color:var(--muted)"> / ' + p.items + '</span></div><div class="kpi-cap">' + t("eval_silent") + '</div><div class="hint">' + L("留出集 " + p.items + " 条中的计数", "count among " + p.items + " holdout rows") + "</div></div></div>" +
+      '<div><div class="big">' + p.silent + '<span style="font-size:22px;color:var(--muted)"> / ' + p.items + '</span></div><div class="kpi-cap">' + t("eval_silent") + '</div><div class="hint">' + (function () { var hk = ev.recall_by_market.hk, e = hk.errors, u = e - Math.round((hk.recall || 0) * e);
+        return L("美股 + A 股留出集；港股 " + e + " 个错误中 " + u + ' 个未被标出，见<a class="link" data-go="method">方法页</a>',
+                 "US + A-share holdout; in HK, " + u + " of " + e + ' errors were not flagged; see <a class="link" data-go="method">Method</a>'); })() + "</div></div></div>" +
       '<p class="src">' + t("eval_note", { d: pct(h.ds_direct.strict_acc) }) + "</p></div></section></div>";
   }
 
@@ -444,7 +447,7 @@
         (S.auxOpen ? rtable(aux, src) : "") : "") + "</div>";
     var m = (r.metrics || []).length ? '<section class="section"><div class="section-head"><div><h2 style="font-size:22px">' + t("r_metrics") + '</h2><div class="hint">' + t("r_metrics_sub") + '</div></div></div><div class="metric-grid">' +
       r.metrics.map(function (x) {
-        return '<div class="metric"><div style="display:flex;justify-content:space-between;gap:8px"><span class="lbl" style="letter-spacing:.02em">' + esc(x.name) + "</span>" + stBadge(x.status) + '</div><div class="v">' + esc(x.raw) + "<small>" + esc(x.unit || "") + '</small></div><div class="hint">' + esc(x.rationale || "") + "</div>" +
+        return '<div class="metric"><div style="display:flex;justify-content:space-between;gap:8px"><span class="lbl" style="letter-spacing:.02em">' + esc(mtext(x, "name")) + "</span>" + stBadge(x.status) + '</div><div class="v">' + esc(x.raw) + "<small>" + esc(x.unit || "") + '</small></div><div class="hint">' + esc(mtext(x, "rationale")) + "</div>" +
           (x.page ? '<a class="pg" data-page="' + x.page + '" data-src="' + src + '">p.' + x.page + " " + ic("ext", "sm") + "</a>" : "") + "</div>";
       }).join("") + "</div></section>" : "";
     return head + sums + table + m;
@@ -795,7 +798,7 @@
   }
   function keyPayload() {
     var f = S.form;
-    return { provider: f.provider, model: f.model.trim(), base_url: f.base_url.trim(), key: f.key.trim() };
+    return { provider: f.provider, model: f.model.trim(), base_url: f.base_url.trim(), key: f.key.trim(), lang: S.lang };
   }
   function bind() {
     var app = document.getElementById("app"), ov = document.getElementById("overlay");

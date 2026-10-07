@@ -443,68 +443,98 @@
   {
    "name": "Automotive segment revenue",
    "rationale": "Automotive (vehicle sales, leasing and regulatory credits) is Tesla's largest reportable segment and drives the majority of revenue and gross profit.",
+   "lang": null,
    "raw": "25,097",
    "unit": "in millions",
    "ptype": "Q",
    "page": 27,
    "quote": "Revenues $ 25,097 $ 19,707 $ 45,076 $ 36,312",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "汽车业务收入",
+   "rationale_zh": "汽车业务（车辆销售、租赁和监管积分）是特斯拉最大的可报告分部，并贡献了大部分收入和毛利润。",
+   "name_en": "Automotive segment revenue",
+   "rationale_en": "Automotive (vehicle sales, leasing and regulatory credits) is Tesla's largest reportable segment and drives the majority of revenue and gross profit."
   },
   {
    "name": "Energy generation and storage segment revenue",
    "rationale": "Energy storage is Tesla's second reportable segment and its growth and margin profile are a key swing factor for overall profitability.",
+   "lang": null,
    "raw": "3,139",
    "unit": "in millions",
    "ptype": "Q",
    "page": 27,
    "quote": "Revenues $ 3,139 $ 2,789 $ 5,547 $ 5,519",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "能源发电和储能分部收入",
+   "rationale_zh": "储能是特斯拉的第二个可报告分部，其增长和利润率状况是整体盈利能力的关键波动因素。",
+   "name_en": "Energy generation and storage segment revenue",
+   "rationale_en": "Energy storage is Tesla's second reportable segment and its growth and margin profile are a key swing factor for overall profitability."
   },
   {
    "name": "Automotive regulatory credits revenue",
    "rationale": "Regulatory credit sales are almost pure-margin revenue for Tesla and are highly sensitive to other automakers' compliance demand.",
+   "lang": null,
    "raw": "146",
    "unit": "in millions",
    "ptype": "Q",
    "page": 5,
    "quote": "Automotive regulatory credits 146 439 526 1,034",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "汽车监管积分收入",
+   "rationale_zh": "监管积分销售对特斯拉而言几乎是纯利润收入，并且对其他汽车制造商的合规需求高度敏感。",
+   "name_en": "Automotive regulatory credits revenue",
+   "rationale_en": "Regulatory credit sales are almost pure-margin revenue for Tesla and are highly sensitive to other automakers' compliance demand."
   },
   {
    "name": "Energy generation and storage segment gross margin",
    "rationale": "Storage gross margin is volatile and indicates pricing power versus battery cell cost inflation, a key earnings driver.",
+   "lang": null,
    "raw": "20.4",
    "unit": "%",
    "ptype": "Q",
    "page": 32,
    "quote": "Gross margin energy generation and storage segment 20.4 % 30.3 % 28.7 % 29.6 %",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "能源发电和储能分部毛利率",
+   "rationale_zh": "储能毛利率波动较大，反映其相对于电池电芯成本上涨的定价能力，这是一个关键的盈利驱动因素。",
+   "name_en": "Energy generation and storage segment gross margin",
+   "rationale_en": "Storage gross margin is volatile and indicates pricing power versus battery cell cost inflation, a key earnings driver."
   },
   {
    "name": "Purchases of property and equipment (capital expenditures)",
    "rationale": "Tesla's heavy capex on AI, factories and infrastructure drives its free cash flow and capacity expansion outlook.",
+   "lang": null,
    "raw": "(8,282)",
    "unit": "in millions",
    "ptype": "H",
    "page": 9,
    "quote": "Purchases of property and equipment excluding finance leases, net of sales (8,282) (3,886)",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "购置物业和设备（资本支出）",
+   "rationale_zh": "特斯拉在人工智能、工厂和基础设施上的高额资本支出驱动其自由现金流和产能扩张前景。",
+   "name_en": "Purchases of property and equipment (capital expenditures)",
+   "rationale_en": "Tesla's heavy capex on AI, factories and infrastructure drives its free cash flow and capacity expansion outlook."
   },
   {
    "name": "AI infrastructure (property, plant and equipment)",
    "rationale": "AI infrastructure assets signal Tesla's investment in autonomy and robotics, a central part of its long-term strategy.",
+   "lang": null,
    "raw": "10,823",
    "unit": "in millions",
    "ptype": "PIT",
    "page": 18,
    "quote": "AI infrastructure 10,823 6,816",
    "status": "⚠️",
-   "reason_zh": ""
+   "reason_zh": "",
+   "name_zh": "人工智能基础设施（物业、厂房和设备）",
+   "rationale_zh": "人工智能基础设施资产表明特斯拉在自动驾驶和机器人技术上的投资，这是其长期战略的核心部分。",
+   "name_en": "AI infrastructure (property, plant and equipment)",
+   "rationale_en": "AI infrastructure assets signal Tesla's investment in autonomy and robotics, a central part of its long-term strategy."
   }
  ],
  "pages": {
@@ -516,6 +546,10 @@
   "32": "Table of Contents\nCost of Revenues and Gross Margin\nThree Months Ended June 30, Change Six Months Ended June 30, Change \n(Dollars in millions) 2026 2025 $ % 2026 2025 $ % \nCost of revenues \nAutomotive sales $ 16,866 $ 13,567 $ 3,299 24 % $ 29,482 $ 25,028 $ 4,454 18 % \nAutomotive leasing 187 228 (41) (18) % 383 467 (84) (18) % \nTotal automotive cost of revenues 17,053 13,795 3,258 24 % 29,865 25,495 4,370 17 % \nServices and other 3,933 2,880 1,053 37 % 7,332 5,417 1,915 35 % \nTotal automotive & services and other segment cost of revenues 20,986 16,675 4,311 26 % 37,197 30,912 6,285 20 % \nEnergy generation and storage segment 2,499 1,943 556 29 % 3,955 3,888 67 2 % \nTotal cost of revenues $ 23,485 $ 18,618 $ 4,867 26 % $ 41,152 $ 34,800 $ 6,352 18 % \nGross profit total automotive $ 3,463 $ 2,866 $ 6,885 $ 5,133 \nGross margin total automotive 16.9 % 17.2 % 18.7 % 16.8 % \nGross profit total automotive & services and other segment $ 4,111 $ 3,032 $ 7,879 $ 5,400 \nGross margin total automotive & services and other segment 16.4 % 15.4 % 17.5 % 14.9 % \nGross profit energy generation and storage segment $ 640 $ 846 $ 1,592 $ 1,631 \nGross margin energy generation and storage segment 20.4 % 30.3 % 28.7 % 29.6 % \nTotal gross profit $ 4,751 $ 3,878 $ 9,471 $ 7,031 \nTotal gross margin 16.8 % 17.2 % 18.7 % 16.8 % \nAutomotive & Services and Other Segment\nCost of automotive sales revenue increased $3.30 billion, or 24%, in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025, due to the increase in deliveries year over year as discussed above.\nCost of automotive sales revenue increased $4.45 billion, or 18%, in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025, due to the increase in deliveries year over year as discussed above. Average cost per unit was relatively consistent due to unfavorable sales mix and a negative impact from the weakening of the United States dollar when compared to foreign currencies year over year, offset by favorable impacts related to warranty adjustments and tariffs.\nCost of services and other revenue increased $1.05 billion, or 37%, in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025. Cost of services and other revenue increased $1.92 billion, or 35%, in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025. These increases were primarily due to increases in used vehicle sales volume, cost related to non-warranty maintenance services and collision revenue and cost of paid Supercharging sessions.\nGross margin for total automotive decreased from 17.2% to 16.9% in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025. Gross margin for total automotive increased from 16.8% to 18.7% in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025. The fluctuations are primarily due to the changes in automotive sales revenue and cost of automotive sales revenue and a decrease in regulatory credits revenue, as discussed above.\n32"
  },
  "cum": "H",
+ "metrics_translated": {
+  "model": "deepseek-flash",
+  "note": "name / rationale only; numbers and quotes untouched"
+ },
  "example": true,
  "from_cache": true
 }

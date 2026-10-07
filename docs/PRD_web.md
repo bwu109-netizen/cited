@@ -5,7 +5,7 @@
 | 产品 | 财报核对助手（工作名，英文名待定）：从美股、A 股、港股的定期报告里抽取核心财务数字，每个数字附页码和原文，并用纯代码核验，把可疑的数标红 |
 | 线上地址 / 代码 | 部署后填写（Streamlit Community Cloud）/ GitHub 仓库名部署前确认 |
 | 版本 | v0.1，2026-10-06，初稿。已并入 `docs/prd_verify_page.md`（核验页），该文件随后删除，以本文件为准 |
-| 风格参考 | **待用户提供**（§6 的颜色、字体、动效 token 在拿到参考后填写） |
+| 风格参考 | 用户的 Stitch 项目「Financial Trading Dashboard UI」的设计系统（只借视觉，不借内容，见 §6） |
 | 范围 | 只做网页呈现和交互。抽取、核验、评估逻辑全部复用 `earnings_agent/`，不改核心模块（deny 规则见 `.claude/settings.local.json`）。网页代码全部放在 `web/` |
 | 不做 | 跨期追踪、点评生成（明天再定） |
 
@@ -290,18 +290,82 @@ flowchart TD
 
 ---
 
-## 6. 视觉规范（等风格参考，先定硬约束）
+## 6. 视觉规范
 
-**已定的硬约束**（不随风格变）：
+**风格参考**：用户的 Stitch 项目「Financial Trading Dashboard UI」中的设计系统 “Institutional Terminal Precision”（2026-10-07 确定）。完整 token 和组件规则见 `docs/stitch/DESIGN.md`。
 
-- 状态色只用于状态和数据：❌ 红、⚠️ 琥珀、✅ 绿。其他地方不用彩色强调，具体色值在拿到参考后定。
-- 状态不能只靠颜色区分：图标、文字和颜色同时出现，照顾色弱用户。
-- 数字用等宽或表格数字字体（tabular figures），千分位对齐。
-- 中英文都要有字体回退：中文用 Noto Sans SC（或系统黑体）。
-- 不用照片、3D、插画、emoji 装饰。图表只在 P5 出现，而且只用简单的条形图或表格。
-- 尊重 `prefers-reduced-motion`。
+**借什么**：深色终端式底色，1px 细线分隔，4px 小圆角，信息密度高的表格和卡片；Inter 配 JetBrains Mono 的双字体；状态徽章的样式。
 
-**待风格参考确定**：颜色 token（名称、用途、hex）、字体与字号阶梯、间距与栅格、圆角、卡片与输入框样式、动效表。确定后补进本节和 §13.2。
+**不借什么**：参考项目里所有交易看板内容一律不要，包括 K 线、涨跌幅、实时行情、盘口、行情代码滚动条。参考页面里的示例文案和数字也不用，例如 “OCR 置信度 99.84%”、自由现金流行、头像，以及 “0 条静默错误……漏报率为 0”，后者违反 §1.5。参考页面里另有一套亮绿主色的 “Robinhood” 变体，**不采用**：绿色在本产品中只表示“通过核验”，主色若也用绿色会混淆状态含义，所以主色用设计系统里的天蓝。
+
+### 6.1 颜色
+
+| token | hex | 用途 |
+|---|---|---|
+| canvas | #0b0d11 | 页面底色、表头行、输入框 |
+| panel | #12151c | 卡片、面板、表格行 |
+| elevated | #1a1e27 | 悬停行、菜单、抽屉 |
+| hairline | #262c38 | 1px 边框和分隔线 |
+| hairline-strong | #3a4254 | 悬停 / 选中边框 |
+| text | #f1f5f9 | 主文字 |
+| text-muted | #94a3b8 | 次要文字、元数据 |
+| text-faint | #64748b | 单位、列名、提示 |
+| accent | #38bdf8 | 主按钮、焦点、当前导航、链接（悬停 #7dd3fc） |
+| accent-2 | #6366f1 | 原文引用里的交叉链接，少用 |
+| bad | #f43f5e | ❌ 需要复核（底 rgba(244,63,94,0.12)，边 rgba(244,63,94,0.30)） |
+| warn | #f59e0b | ⚠️ 无可比数据（底 rgba(245,158,11,0.12)，边 rgba(245,158,11,0.30)） |
+| ok | #10b981 | ✅ 通过核验（底 rgba(16,185,129,0.12)，边 rgba(16,185,129,0.30)） |
+
+红、琥珀、绿只用于这三种核验状态，而且总是和图标、文字一起出现；不用于装饰，也不表示涨跌。
+
+### 6.2 字体
+
+- Inter 用于正文、控件和标题，开启表格数字（tnum）；中文回退 Noto Sans SC、PingFang SC。
+- JetBrains Mono 用于所有数字、代码、期间、页码标记和大写列名。
+
+| 级别 | 字体 | 字号 / 行高 | 字重 | 字距 |
+|---|---|---|---|---|
+| display（仅首页大标题） | Inter | 40 / 48 | 600 | -0.02em |
+| headline-xl | Inter | 24 / 32 | 600 | -0.02em |
+| headline-lg | Inter | 18 / 24 | 600 | -0.015em |
+| headline-md | Inter | 15 / 20 | 600 | -0.01em |
+| body-md | Inter | 13 / 18 | 400 | 0 |
+| body-sm | Inter | 12 / 16 | 400 | 0 |
+| data-lg | JetBrains Mono | 16 / 20 | 500 | -0.01em |
+| data-md | JetBrains Mono | 12 / 16 | 500 | -0.01em |
+| data-sm | JetBrains Mono | 11 / 14 | 400 | 0 |
+| label-caps | JetBrains Mono | 10 / 12 | 600 | +0.06em，大写 |
+
+### 6.3 形状、间距、层次
+
+- 圆角：卡片、输入框、表格 4px；徽章 2px；抽屉最大 6px。不用胶囊按钮。
+- 间距用 4 / 8px 栅格；表格行高 32px（紧凑 28px），表头 28px；桌面内容最大宽度 1280px。
+- 层次只靠底色深浅和 1px 细线表现；不用柔和阴影、渐变或光晕。菜单可以用一道锐利阴影 `0 4px 12px rgba(0,0,0,0.7)`。
+
+### 6.4 组件
+
+- **主按钮**：accent 底、#0b0d11 字、高 32px。**次按钮**：panel 底加 hairline 边。
+- **状态徽章**：图标 + 文字，高 20px，等宽 10px 大写。
+- **指标表**：数字右对齐、等宽字体；文字左对齐、Inter；❌ 行在最前，指标名下面一行写原因。
+- **页码链接**：`p.5`，等宽字体、accent 色。
+- **原文引用**：等宽 11px、text-muted 色，放在 canvas 底加细线框里，命中的数字用 rgba(56,189,248,0.15) 高亮。
+- **原文页抽屉**：右侧，宽 420px。
+
+### 6.5 动效
+
+只有三处：
+1. 进度步骤的当前点做脉冲（1.2s 循环）；
+2. 抽屉滑入（160ms）；
+3. 悬停时底色过渡（120ms）。
+
+`prefers-reduced-motion` 时全部关闭。
+
+### 6.6 硬约束（不随风格变）
+
+- 状态不能只靠颜色区分。
+- 数字一律用表格数字。
+- 不用照片、3D、插画或 emoji 装饰。
+- 图表只在 P5 出现，而且只用简单条形图或表格。
 
 ---
 
@@ -452,14 +516,9 @@ flowchart TD
 
 先出 **S1 和 S2** 定调，确认后再出其余。
 
-### 13.2 通用风格提示词
+### 13.2 通用风格提示词（每次生成都放在最前）
 
-**待风格参考确定后填写。**已经可以确定、必须写进去的禁令：
-
-- No photos, no 3D, no illustrations, no emoji, no user avatars, no testimonials, no customer logos, no usage counts.
-- No confidence scores, no run IDs, no "processed locally" or "never stored" claims.
-- Color only for status: red = needs review, amber = no external figure, green = passed checks, always paired with an icon and a text label.
-- Tabular numerals for all figures.
+"Dark, dense, hairline-framed web app for checking figures copied out of company filings (a tool for equity research analysts). Page background #0b0d11, cards and table rows #12151c, hover/drawers #1a1e27, 1px borders #262c38. Text #f1f5f9, secondary #94a3b8, faint labels #64748b. Accent #38bdf8 for primary buttons (dark text), focus rings, the current nav item and links. Inter for prose and controls; JetBrains Mono for every number, ticker, period, page marker ('p.5') and uppercase 10px column labels with wide tracking. 4px corners, no pill buttons, no shadows, no gradients, no glow. Status colours appear ONLY as verification badges with an icon and a text label: red #f43f5e 'NEEDS REVIEW', amber #f59e0b 'NO EXTERNAL FIGURE', green #10b981 'PASSED CHECKS' (12% tinted fill, 30% border). This is NOT a trading dashboard: no candlestick or line charts, no price tickers, no % change, no live quotes, no market data. No photos, 3D, illustrations or emoji. No user avatar or account menu. No invented numbers, confidence scores, OCR scores, run IDs, hashes, testimonials, logos or usage counts. Never write 'zero silent errors', 'catches every error', 'more accurate than asking AI', 'verified correct' or '100% accurate'. Same top nav and footer on every screen."
 
 ### 13.3 分画面提示词（内容部分；风格部分待 13.2）
 
@@ -482,7 +541,7 @@ flowchart TD
 | 中英切换；手机可用 | 已定 |
 | 不做跨期追踪、点评 | 已定（明天再说） |
 | 诚实规则与禁用语 | 已定 |
-| 风格参考 | **待用户提供** |
+| 风格参考 | 已定（2026-10-07）：Stitch 项目「Financial Trading Dashboard UI」，只借视觉 |
 | 默认语言 | 待定。建议：按浏览器语言自动选择，中文用户默认中文，其余默认英文 |
 | 3 份示例 | 待定。建议 TSLA 2026Q2 / 中国石油 2025FY / 小米 2026H1（理由见 P1 M2） |
 | 示例按哪版规则核验 | 待定。建议按当前产品规则（R1–R6）重新核验，并注明“示例不是评估数字” |

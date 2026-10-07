@@ -124,10 +124,24 @@
     status_bad: ["需要复核", "Needs review"], status_warn: ["无可比数据", "No external figure"], status_ok: ["通过核验", "Passed checks"],
     col_status: ["状态", "Status"], col_metric: ["指标", "Metric"], col_value: ["数值", "Value"], col_unit: ["单位", "Unit"],
     col_period: ["期间", "Period"], col_page: ["页码", "Page"], col_quote: ["原文引用", "Quote"],
-    p_Q: ["单季", "Quarter"], p_H: ["半年", "Six months"], p_YTD: ["年初至今", "Year to date"], p_FY: ["全年", "Full year"], p_PIT: ["时点", "Point in time"],
+    p_Q: ["单季", "Quarter"], p_H: ["上半年累计", "Six months"], p_YTD: ["前三季度累计", "Nine months"], p_FY: ["全年", "Full year"], p_PIT: ["时点", "Point in time"],
     t_general: ["通用", "General"], t_bank: ["银行", "Bank"], t_insurance: ["保险", "Insurance"],
     r_pages: ["共 {a} 页 · 送给模型 {b} 页", "{a} pages · {b} sent to the model"], r_cost: ["本次花费 ≈ ${c}", "Cost ≈ ${c}"],
-    r_end: ["期末日", "Period end"], r_source: ["原文", "Source"], r_template: ["模板", "Template"],
+    r_end: ["截止日", "Period end"], r_period: ["报告期", "Period"],
+    col_yoy: ["同比", "YoY"], code_calc: ["代码计算", "computed by code"], y_prev: ["上年同期 {v}", "Prior year {v}"],
+    y_none: ["没有取到上年同期的数", "No prior-year figure"], y_flagged: ["本期数需要复核，不计算同比", "Current figure needs review; not computed"],
+    y_neg: ["上年同期为零或负数，不计算百分比", "Prior-year figure is zero or negative; no percentage"], y_nm: ["不适用", "n/m"],
+    v_line: ["{n} 项中 {ok} 项通过核验", "{ok} of {n} items passed the checks"], v_warn: ["，{w} 项无可比数据", ", {w} have no external figure"],
+    v_bad: ["，{b} 项需要复核：{l}。", "; {b} need review: {l}."], v_nobad: ["，没有需要复核的项。", "; none need review."],
+    kc_title: ["关键变化", "Key changes"], pp: ["个百分点", "pp"],
+    hl_title: ["业绩要点", "Highlights"], hl_tag: ["模型撰写 · 数字经代码核对", "Written by the model · numbers checked by code"],
+    hl_log: ["运行记录：{n} 条要点未通过检查，未显示", "Run log: {n} highlights failed the checks and are hidden"],
+    hl_none: ["没有通过检查的业绩要点。", "No highlight passed the checks."], hl_err: ["业绩要点生成失败：{e}", "Highlights could not be written: {e}"],
+    cmp_log: ["上年同期：{n} 个数未通过核验，未使用", "Prior year: {n} figures failed the checks and were not used"],
+    rt_title: ["比率", "Ratios"], rt_note: ["代码计算：毛利率 = 毛利 ÷ 营业收入；归母净利率 = 归母净利润 ÷ 营业收入。", "Computed by code: gross margin = gross profit ÷ revenue; net margin = net income attributable ÷ revenue."],
+    gross_margin: ["毛利率", "Gross margin"], net_margin: ["归母净利率", "Net margin (attributable)"],
+    rt_now: ["本期", "Current"], rt_prev: ["上年同期", "Prior year"], rt_chg: ["变化", "Change"],
+    only_zh: ["仅中文", "Chinese only"], only_en: ["仅英文", "English only"], unit_raw: ["原文单位：{u}", "Unit as printed: {u}"], r_source: ["原文", "Source"], r_template: ["模板", "Template"],
     r_core: ["核心指标", "Core metrics"], r_core_sub: ["需要复核的在最前；点页码看原文那一页", "Rows that need review come first; click a page number to open that page"],
     r_aux: ["辅助字段", "Auxiliary fields"], r_aux_sub: ["普通股股东应占、营业成本、加权股数等；会核验，但不是核心指标", "Net income to common, cost of revenue, share count…; checked, but not core metrics"],
     r_aux_bad: ["其中 {n} 条需要复核", "{n} need review"],
@@ -154,6 +168,8 @@
     run_title: ["执行进度", "Progress"], run_stop: ["停止", "Stop"], run_edit: ["修改条件", "Edit"],
     run_tokens: ["已用 tokens {t} · 花费 ≈ ${c}", "Tokens {t} · cost ≈ ${c}"],
     s1: ["获取报告", "Fetch report"], s2: ["解析与定位", "Parse and locate"], s3: ["模型抽取", "Model extraction"], s4: ["代码换算与核验", "Convert and check"], s5: ["补问缺失期间", "Ask once more for missing periods"],
+    s6: ["上年同期与业绩要点", "Prior year and highlights"],
+    s6_d: ["照抄上年同期的数并核验；模型按结果表写要点，代码核对数字", "Copy and check prior-year figures; the model writes highlights from the table and code checks the numbers"],
     s1_d: ["从 {src} 下载定期报告", "Downloading the filing from {src}"], s2_d: ["共 {p} 页，定位到 {s} 页报表页；行业模板：{t}", "{p} pages, {s} statement pages located; template: {t}"],
     s3_d: ["{m} 照抄数字、单位、页码和原文", "{m} copies numbers, units, pages and quotes"], s4_d: ["C1–C4 + 合理性检查，纯代码", "C1–C4 + consistency checks, code only"],
     s5_d: ["只在缺少应有期间时触发，最多一次", "Only when an expected period is missing; at most once"],
@@ -208,7 +224,7 @@
       "Adapted from the R3 wording in the evaluation: R3 scored {p} strict accuracy on the DeepSeek holdout (US + A-share, parsed-text input). This universal version itself, and other models, are not evaluated."],
     v_absent: ["AI 标明原文没有：{l}", "The AI says these are not in the report: {l}"],
     v_fmt_json: ["JSON", "JSON"], v_fmt_table: ["表格", "Table"], v_fmt_wait: ["等待输入", "Waiting for input"],
-    v_ph: ["粘贴 AI 的回答……\n\n表格示例：\n| 指标 | 数值 | 单位 | 期间 | 页码 | 原文 |\n|---|---|---|---|---|---|\n| 营业收入 | 28,236 | in millions | 单季 | 5 | Total revenues 28,236 22,496 50,623 41,831 |\n\nJSON 示例：\n{\"items\": [{\"field\": \"revenue\", \"raw_value\": \"28,236\", \"raw_unit\": \"in millions\", \"raw_currency\": \"$\", \"period_type\": \"Q\", \"page\": 5, \"quote\": \"Total revenues 28,236 ...\"}]}",
+    v_ph: ["粘贴 AI 的回答……\n\n表格示例：\n| 指标 | 数值 | 单位 | 期间 | 页码 | 原文 |\n|---|---|---|---|---|---|\n| 营业收入 | 2,864,469 | 人民币百万元 | 全年 | 109 | 营业收入 42 2,864,469 2,937,981 1,730,507 1,810,603 |\n\nJSON 示例：\n{\"items\": [{\"field\": \"revenue\", \"raw_value\": \"2,864,469\", \"raw_unit\": \"人民币百万元\", \"raw_currency\": \"人民币\", \"period_type\": \"FY\", \"page\": 109, \"quote\": \"营业收入 42 2,864,469 ...\"}]}",
       "Paste the AI's answer…\n\nTable example:\n| Metric | Value | Unit | Period | Page | Quote |\n|---|---|---|---|---|---|\n| Revenue | 28,236 | in millions | Q | 5 | Total revenues 28,236 22,496 50,623 41,831 |\n\nJSON example:\n{\"items\": [{\"field\": \"revenue\", \"raw_value\": \"28,236\", \"raw_unit\": \"in millions\", \"raw_currency\": \"$\", \"period_type\": \"Q\", \"page\": 5, \"quote\": \"Total revenues 28,236 ...\"}]}"],
     v_meta: ["报告信息", "About the filing"], v_code_opt: ["代码（可选，美股 / A 股用于 C4）", "Ticker (optional; enables C4 for US / A-share)"],
     v_tpl: ["行业模板", "Template"], v_tpl_auto: ["自动判定", "Auto"],
@@ -266,6 +282,9 @@
     l2_t: ["未标红不等于正确", "Not flagged ≠ correct"], l2_d: ["港股的标记召回率明显更低；美股和 A 股去 C4 后召回率也会下降。", "Flag recall is clearly lower for HK; for US and A-share it drops without C4."],
     l3_t: ["输入是解析文本，不是 PDF", "Input is parsed text, not the PDF"], l3_d: ["所有档拿到的都是同一份解析文字；扫描件无法处理。", "Every tier saw the same parsed text; scanned PDFs can't be handled."],
     l4_t: ["主结论基于 DeepSeek", "Main results are DeepSeek"], l4_d: ["Fable 只有 9 份；港股留出集未评；修订是看过结果后做的。", "Fable has only 9 filings; the HK holdout was not scored; revisions were made after seeing results."],
+    l5_t: ["同比、比率和业绩要点", "YoY, ratios and highlights"],
+    l5_d: ["同比和比率由代码计算；业绩要点由模型撰写，数字经代码核对，措辞未经评估。上年同期的数由另一次模型调用照抄，经 C1–C3 核验，也未经评估。",
+      "YoY changes and ratios are computed by code; highlights are written by the model, with numbers checked by code and wording not evaluated. Prior-year figures are copied by a separate model call and checked by C1–C3, also not evaluated."],
     mt_links: ["评估设计", "Evaluation design"], mt_links2: ["评估结果", "Evaluation results"],
     gh: ["GitHub", "GitHub"]
   };
@@ -324,6 +343,32 @@
   function ptype(p) { return T["p_" + p] ? t("p_" + p) : (p || ""); }
   function tplName(x) { return T["t_" + x] ? t("t_" + x) : x; }
   function mtext(x, k) { return (S.lang === "zh" ? x[k + "_zh"] : x[k + "_en"]) || x[k] || ""; }
+  // text only available in the other language (results saved before both languages were generated)
+  function onlyTag(x, k) {
+    if (x[k + "_" + S.lang] || !x[k]) return "";
+    var other = x.lang || (/[\u4e00-\u9fff]/.test(x[k]) ? "zh" : "en");
+    return other === S.lang ? "" : ' <span class="pill tiny">' + t(other === "zh" ? "only_zh" : "only_en") + "</span>";
+  }
+  function unitText(it) { return (S.lang === "zh" ? it.unit_zh : it.unit_en) || it.unit || ""; }
+  function unitHtml(it) {
+    var u = S.lang === "zh" ? it.unit_zh : it.unit_en;
+    return u ? '<span title="' + esc(t("unit_raw", { u: it.unit || "" })) + '">' + esc(u) + "</span>" : '<span data-orig="1">' + esc(it.unit || "") + "</span>";
+  }
+  function periodTitle(d) { var p = d.period_label; return p ? (S.lang === "zh" ? p.zh : p.en) : (d.period || ""); }
+  function arrow(x) { return x > 0.0005 ? "▲" : x < -0.0005 ? "▼" : "■"; }
+  function yoyHtml(y, src) {
+    if (!y) return '<span class="faint" title="' + esc(t("y_none")) + '">—</span>';
+    var main = y.pct == null ? '<span class="faint" title="' + esc(y.note === "current_flagged" ? t("y_flagged") : t("y_neg")) + '">' + (y.note === "current_flagged" ? "—" : t("y_nm")) + "</span>"
+      : '<span class="yoy">' + arrow(y.pct) + " " + Math.abs(y.pct * 100).toFixed(1) + "%</span>";
+    return main + '<div class="faint mono yprev">' + esc(t("y_prev", { v: y.prev_raw })) + (y.prev_page ? ' <a class="pg" data-page="' + y.prev_page + '" data-src="' + src + '">p.' + y.prev_page + "</a>" : "") + "</div>";
+  }
+  function colon() { return L("：", ": "); }
+  function paren(x) { return L("（", " (") + x + L("）", ")"); }
+  var DOC_KIND = { "定期报告": ["定期报告", "Periodic report"], "業績公告": ["业绩公告", "Results announcement"], "业绩公告": ["业绩公告", "Results announcement"],
+    "中期報告": ["中期报告", "Interim report"], "中期报告": ["中期报告", "Interim report"], "年報": ["年报", "Annual report"], "年报": ["年报", "Annual report"],
+    "中期報告/年報": ["中期报告 / 年报", "Interim / annual report"] };
+  function docKind(k) { var m = DOC_KIND[k]; return m ? L(m[0], m[1]) : '<span data-orig="1">' + esc(k || "") + "</span>"; }
+  function pctTxt(x) { return (x * 100).toFixed(1) + "%"; }
   function mname(it) { return S.lang === "zh" ? it.name_zh : it.name_en; }
   function stClass(s) { return s === "❌" ? "bad" : s === "⚠️" ? "warn" : s === "✅" ? "ok" : "grey"; }
   function stBadge(s) {
@@ -427,7 +472,7 @@
     var list = histLoad(), p = S.cfg.providers[S.form.provider] || {};
     var recent = list.length ? list.map(function (h) {
       var c = h.counts || {};
-      return '<a class="hist' + (S.hist === h.id || (!S.hist && S.view === "analyze" && S.saved[S.job.id] === h.id) ? " on" : "") + '" data-hist="' + esc(h.id) + '"><span class="hn">' + esc(h.name || h.code) + '</span><span class="hm mono">' + esc(h.code) + " · " + esc(h.period) +
+      return '<a class="hist' + (S.hist === h.id || (!S.hist && S.view === "analyze" && S.saved[S.job.id] === h.id) ? " on" : "") + '" data-hist="' + esc(h.id) + '"><span class="hn">' + esc(h.name || h.code) + '</span><span class="hm mono">' + esc(h.code) + " · " + esc(periodTitle((h.result && h.result.doc) || { period: h.period })) +
         (c["❌"] ? ' · <span class="tx-bad">' + c["❌"] + "</span>" : "") + "</span></a>";
     }).join("") : '<div class="hint" style="padding:4px 10px">' + t("sb_empty") + "</div>";
     return '<aside class="side"><div class="side-top"><a class="brand" data-act="new"><span class="logo">' + ic("shield") + "</span>" + t("brand") + "</a>" +
@@ -437,7 +482,7 @@
       '<div class="side-sec"><div class="side-lbl"><span>' + t("sb_recent") + "</span>" + (list.length ? '<button data-act="hist-clear">' + t("sb_clear") + "</button>" : "") + '</div><div class="side-note">' + ic("lock", "sm") + t("sb_local") + "</div>" + recent + "</div>" +
       '<div class="side-bottom"><a class="keystat" data-go="analyze"><span class="kdot' + (S.form.key ? " on" : "") + '"></span>' + (S.form.key ? t("key_set", { p: esc(p.label || S.form.provider) }) : t("key_none")) + "</a>" +
       '<div class="side-btns"><button class="chip-btn" data-act="theme" aria-label="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '" title="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '">' + ic(S.theme === "light" ? "moon" : "sun", "sm") + "</button>" +
-      '<button class="chip-btn" data-act="lang"><b>' + (S.lang === "zh" ? "中" : "EN") + "</b> / " + (S.lang === "zh" ? "EN" : "中") + "</button>" +
+      '<button class="chip-btn" data-act="lang" data-orig="1"><b>' + (S.lang === "zh" ? "中" : "EN") + "</b> / " + (S.lang === "zh" ? "EN" : "中") + "</button>" +
       '<a class="chip-btn" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + "GitHub</a></div></div></aside>";
   }
   function caveat() { return '<p class="caveat">' + t("caveat") + "</p>"; }
@@ -463,14 +508,14 @@
     var cards = exKeys().map(function (k) {
       var r = S.cfg.examples[k], d = r.doc;
       var auxBad = r.items.filter(function (i) { return i.aux && i.status === "❌"; })[0];
-      return '<div class="ex-card" data-ex="' + k + '"><div class="top"><div><div class="tick">' + esc(d.name) + "</div>" +
-        '<div class="faint mono" style="font-size:12px;margin-top:4px">' + esc(d.code) + " · " + mkName(d.market) + " · " + esc(d.title) + "</div></div>" +
+      return '<div class="ex-card" data-ex="' + k + '"><div class="top"><div><div class="tick" data-orig="1">' + esc(d.name) + "</div>" +
+        '<div class="faint mono" style="font-size:12px;margin-top:4px">' + esc(d.code) + " · " + mkName(d.market) + " · " + esc(periodTitle(d)) + "</div></div>" +
         '<span class="pill">' + t("ex_tag") + "</span></div>" +
         "<div>" + coreRows(r).map(function (i) {
           return '<div class="ex-row"><span class="muted">' + esc(mname(i)) + " · " + ptype(i.ptype) + '</span><span class="v">' + esc(i.raw) +
-            "<small>" + esc(i.unit || "") + " · p." + esc(i.page) + "</small></span></div>";
+            "<small>" + unitHtml(i) + " · p." + esc(i.page) + "</small></span></div>";
         }).join("") + "</div>" +
-        (auxBad ? '<div class="ex-flag">' + ic("x", "sm") + " " + esc(mname(auxBad)) + "（" + ptype(auxBad.ptype) + "）：" + esc(S.lang === "zh" ? auxBad.reason_zh : auxBad.reason_en).slice(0, 90) + "</div>" : "") +
+        (auxBad ? '<div class="ex-flag">' + ic("x", "sm") + " " + esc(mname(auxBad)) + paren(ptype(auxBad.ptype)) + colon() + esc(S.lang === "zh" ? auxBad.reason_zh : auxBad.reason_en).slice(0, 90) + "</div>" : "") +
         '<div style="display:flex;gap:6px;flex-wrap:wrap">' + ["❌", "⚠️", "✅"].map(function (s) {
           return '<span class="badge ' + stClass(s) + '">' + { bad: t("status_bad"), warn: t("status_warn"), ok: t("status_ok") }[stClass(s)] + " " + r.counts[s] + "</span>";
         }).join("") + "</div>" +
@@ -500,43 +545,90 @@
     var d = r.doc, c = r.counts;
     var core = r.items.filter(function (i) { return !i.aux; }), aux = r.items.filter(function (i) { return i.aux; });
     var head = '<div class="r0"><div><div class="eyebrow">' + (r.example ? t("ex_tag") : r.uploaded ? t("r_uploaded") : srcName(d.market)) + "</div>" +
-      "<h1>" + esc(d.name) + '</h1><div class="tags"><span class="pill">' + esc(d.code) + '</span><span class="pill">' + esc(d.doc_kind || "") + '</span><span class="pill">' + mkName(d.market) + '</span><span class="pill">' + t("r_template") + "：" + tplName(r.template) + "</span></div>" +
-      '<div class="meta"><span>' + t("r_end") + " <b>" + esc(d.period_end) + "</b></span><span>" + esc(d.title) + "</span><span>" + t("r_pages", { a: "<b>" + r.pages_total + "</b>", b: "<b>" + r.pages_sent + "</b>" }) + "</span>" +
+      '<h1 data-orig="1">' + esc(d.name) + '</h1><div class="tags"><span class="pill">' + esc(d.code) + '</span><span class="pill">' + docKind(d.doc_kind) + '</span><span class="pill">' + mkName(d.market) + '</span><span class="pill">' + t("r_template") + colon() + tplName(r.template) + "</span></div>" +
+      '<div class="meta"><span>' + t("r_period") + " <b>" + esc(periodTitle(d)) + "</b></span><span>" + t("r_end") + " <b>" + esc(d.period_end) + '</b></span><span data-orig="1">' + esc(d.title) + "</span><span>" + t("r_pages", { a: "<b>" + r.pages_total + "</b>", b: "<b>" + r.pages_sent + "</b>" }) + "</span>" +
       (r.cost != null ? "<span>" + t("r_cost", { c: money(r.cost) }) + "</span>" : "") + "</div></div>" +
       '<div style="display:flex;gap:10px;flex-wrap:wrap">' + (d.url ? '<a class="btn ghost sm" href="' + esc(d.url) + '" target="_blank" rel="noopener">' + t("r_source") + " " + ic("ext", "sm") + "</a>" : "") +
       '<button class="btn ghost sm" data-act="csv">' + t("r_export_csv") + '</button><button class="btn ghost sm" data-act="json">' + t("r_export_json") + "</button></div></div>";
-    var sums = '<div class="sumcards">' + [["bad", "❌", "x"], ["warn", "⚠️", "warn"], ["ok", "✅", "check"]].map(function (x) {
-      return '<div class="sumcard ' + x[0] + '"><div class="ic">' + ic(x[2]) + '</div><div><div class="lab">' + t("status_" + x[0]) + '</div><div class="num">' + c[x[1]] + "</div></div></div>";
-    }).join("") + "</div>";
+    var sums = conclusion(r, src, true);
     var fu = r.followup && r.followup.asked && r.followup.asked.length ? r.items.filter(function (i) { return i.category === "漏抽"; }).length : 0;
     var table = '<div class="tbl-card"><div class="tbl-head"><div><h2>' + t("r_core") + '</h2><div class="hint">' + t("r_core_sub") + "</div></div>" +
-      (fu ? '<span class="badge warn">' + t("r_followup", { n: fu }) + "</span>" : "") + "</div>" + rtable(core, src) +
+      (fu ? '<span class="badge warn">' + t("r_followup", { n: fu }) + "</span>" : "") + "</div>" + rtable(core, src, !!r.comparatives_log) +
       (aux.length ? '<button class="aux-toggle" data-act="aux"><span><b style="color:var(--text)">' + t("r_aux") + "</b> · " + t("r_aux_sub") + (r.aux_bad ? ' · <span class="tx-bad">' + t("r_aux_bad", { n: r.aux_bad }) + "</span>" : "") + "</span><span>" + (S.auxOpen ? t("r_less") : t("r_more")) + "</span></button>" +
-        (S.auxOpen ? rtable(aux, src) : "") : "") + "</div>" + caveat();
+        (S.auxOpen ? rtable(aux, src, !!r.comparatives_log) : "") : "") + "</div>" + caveat() + ratiosCard(r);
     var m = (r.metrics || []).length ? '<section class="section"><div class="section-head"><div><h2 style="font-size:22px">' + t("r_metrics") + '</h2><div class="hint">' + t("r_metrics_sub") + '</div></div></div><div class="metric-grid">' +
       r.metrics.map(function (x) {
-        return '<div class="metric"><div style="display:flex;justify-content:space-between;gap:8px"><span class="lbl" style="letter-spacing:.02em">' + esc(mtext(x, "name")) + "</span>" + stBadge(x.status) + '</div><div class="v">' + esc(x.raw) + "<small>" + esc(x.unit || "") + '</small></div><div class="hint">' + esc(mtext(x, "rationale")) + "</div>" +
+        return '<div class="metric"><div style="display:flex;justify-content:space-between;gap:6px 8px;flex-wrap:wrap"><span class="lbl" style="letter-spacing:.02em"' + (onlyTag(x, "name") ? ' data-orig="1"' : "") + ">" + esc(mtext(x, "name")) + onlyTag(x, "name") + "</span>" + stBadge(x.status) + '</div><div class="v">' + esc(x.raw) + "<small>" + unitHtml(x) + '</small></div><div class="hint"' + (onlyTag(x, "rationale") ? ' data-orig="1"' : "") + ">" + esc(mtext(x, "rationale")) + "</div>" +
           (x.page ? '<a class="pg" data-page="' + x.page + '" data-src="' + src + '">p.' + x.page + " " + ic("ext", "sm") + "</a>" : "") + "</div>";
       }).join("") + "</div></section>" : "";
     return head + sums + table + m;
   }
-  function rtable(items, src) {
-    return '<div class="scrollx"><table class="res"><thead><tr><th>' + t("col_status") + "</th><th>" + t("col_metric") + '</th><th style="text-align:right">' + t("col_value") + "</th><th>" + t("col_period") + "</th><th>" + t("col_page") + "</th><th>" + t("col_quote") + "</th></tr></thead><tbody>" +
+  // top of a result: 1 verdict (code) · 2 key changes (code) · 3 highlights (model, checked by code)
+  function conclusion(r, src, full) {
+    var s = r.summary;
+    if (!s) {  // results saved before the summary existed: same counts from the rows
+      var core = r.items.filter(function (i) { return !i.aux; });
+      s = { n: core.length, ok: core.filter(function (i) { return i.status === "✅"; }).length, warn: core.filter(function (i) { return i.status === "⚠️"; }).length,
+        bad: core.filter(function (i) { return i.status === "❌"; }).map(function (i) { return { name_zh: i.name_zh, name_en: i.name_en, ptype: i.ptype }; }) };
+    }
+    var bad = s.bad.map(function (b) { return (S.lang === "zh" ? b.name_zh : b.name_en) + L("（", " (") + ptype(b.ptype) + L("）", ")"); });
+    var line = t("v_line", { n: s.n, ok: '<b class="tx-ok">' + s.ok + "</b>" }) + (s.warn ? t("v_warn", { w: s.warn }) : "") +
+      (bad.length ? t("v_bad", { b: '<b class="tx-bad">' + bad.length + "</b>", l: esc(bad.join(L("、", ", "))) }) : t("v_nobad"));
+    var out = '<div class="verdict">' + ic(bad.length ? "warn" : "check") + "<p>" + line + "</p></div>";
+    if (!full) return out;
+    var cards = (r.cards || []).map(function (c) {
+      if (c.ratio) {
+        var x = c.ratio;
+        return '<div class="kcard"><div class="lbl">' + t(x.key) + " · " + ptype(c.ptype) + '</div><div class="kv">' + pctTxt(x.value) + "</div>" +
+          (x.change_pp != null ? '<div class="ky"><span class="yoy">' + arrow(x.change_pp) + " " + Math.abs(x.change_pp).toFixed(1) + " " + t("pp") + '</span><span class="faint"> · ' + esc(t("y_prev", { v: pctTxt(x.prev) })) + "</span></div>" : '<div class="ky faint">—</div>') +
+          '<div class="ktag">' + t("code_calc") + "</div></div>";
+      }
+      var it = { unit_zh: c.unit_zh, unit_en: c.unit_en, unit: "" }, y = c.yoy;
+      return '<div class="kcard"><div class="lbl">' + esc(fieldName(c.field)) + " · " + ptype(c.ptype) + " " + stIcon(c.status) + '</div><div class="kv">' + esc(c.raw || "—") + " <small>" + unitHtml(it) + "</small></div>" +
+        (y && y.pct != null ? '<div class="ky"><span class="yoy">' + arrow(y.pct) + " " + Math.abs(y.pct * 100).toFixed(1) + "%</span>" + '<span class="faint"> · ' + esc(t("y_prev", { v: y.prev_raw })) + "</span></div>"
+          : '<div class="ky faint">' + (y ? esc(t("y_prev", { v: y.prev_raw })) : t("y_none")) + "</div>") +
+        '<div class="ktag">' + t("col_yoy") + " · " + t("code_calc") + "</div></div>";
+    }).join("");
+    if (cards) out += '<div class="kc-head"><h2>' + t("kc_title") + '</h2></div><div class="kcards">' + cards + "</div>";
+    var h = r.highlights, log = r.comparatives_log;
+    if (h) {
+      var pts = (h.points || []).map(function (p) {
+        return "<li>" + esc(S.lang === "zh" ? p.text_zh : p.text_en) + " " + (p.pages || []).map(function (n) { return '<a class="pg" data-page="' + n + '" data-src="' + src + '">p.' + n + "</a>"; }).join(" ") + "</li>";
+      }).join("");
+      var dropped = h.dropped || [], rej = (log && log.rejected) || [];
+      var logs = (dropped.length ? "<li>" + t("hl_log", { n: dropped.length }) + "<ul>" + dropped.map(function (d) { return "<li>" + esc(S.lang === "zh" ? d.why_zh : d.why_en) + "</li>"; }).join("") + "</ul></li>" : "") +
+        (rej.length ? "<li>" + t("cmp_log", { n: rej.length }) + "</li>" : "");
+      out += '<div class="hl"><div class="hl-head"><h2>' + t("hl_title") + '</h2><span class="ktag">' + t("hl_tag") + "</span></div>" +
+        (pts ? "<ul>" + pts + "</ul>" : '<p class="hint">' + (h.error ? esc(t("hl_err", { e: h.error })) : t("hl_none")) + "</p>") +
+        (logs ? '<details class="runlog"><summary>' + t("run_log") + "</summary><ul>" + logs + "</ul></details>" : "") + "</div>";
+    }
+    return out;
+  }
+  function ratiosCard(r) {
+    var rs = r.ratios || [];
+    if (!rs.length) return "";
+    return '<div class="tbl-card"><div class="tbl-head"><div><h2>' + t("rt_title") + '</h2><div class="hint">' + t("rt_note") + '</div></div></div><div class="scrollx"><table class="res ratios"><thead><tr><th>' + t("col_metric") + "</th><th>" + t("col_period") + '</th><th style="text-align:right">' + t("rt_now") + '</th><th style="text-align:right">' + t("rt_prev") + '</th><th style="text-align:right">' + t("rt_chg") + "</th></tr></thead><tbody>" +
+      rs.map(function (x) {
+        return "<tr><td><b>" + t(x.key) + "</b></td><td>" + ptype(x.ptype) + '</td><td class="num">' + pctTxt(x.value) + '</td><td class="num">' + (x.prev != null ? pctTxt(x.prev) : "—") + '</td><td class="num">' + (x.change_pp != null ? '<span class="yoy">' + arrow(x.change_pp) + " " + Math.abs(x.change_pp).toFixed(1) + " " + t("pp") + "</span>" : "—") + "</td></tr>";
+      }).join("") + "</tbody></table></div></div>";
+  }
+  function rtable(items, src, withYoy) {
+    return '<div class="scrollx"><table class="res"><thead><tr><th>' + t("col_status") + "</th><th>" + t("col_metric") + '</th><th style="text-align:right">' + t("col_value") + "</th>" + (withYoy ? '<th>' + t("col_yoy") + '<span class="th-sub">' + t("code_calc") + "</span></th>" : "") + "<th>" + t("col_period") + "</th><th>" + t("col_page") + "</th><th>" + t("col_quote") + "</th></tr></thead><tbody>" +
       items.map(function (it, k) {
         var id = it.field + "_" + it.ptype, reason = S.lang === "zh" ? it.reason_zh : it.reason_en;
         var val = it.value == null ? '<span class="faint">' + t("r_notfound") + "</span>" :
-          '<div class="main">' + esc(it.raw) + '</div><div class="conv">' + esc(it.unit || "") + " → " + scaled(it.value, it.currency, isPerShare(it.field)) + "</div>";
+          '<div class="main">' + esc(it.raw || "") + '</div><div class="conv">' + unitHtml(it) + "</div>";
         var comps = it.derived && it.components.length ? '<button class="more" data-comp="' + id + '">' + t("r_components") + " " + (S.openComps[id] ? "▴" : "▾") + "</button>" +
           (S.openComps[id] ? '<div class="comps">' + it.components.map(function (c) {
             return "<div><span>" + esc(c.name) + " " + (c.ok ? '<span class="tx-ok">✓</span>' : '<span class="tx-bad">✕</span>') + '</span><span class="mono">' + esc(c.raw) + " " + (c.page ? '<a class="pg" data-page="' + c.page + '" data-src="' + src + '">p.' + c.page + "</a>" : "") + "</span></div>";
           }).join("") + "</div>" : "") : "";
         return '<tr class="' + (it.status === "❌" ? "is-bad" : "") + '"><td>' + stBadge(it.status) + "</td>" +
-          '<td><div class="mname">' + esc(mname(it)) + (it.derived ? ' <span class="pill" style="height:20px">' + t("r_derived") + "</span>" : "") + "<small>" + esc(S.lang === "zh" ? it.name_en : it.name_zh) + "</small></div>" +
+          '<td><div class="mname">' + esc(mname(it)) + (it.derived ? ' <span class="pill" style="height:20px">' + t("r_derived") + "</span>" : "") + "</div>" +
           (reason ? '<div class="reason ' + stClass(it.status) + '">' + esc(reason) + "</div>" : "") + comps + "</td>" +
-          '<td class="num">' + val + "</td>" +
+          '<td class="num">' + val + "</td>" + (withYoy ? '<td class="yoycell">' + yoyHtml(it.yoy, src) + "</td>" : "") +
           '<td><span class="mono" style="font-size:12.5px">' + ptype(it.ptype) + '</span><div class="faint mono" style="font-size:11px">' + esc(it.period_end || "") + "</div></td>" +
           "<td>" + (it.page ? '<a class="pg" data-page="' + it.page + '" data-src="' + src + '" data-item="' + id + '">p.' + it.page + " " + ic("ext", "sm") + "</a>" : '<span class="faint">—</span>') + "</td>" +
-          "<td>" + (it.quote ? '<div class="quote' + (S.openQuotes[id] ? " open" : "") + '">' + esc(it.quote) + "</div>" + (it.quote.length > 90 ? '<button class="more" data-quote="' + id + '">' + (S.openQuotes[id] ? t("r_less") : t("r_more")) + "</button>" : "") : '<span class="faint">—</span>') + "</td></tr>";
+          "<td>" + (it.quote ? '<div data-orig="1" class="quote' + (S.openQuotes[id] ? " open" : "") + '">' + esc(it.quote) + "</div>" + (it.quote.length > 90 ? '<button class="more" data-quote="' + id + '">' + (S.openQuotes[id] ? t("r_less") : t("r_more")) + "</button>" : "") : '<span class="faint">—</span>') + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
   function curResult(src) {
@@ -562,10 +654,10 @@
     var prev = live ? (D.n > 1 ? D.n - 1 : null) : avail.filter(function (n) { return n < D.n; }).pop();
     var next = live ? (D.n < r.pages_total ? D.n + 1 : null) : avail.filter(function (n) { return n > D.n; })[0];
     var hl = it ? it.raw : null;
-    var focus = it ? '<div class="focus"><div class="row">' + stBadge(it.status) + '<b style="font-size:16px">' + esc(mname(it)) + '</b><span class="mono muted">' + ptype(it.ptype) + '</span><span class="mono" style="margin-left:auto;font-size:18px;font-weight:650">' + esc(it.raw) + " <small class='faint'>" + esc(it.unit || "") + "</small></span></div>" +
+    var focus = it ? '<div class="focus"><div class="row">' + stBadge(it.status) + '<b style="font-size:16px">' + esc(mname(it)) + '</b><span class="mono muted">' + ptype(it.ptype) + '</span><span class="mono" style="margin-left:auto;font-size:18px;font-weight:650">' + esc(it.raw || "") + " <small class='faint'>" + unitHtml(it) + "</small></span></div>" +
       ((S.lang === "zh" ? it.reason_zh : it.reason_en) ? '<div class="reason ' + stClass(it.status) + '">' + esc(S.lang === "zh" ? it.reason_zh : it.reason_en) + "</div>" : "") +
-      (it.bench && it.bench.value != null ? '<div class="hint" style="margin-top:6px">' + t("r_bench") + "：" + esc(it.bench.source || "") + " " + esc(it.bench.field || "") + " = " + Number(it.bench.value).toLocaleString("en-US") + "</div>" : "") + "</div>" : "";
-    return '<div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint">' + esc(D.src === "job" && S.job.kind === "verify" && S.ver.pdfName ? S.ver.pdfName : r.doc.name + " · " + r.doc.title) + "</div></div>" +
+      (it.bench && it.bench.value != null ? '<div class="hint" style="margin-top:6px">' + t("r_bench") + colon() + '<span data-orig="1">' + esc(it.bench.source || "") + " " + esc(it.bench.field || "") + "</span> = " + Number(it.bench.value).toLocaleString("en-US") + "</div>" : "") + "</div>" : "";
+    return '<div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint" data-orig="1">' + esc(D.src === "job" && S.job.kind === "verify" && S.ver.pdfName ? S.ver.pdfName : r.doc.name + " · " + r.doc.title) + "</div></div>" +
       '<div class="pager"><button data-dpage="' + (prev || "") + '"' + (prev ? "" : " disabled") + ">" + ic("left", "sm") + "</button><span>" + t("d_page", { n: D.n, t: r.pages_total || "?" }) + '</span><button data-dpage="' + (next || "") + '"' + (next ? "" : " disabled") + ">" + ic("right", "sm") + "</button></div>" +
       (r.doc.url ? '<a class="round" href="' + esc(r.doc.url) + '" target="_blank" rel="noopener" title="' + t("d_open") + '">' + ic("ext", "sm") + "</a>" : "") +
       '<button class="round" data-act="close" aria-label="close">' + ic("close", "sm") + "</button></div>" +
@@ -627,7 +719,7 @@
     var j = S.job;
     if (S.hist) {
       var h = histGet(S.hist);
-      if (h) return '<div class="wrap"><div class="runbar"><span style="width:9px;height:9px;border-radius:50%;background:var(--faint)"></span><div class="what">' + mkName(h.market) + " · " + esc(h.code) + " · " + esc(h.period) + '</div><span class="hint">' + t("h_saved", { t: new Date(h.ts).toLocaleString(S.lang === "zh" ? "zh-CN" : "en-US") }) + "</span></div>" + result(h.result, "hist") + "</div>";
+      if (h) return '<div class="wrap"><div class="runbar"><span style="width:9px;height:9px;border-radius:50%;background:var(--faint)"></span><div class="what">' + mkName(h.market) + " · " + esc(h.code) + " · " + esc(periodTitle((h.result && h.result.doc) || { period: h.period })) + '</div><span class="hint">' + t("h_saved", { t: new Date(h.ts).toLocaleString(S.lang === "zh" ? "zh-CN" : "en-US") }) + "</span></div>" + result(h.result, "hist") + "</div>";
       S.hist = null;
     }
     if (j.kind === "single" && j.status !== "idle") {
@@ -662,11 +754,13 @@
   function progressPanel() {
     var j = S.job, q = j.query || {}, m = j.meta || {}, st = j.stage || 1;
     var prov = (S.cfg.providers[q.provider] || {}).label || q.provider;
-    var steps = [1, 2, 3, 4, 5].map(function (n) {
+    var asked5 = S.log.some(function (x) { return x.k === "s5"; });
+    var steps = [1, 2, 3, 4, 5, 6].map(function (n) {
       var state = n < st ? "done" : n === st ? "now" : "wait";
+      if (n === 5 && st > 5 && !asked5) state = "skip";
       if (n === 5 && st < 5 && st >= 4) state = "wait";
-      var d = { 1: t("s1_d", { src: srcName(q.market) }), 2: m.pages ? t("s2_d", { p: m.pages, s: m.selected, t: tplName(m.template) }) : "", 3: t("s3_d", { m: prov + (q.model ? " / " + q.model : "") }), 4: t("s4_d"), 5: t("s5_d") }[n];
-      var lab = { done: t("st_done"), now: t("st_now"), wait: n === 5 ? t("st_skip") : t("st_wait") }[state];
+      var d = { 1: t("s1_d", { src: srcName(q.market) }), 2: m.pages ? t("s2_d", { p: m.pages, s: m.selected, t: tplName(m.template) }) : "", 3: t("s3_d", { m: prov + (q.model ? " / " + q.model : "") }), 4: t("s4_d"), 5: t("s5_d"), 6: t("s6_d") }[n];
+      var lab = { done: t("st_done"), now: t("st_now"), skip: t("st_skip"), wait: n === 5 ? t("st_skip") : t("st_wait") }[state];
       return '<div class="step ' + state + '"><span class="ring">' + (state === "done" ? ic("check") : state === "now" ? "" : '<span class="mono">' + n + "</span>") + "</span><div><h4>" + n + ". " + t("s" + n) + "</h4><p>" + esc(d) + "</p></div>" +
         '<span class="st badge ' + (state === "done" || state === "now" ? "ok" : "grey") + '">' + lab + "</span></div>";
     }).join("");
@@ -677,9 +771,9 @@
       var lab = { done: t("st_done"), now: t("st_now"), wait: t("st_wait"), skip: t("st_skip") }[state];
       return '<div class="chk ' + state + '"><div><h4>' + t(k + "_t") + "</h4><p>" + (skip ? t("pn_hk_c4") : t(k + "_d")) + '</p></div><span class="badge ' + (state === "done" || state === "now" ? "ok" : "grey") + '">' + lab + "</span></div>";
     }).join("");
-    var pctv = Math.min(100, Math.round(((st - 1) / 4) * 100));
+    var pctv = Math.min(100, Math.round(((st - 1) / 5) * 100));
     var log = S.log.map(function (x) { return "<div>[" + x.t + "] <b>" + esc(T[x.k] ? t(x.k) : x.k) + "</b>" + (x.done ? " · " + t("st_done") : "") + "</div>"; }).join("");
-    return '<div class="dh"><div><h3>' + t("run_title") + '</h3><div class="hint">' + mkName(q.market || "us") + " · " + esc((q.code || "").toUpperCase()) + " · " + esc(q.period || "") + '</div></div><span class="pill" style="margin-left:auto">' + st + " / 5</span>" +
+    return '<div class="dh"><div><h3>' + t("run_title") + '</h3><div class="hint">' + mkName(q.market || "us") + " · " + esc((q.code || "").toUpperCase()) + " · " + esc(q.period || "") + '</div></div><span class="pill" style="margin-left:auto">' + st + " / 6</span>" +
       '<button class="round" data-act="panel-hide" aria-label="close">' + ic("close", "sm") + "</button></div>" +
       '<div class="db"><div class="progress"><div style="width:' + pctv + '%"></div></div><div class="steps">' + steps + "</div>" +
       '<div class="lbl">' + t("pn_checks") + '</div><div class="chks">' + checks + "</div>" +
@@ -689,7 +783,7 @@
     var j = S.job, q = j.query || {};
     if (j.error_kind === "scanned") return runbar(true) + '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("scanned") + '</h3></div><button class="btn ghost sm act" data-act="reset">' + t("e_again") + "</button></div>";
     var up = S.upload;
-    return '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("ff_title") + "：" + mkName(q.market) + " " + esc(q.code) + " " + esc(q.period) + "</h3><p>" + (function () { var e = String(j.error || ""), k = e.split("|")[0], d = e.indexOf("|") >= 0 ? e.slice(e.indexOf("|") + 1) : e; return (T["ff_" + k] ? t("ff_" + k, { src: srcName(q.market) }) : t("ff_reason", { r: esc(d) })) + '<br><span class="mono faint" style="font-size:11.5px">' + t("ff_detail", { d: esc(d) }) + "</span>"; })() + '</p></div><button class="btn ghost sm act" data-act="retry">' + ic("refresh", "sm") + t("ff_retry") + "</button></div>" +
+    return '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + t("ff_title") + colon() + mkName(q.market) + " " + esc(q.code) + " " + esc(q.period) + "</h3><p>" + (function () { var e = String(j.error || ""), k = e.split("|")[0], d = e.indexOf("|") >= 0 ? e.slice(e.indexOf("|") + 1) : e; return (T["ff_" + k] ? t("ff_" + k, { src: srcName(q.market) }) : t("ff_reason", { r: esc(d) })) + '<br><span class="mono faint" style="font-size:11.5px">' + t("ff_detail", { d: esc(d) }) + "</span>"; })() + '</p></div><button class="btn ghost sm act" data-act="retry">' + ic("refresh", "sm") + t("ff_retry") + "</button></div>" +
       '<div class="split" style="margin-top:24px"><div class="card"><div class="drop" id="drop1">' + '<div class="circle">' + ic("upload") + "</div><h3 style='font-size:20px'>" + (up ? esc(up.name) : t("ff_drop")) + '</h3><p class="hint" style="max-width:460px;margin:8px auto 18px">' + t("ff_drop_sub") + "</p>" +
       '<input type="file" id="file1" accept="application/pdf" class="hidden"><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" data-act="pick1">' + ic("file", "sm") + t("ff_choose") + '</button><button class="btn primary" data-act="upload"' + (up ? "" : " disabled") + ">" + t("ff_go") + "</button></div></div>" +
       (S.form.key ? "" : '<div style="margin-top:20px">' + keyFields(S.form) + "</div>") + "</div>" +
@@ -748,7 +842,7 @@
         var it = row.cells[f];
         if (!it) return '<td class="faint">' + (f === "gross_profit" && row.template !== "general" ? t("c_bank_na") : "—") + "</td>";
         var conv = c.ccy === "local" && it.currency && it.currency !== row.listing;
-        var fx = conv ? fxFor(row, it) : null, v = it.value, ccy = it.currency, sub = esc(it.raw) + " " + esc(it.unit || "");
+        var fx = conv ? fxFor(row, it) : null, v = it.value, ccy = it.currency, sub = esc(it.raw) + " " + unitHtml(it);
         if (conv && fx) { v = it.value * fx.rate; ccy = row.listing; pairs[it.currency + "→" + row.listing] = fx; sub = L("原 ", "orig ") + scaled(it.value, it.currency, isPerShare(f)) + " × " + fx.rate.toFixed(4); }
         else if (conv) sub = '<span class="tx-warn">' + t("c_fx_missing") + "</span>";
         return '<td class="cell" data-copen="' + i + '"><div class="v">' + scaled(v, ccy, isPerShare(f)) + " " + stIcon(it.status) + '</div><div class="sub">' + sub + "</div></td>";
@@ -802,7 +896,7 @@
       '<div class="field"><label>' + t("v_code_opt") + '</label><input class="input" id="v-code" value="' + esc(v.code) + '" placeholder="' + t("ph_" + v.market) + '"></div></div>' +
       '<div class="card" style="display:flex;flex-direction:column;gap:14px"><h2><span class="pill" style="margin-right:8px">2</span>' + t("v_paste") + "</h2>" +
       '<div style="display:flex;gap:6px">' + ["json", "table"].map(function (k) { return '<span class="badge ' + (fmt === k ? "ok" : "grey") + '">' + t("v_fmt_" + k) + "</span>"; }).join("") + (fmt ? "" : '<span class="badge grey">' + t("v_fmt_wait") + "</span>") + "</div>" +
-      '<textarea class="input" id="v-text" spellcheck="false" placeholder="' + esc(t("v_ph")) + '">' + esc(v.text) + '</textarea><div class="hint" style="text-align:right">' + t("v_chars", { n: v.text.length.toLocaleString("en-US") }) + "</div>" +
+      '<textarea class="input" id="v-text" data-orig="1" spellcheck="false" placeholder="' + esc(t("v_ph")) + '">' + esc(v.text) + '</textarea><div class="hint" style="text-align:right">' + t("v_chars", { n: v.text.length.toLocaleString("en-US") }) + "</div>" +
       '<button class="btn primary block" data-act="ver-run"' + (can ? "" : " disabled") + ">" + ic("play") + t("v_run") + "</button>" +
       (!can ? '<div class="hint">' + (!v.pdf ? t("v_need_pdf") : t("v_need_text")) + "</div>" : "") + "</div></div>" +
       '<p class="hint" style="max-width:1040px;margin:0">' + t("v_lead") + "</p></div>";
@@ -835,14 +929,15 @@
     var vx = r.verify || {}, c = r.counts;
     var checks = vx.c4 ? t("v_checks_c4") : t("v_checks_noc4_" + (vx.c4_reason === "hk" ? "hk" : vx.c4_reason === "no_code" ? "code" : "data"));
     var bad = vx.bad_rows || [], absent = vx.absent || [];
-    var absentLine = absent.length ? '<p class="hint" style="margin:14px 2px 0">' + t("v_absent", { l: absent.map(function (a) { return esc(fieldName(a.field)) + (a.period_type ? "（" + ptype(a.period_type) + "）" : "") + (a.note ? "：" + esc(a.note) : ""); }).join("；") }) + "</p>" : "";
+    var absentLine = absent.length ? '<p class="hint" style="margin:14px 2px 0">' + t("v_absent", { l: absent.map(function (a) { return esc(fieldName(a.field)) + (a.period_type ? paren(ptype(a.period_type)) : "") + (a.note ? colon() + '<span data-orig="1">' + esc(a.note) + "</span>" : ""); }).join(L("；", "; ")) }) + "</p>" : "";
     return '<div class="runbar"><span style="width:9px;height:9px;border-radius:50%;background:var(--ok)"></span><div class="what">' + esc(S.ver.pdfName) + ' <span class="pill">' + r.pages_total + L(" 页", " pages") + "</span></div>" +
       '<span class="hint">' + checks + '</span><div style="margin-left:auto;display:flex;gap:10px"><button class="btn ghost sm" data-act="csv">' + t("r_export_csv") + '</button><button class="btn primary sm" data-act="reset">' + t("v_again") + "</button></div></div>" +
       '<div class="grid4" style="margin-top:20px">' + [["bad", "❌", "x"], ["warn", "⚠️", "warn"], ["ok", "✅", "check"]].map(function (x) {
         return '<div class="sumcard ' + x[0] + '"><div class="ic">' + ic(x[2]) + '</div><div><div class="lab">' + t("status_" + x[0]) + '</div><div class="num">' + c[x[1]] + "</div></div></div>";
       }).join("") + '<div class="sumcard"><div class="ic" style="background:var(--surface-2);color:var(--muted)">' + ic("warn") + '</div><div><div class="lab muted">' + t("v_unparsed") + '</div><div class="num">' + bad.length + "</div></div></div></div>" +
       (bad.length ? '<div class="alert" style="margin-top:20px"><span class="ic" style="background:var(--warn-soft);color:var(--warn)">' + ic("warn") + "</span><div><h3>" + t("v_badrows", { l: bad.map(function (b) { return b.line; }).join(", ") }) + "</h3>" + bad.map(function (b) { return '<p class="mono" style="font-size:12px">#' + b.line + " · " + esc(b.why) + (b.text ? " · " + esc(b.text) : "") + "</p>"; }).join("") + "</div></div>" : "") + absentLine +
-      '<div class="tbl-card"><div class="tbl-head"><h2>' + t("r_core") + '</h2><span class="hint">' + t("r_core_sub") + "</span></div>" + rtable(r.items, "job") + "</div>" + caveat();
+      conclusion(r, "job", false) +
+      '<div class="tbl-card"><div class="tbl-head"><h2>' + t("r_core") + '</h2><span class="hint">' + t("r_core_sub") + "</span></div>" + rtable(r.items, "job", false) + "</div>" + caveat();
   }
 
   // ------------------------------------------------------------------ P5 method
@@ -872,7 +967,7 @@
       '<section class="section" id="m-fable"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.fable.label_zh, E.fable.label_en)) + "</div><h2>" + t("mt_fable") + '</h2></div><span class="hint">docs/eval_results.md ' + E.fable.section + "</span></div>" + tbl(FB, ["fable_direct", "fable_pipeline", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("mt_fable_note") + "</p></section>" +
       '<section class="section" id="m-checks"><div class="section-head"><div><h2>' + t("mt_checks") + '</h2></div></div><div class="grid3">' + mods + "</div></section>" +
       '<section class="section" id="m-prompt"><div class="section-head"><div><h2>' + t("mt_prompt") + '</h2></div><a class="link" data-go="verify">' + t("nav_verify") + ' →</a></div><div class="card"><p style="margin:0">' + t("mt_prompt_d1") + '</p><p class="muted" style="margin:10px 0 0">' + t("mt_prompt_d2", { p: pct(R3.strict_acc), n: R3.items }) + "</p></div></section>" +
-      '<section class="section" id="m-limits"><div class="section-head"><div><h2>' + t("mt_limits") + '</h2></div></div><div class="card"><div class="lim">' + [1, 2, 3, 4].map(function (n) { return '<div><span class="n">' + n + "</span><div><h4>" + t("l" + n + "_t") + "</h4><p>" + t("l" + n + "_d") + "</p></div></div>"; }).join("") + "</div>" +
+      '<section class="section" id="m-limits"><div class="section-head"><div><h2>' + t("mt_limits") + '</h2></div></div><div class="card"><div class="lim">' + [1, 2, 3, 4, 5].map(function (n) { return '<div><span class="n">' + n + "</span><div><h4>" + t("l" + n + "_t") + "</h4><p>" + t("l" + n + "_d") + "</p></div></div>"; }).join("") + "</div>" +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><a class="btn ghost sm" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + " GitHub</a><span class='pill'>docs/eval_design.md · " + t("mt_links") + "</span><span class='pill'>docs/eval_results.md · " + t("mt_links2") + "</span></div></div></section></article>" +
       '<nav class="mtoc"><div class="lbl">' + t("mt_toc") + "</div>" + toc.map(function (x) { return '<a data-toc="' + x[0] + '">' + x[1] + "</a>"; }).join("") + "</nav></div>";
   }
@@ -887,9 +982,10 @@
   function exportResult(r, kind) {
     var d = r.doc, base = d.market + "_" + d.code + "_" + d.period;
     if (kind === "json") return download(base + ".json", JSON.stringify(r, null, 1), "application/json");
-    var head = ["status", "field", "metric_zh", "metric_en", "period_type", "period_end", "raw_value", "unit", "value", "currency", "page", "quote", "category", "reason_zh", "reason_en", "auxiliary"];
+    var head = ["status", "field", "metric_zh", "metric_en", "period_type", "period_end", "raw_value", "unit", "value", "currency", "page", "quote", "category", "reason_zh", "reason_en", "auxiliary", "prior_year_raw", "prior_year_page", "yoy_pct_code"];
     var lines = [head.join(",")].concat(r.items.map(function (i) {
-      return [i.status, i.field, i.name_zh, i.name_en, i.ptype, i.period_end, i.raw, i.unit, i.value, i.currency, i.page, i.quote, i.category, i.reason_zh, i.reason_en, i.aux].map(csvCell).join(",");
+      var y = i.yoy || {};
+      return [i.status, i.field, i.name_zh, i.name_en, i.ptype, i.period_end, i.raw, i.unit, i.value, i.currency, i.page, i.quote, i.category, i.reason_zh, i.reason_en, i.aux, y.prev_raw, y.prev_page, y.pct != null ? (y.pct * 100).toFixed(2) : ""].map(csvCell).join(",");
     }));
     download(base + ".csv", "﻿" + lines.join("\n"), "text/csv");
   }

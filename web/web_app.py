@@ -103,7 +103,8 @@ def _single(job, ev, pdf_bytes=None):
         job["_ctx"] = ctx
         client = core.client_for(ev)
         res = core.run_pipeline(ctx, client, job, ev.get("lang", "zh"))
-        job["result"] = core.payload(res)
+        core.extras(ctx, res, client, job)
+        job["result"] = core.add_highlights(core.payload(res), client, job)
         job["status"] = "done"
     except core.FetchError as e:
         msg = str(e)

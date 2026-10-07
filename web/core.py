@@ -22,6 +22,8 @@ from earnings_agent.sources import fetch_report
 from earnings_agent.templates import AUX_FIELDS, FIELDS, choose_template
 from earnings_agent.verify import verify_report
 
+from . import insights
+
 NAMES = {  # field -> (zh, en)
     "revenue": ("营业收入", "Revenue"), "net_income_parent": ("归母净利润", "Net income attributable"),
     "eps_basic": ("基本每股收益", "Basic EPS"), "gross_profit": ("毛利", "Gross profit"),
@@ -145,18 +147,16 @@ def call(client, system, user, job):
     raise last
 
 
-LANG_NOTE = {
-    "zh": "\n\n另外：industry_metrics 的 name 和 rationale 请用中文写（raw_value、raw_unit、quote 仍逐字照抄原文）。",
-    "en": "\n\nAlso: write the industry_metrics name and rationale in English (raw_value, raw_unit and quote are still "
-          "copied verbatim from the page).",
-}
+# Industry-metric names and rationales in both interface languages, so switching language needs no model call.
+METRICS_NOTE = ("\n\n另外：industry_metrics 每一项除 name、rationale 外，再给中英文两版：name_zh、name_en、rationale_zh、"
+                "rationale_en（意思相同；raw_value、raw_unit、quote 仍逐字照抄原文）。")
 
 
 def run_pipeline(ctx, client, job, lang="zh"):
     """extract -> verify -> one follow-up for missing periods -> verify. Returns the finish() result.
-    The only web-side prompt change: industry-metric names and rationales in the interface language."""
+    The only web-side prompt change: industry-metric names and rationales in Chinese and English."""
     job["stage"] = 3
-    rec = call(client, ctx["system"], ctx["user"] + LANG_NOTE.get(lang, ""), job)
+    rec = call(client, ctx["system"], ctx["user"] + METRICS_NOTE, job)
     rec["lang"] = lang
     job["stage"] = 4
     data = rec.get("data") or {}
@@ -244,8 +244,24 @@ def _reason(it, market):
     return (reasons[0] if reasons else "未通过核验。", "Failed a check.")
 
 
+def _unit(it):
+    """Display unit (zh, en) from the parsed multiplier and currency; None keeps the unit as printed."""
+    mult = it.get("multiplier")
+    if mult is None and it.get("components"):
+        mult = (it["components"][0] or {}).get("multiplier")
+    per_share = it.get("field") in insights.PER_SHARE
+    lab = insights.unit_label(it.get("currency"), mult, per_share)
+    if lab:
+        return lab
+    if it.get("unit_kind") == "ratio":
+        return "%", "%"
+    sz, se = insights.SCALE.get(float(mult or 1), (None, None))
+    return (sz, se) if sz else (None, None)
+
+
 def _item(it, market):
     zh_name, en_name = NAMES.get(it["field"], (it["field"], it["field"]))
+    uz, ue = _unit(it)
     zh, en = _reason(it, market)
     page = it.get("page_used") or it.get("page")
     b = it.get("benchmark") or None
@@ -253,6 +269,7 @@ def _item(it, market):
         "field": it["field"], "name_zh": zh_name, "name_en": en_name, "aux": it["field"] in AUX_FIELDS,
         "ptype": it.get("period_type"), "period_end": it.get("period_end"),
         "raw": it.get("raw_value"), "unit": it.get("raw_unit"), "currency_raw": it.get("raw_currency"),
+        "unit_zh": uz, "unit_en": ue,
         "value": it.get("value"), "currency": it.get("currency"), "page": page, "quote": it.get("quote"),
         "status": it.get("status"), "category": it.get("category"), "reason_zh": zh, "reason_en": en,
         "reasons": it.get("reasons") or [], "derived": it.get("derivation") == "derived",
@@ -276,18 +293,21 @@ def payload(res, pages_texts=True):
                               core.index(x["field"]) if x["field"] in core else 99, x["ptype"] != "Q"))
     lang = (res.get("llm") or {}).get("lang") or res.get("_lang")
     metrics = [{"name": m.get("name"), "rationale": m.get("rationale"), "lang": lang, "raw": m.get("raw_value"),
-                "unit": m.get("raw_unit"), "ptype": m.get("period_type"), "page": m.get("page_used") or m.get("page"),
+                **{k: m.get(k) for k in ("name_zh", "name_en", "rationale_zh", "rationale_en") if m.get(k)},
+                "unit": m.get("raw_unit"), "unit_zh": _unit(m)[0], "unit_en": _unit(m)[1],
+                "ptype": m.get("period_type"), "page": m.get("page_used") or m.get("page"),
                 "quote": m.get("quote"), "status": m.get("status"),
                 "reason_zh": (m.get("reasons") or [""])[0]} for m in res.get("industry_metrics") or []]
     pages = {}
     if pages_texts:
         want = {i["page"] for i in items if i["page"]} | {c["page"] for i in items for c in i["components"] if c["page"]} \
-            | {m["page"] for m in metrics if m["page"]}
+            | {m["page"] for m in metrics if m["page"]} \
+            | {c["page"] for c in (res.get("comparatives") or {}).get("items") or [] if c.get("page")}
         by = {p["page"]: p["text"] for p in res.get("_pages", [])}
         pages = {str(n): by[n] for n in sorted(want) if n in by}
     counts = {k: sum(1 for i in items if i["status"] == k) for k in ("❌", "⚠️", "✅")}
     llm = res.get("llm") or {}
-    return {
+    out = {
         "doc": {k: doc.get(k) for k in ("market", "code", "name", "period", "period_end", "title", "doc_kind",
                                         "filed", "url")},
         "uploaded": bool(doc.get("uploaded")), "template": tpl,
@@ -299,3 +319,21 @@ def payload(res, pages_texts=True):
         "items": items, "metrics": metrics, "pages": pages,
         "cum": cumulative_type(parse_period(doc["period"])[1]),
     }
+    return insights.enrich(out, res)
+
+
+def extras(ctx, res, client, job):
+    """Prior-year figures (one call, C1–C3 checked) before payload(); errors never break the result."""
+    job["stage"] = 6
+    try:
+        res["comparatives"] = insights.comparatives(ctx, res, lambda s, u: call(client, s, u, job)["data"])
+    except LLMError as e:
+        res["comparatives"] = {"items": [], "rejected": [], "error": str(e)[:200]}
+
+
+def add_highlights(pl, client, job):
+    try:
+        pl["highlights"] = insights.highlights(pl, lambda s, u: call(client, s, u, job)["data"])
+    except LLMError as e:
+        pl["highlights"] = {"points": [], "dropped": [], "error": str(e)[:200]}
+    return pl

@@ -8,7 +8,12 @@
   "title": "中国石油天然气股份有限公司2025年年报",
   "doc_kind": "定期报告",
   "filed": "2026-03-29",
-  "url": "http://static.cninfo.com.cn/finalpage/2026-03-30/1225049376.PDF"
+  "url": "http://static.cninfo.com.cn/finalpage/2026-03-30/1225049376.PDF",
+  "period_label": {
+   "zh": "2025 年全年",
+   "en": "FY2025",
+   "fiscal": false
+  }
  },
  "uploaded": false,
  "template": "general",
@@ -40,6 +45,8 @@
    "raw": "(2,246,121)",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": -2246121000000.0,
    "currency": "CNY",
    "page": 109,
@@ -58,6 +65,14 @@
     "value": 2246121000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "OPERATE_COST"
+   },
+   "yoy": {
+    "pct": null,
+    "note": "current_flagged",
+    "prev_raw": "(2,275,223)",
+    "prev_value": -2275223000000.0,
+    "prev_page": 109,
+    "prev_derived": false
    }
   },
   {
@@ -70,6 +85,8 @@
    "raw": "69,410",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 69410000000.0,
    "currency": "CNY",
    "page": 8,
@@ -82,7 +99,8 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": null
   },
   {
    "field": "weighted_avg_shares_basic",
@@ -94,6 +112,8 @@
    "raw": "1,830.21",
    "unit": "亿股",
    "currency_raw": "人民币",
+   "unit_zh": "亿人民币",
+   "unit_en": "RMB hundred-millions",
    "value": 183021000000.0,
    "currency": "CNY",
    "page": 174,
@@ -106,7 +126,8 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": null
   },
   {
    "field": "revenue",
@@ -118,6 +139,8 @@
    "raw": "695,213",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 695213000000.0,
    "currency": "CNY",
    "page": 8,
@@ -134,7 +157,8 @@
     "value": 695213000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "quarterly OPERATE_INCOME"
-   }
+   },
+   "yoy": null
   },
   {
    "field": "revenue",
@@ -146,6 +170,8 @@
    "raw": "2,864,469",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 2864469000000.0,
    "currency": "CNY",
    "page": 109,
@@ -162,6 +188,14 @@
     "value": 2864469000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "OPERATE_INCOME"
+   },
+   "yoy": {
+    "pct": -0.02502126460314073,
+    "note": null,
+    "prev_raw": "2,937,981",
+    "prev_value": 2937981000000.0,
+    "prev_page": 109,
+    "prev_derived": false
    }
   },
   {
@@ -174,6 +208,8 @@
    "raw": "31,023",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 31023000000.0,
    "currency": "CNY",
    "page": 8,
@@ -190,7 +226,8 @@
     "value": 31023000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "quarterly PARENT_NETPROFIT"
-   }
+   },
+   "yoy": null
   },
   {
    "field": "net_income_parent",
@@ -202,6 +239,8 @@
    "raw": "157,302",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 157302000000.0,
    "currency": "CNY",
    "page": 109,
@@ -218,6 +257,14 @@
     "value": 157302000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "PARENT_NETPROFIT"
+   },
+   "yoy": {
+    "pct": -0.044778838446403846,
+    "note": null,
+    "prev_raw": "164,676",
+    "prev_value": 164676000000.0,
+    "prev_page": 109,
+    "prev_derived": false
    }
   },
   {
@@ -230,6 +277,8 @@
    "raw": "0.86",
    "unit": "人民币元",
    "currency_raw": "人民币",
+   "unit_zh": "人民币/股",
+   "unit_en": "RMB per share",
    "value": 0.86,
    "currency": "CNY",
    "page": 109,
@@ -246,6 +295,14 @@
     "value": 0.86,
     "source": "AKShare 东财 A股报表",
     "field": "BASIC_EPS"
+   },
+   "yoy": {
+    "pct": -0.04444444444444448,
+    "note": null,
+    "prev_raw": "0.90",
+    "prev_value": 0.9,
+    "prev_page": 109,
+    "prev_derived": false
    }
   },
   {
@@ -258,6 +315,8 @@
    "raw": null,
    "unit": null,
    "currency_raw": null,
+   "unit_zh": "人民币",
+   "unit_en": "RMB",
    "value": 618348000000.0,
    "currency": "CNY",
    "page": 109,
@@ -274,6 +333,14 @@
     "value": 618348000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "OPERATE_INCOME-OPERATE_COST"
+   },
+   "yoy": {
+    "pct": -0.0670078671249536,
+    "note": null,
+    "prev_raw": "662,758",
+    "prev_value": 662758000000.0,
+    "prev_page": 109,
+    "prev_derived": true
    }
   },
   {
@@ -286,6 +353,8 @@
    "raw": "412,510",
    "unit": "人民币百万元",
    "currency_raw": "人民币",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "value": 412510000000.0,
    "currency": "CNY",
    "page": 110,
@@ -302,6 +371,14 @@
     "value": 412510000000.0,
     "source": "AKShare 东财 A股报表",
     "field": "NETCASH_OPERATE"
+   },
+   "yoy": {
+    "pct": 0.01470486948136924,
+    "note": null,
+    "prev_raw": "406,532",
+    "prev_value": 406532000000.0,
+    "prev_page": 110,
+    "prev_derived": false
    }
   }
  ],
@@ -312,6 +389,8 @@
    "lang": null,
    "raw": "948.0",
    "unit": "百万桶",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "ptype": "FY",
    "page": 19,
    "quote": "本集团原油产量948.0百万桶,比上年同期的941.8百万桶增长0.7%;可销售天然气产量5,363.2十亿立方英尺,比上年同期的5,133.8十亿立方英尺增长4.5%;油",
@@ -320,7 +399,7 @@
    "name_zh": "原油产量(本集团)",
    "rationale_zh": "原油产量是上游油气业务规模与增长的核心指标，直接决定油气和新能源分部的收入与利润基础。",
    "name_en": "Crude oil production (the Group)",
-   "rationale_en": "Crude oil production is the core indicator of the scale and growth of the upstream oil and gas business, and directly determines the revenue and profit foundation of the oil, gas and new energy segment."
+   "rationale_en": "Crude oil production is a core indicator of the scale and growth of the upstream oil and gas business, and directly determines the revenue and profit foundation of the oil and gas and new energy segment."
   },
   {
    "name": "可销售天然气产量(本集团)",
@@ -328,6 +407,8 @@
    "lang": null,
    "raw": "5,363.2",
    "unit": "十亿立方英尺",
+   "unit_zh": "十亿人民币",
+   "unit_en": "RMB billions",
    "ptype": "FY",
    "page": 19,
    "quote": "本集团原油产量948.0百万桶,比上年同期的941.8百万桶增长0.7%;可销售天然气产量5,363.2十亿立方英尺,比上年同期的5,133.8十亿立方英尺增长4.5%;油",
@@ -336,7 +417,7 @@
    "name_zh": "可销售天然气产量(本集团)",
    "rationale_zh": "天然气产量反映公司天然气销售分部的资源保障能力，是天然气销量与售价实现的基础。",
    "name_en": "Marketable natural gas production (the Group)",
-   "rationale_en": "Natural gas production reflects the company's resource assurance capability for the natural gas sales segment and is the basis for realizing natural gas sales volume and selling prices."
+   "rationale_en": "Natural gas production reflects the resource guarantee capacity of the company's natural gas sales segment and is the basis for realizing natural gas sales volume and selling prices."
   },
   {
    "name": "油气当量产量(本集团)",
@@ -344,6 +425,8 @@
    "lang": null,
    "raw": "1,841.9",
    "unit": "百万桶",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "ptype": "FY",
    "page": 19,
    "quote": "气当量产量1,841.9百万桶,比上年同期的1,797.4百万桶增长2.5%。截至报告期末,",
@@ -360,6 +443,8 @@
    "lang": null,
    "raw": "3,543",
    "unit": "人民币元/吨",
+   "unit_zh": "人民币",
+   "unit_en": "RMB",
    "ptype": "FY",
    "page": 23,
    "quote": "原油(1) 160,159 155,569 3.0 3,543 3,876 (8.6)",
@@ -376,6 +461,8 @@
    "lang": null,
    "raw": "269,089",
    "unit": "人民币百万元",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "ptype": "FY",
    "page": 178,
    "quote": "资本性支出 205,094 47,772 8,216 4,987 3,020 269,089",
@@ -392,6 +479,8 @@
    "lang": null,
    "raw": "481,554",
    "unit": "人民币百万元",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
    "ptype": "FY",
    "page": 95,
    "quote": "息税折旧摊销前利润(EBITDA)(人民币百万元) 481,554 493,564",
@@ -400,7 +489,7 @@
    "name_zh": "息税折旧摊销前利润(EBITDA)",
    "rationale_zh": "EBITDA剔除折旧与融资影响，是评价石油公司经营现金流创造能力与偿债能力的常用指标。",
    "name_en": "Earnings before interest, taxes, depreciation and amortization (EBITDA)",
-   "rationale_en": "EBITDA excludes the effects of depreciation and financing and is a commonly used indicator for evaluating an oil company's operating cash flow generation capability and debt-servicing capacity."
+   "rationale_en": "EBITDA excludes the impact of depreciation and financing and is a commonly used indicator for evaluating an oil company's ability to generate operating cash flow and its debt-servicing capacity."
   }
  ],
  "pages": {
@@ -414,9 +503,168 @@
   "178": "2025年度财务报表附注\n中国石油天然气股份有限公司 (除特别注明外,金额单位为人民币百万元)\n(1) 经营分部\n(a) 2025年度及 2025年 12月 31日分部信息\n油气和 炼油化工和 天然气 总部及\n新能源 新材料 销售 销售 其他 合计\n分部收入 824,808 1,078,047 2,352,746 619,503 7,168 4,882,272\n减:分部间交易收入 (689,779) (751,618) (530,523) (40,646) (5,237) (2,017,803)\n对外交易收入 135,029 326,429 1,822,223 578,857 1,931 2,864,469\n分部费用(i) (530,250) (402,159) (1,557,400) (108,479) (22,157) (2,620,445)\n分部利润/(亏损) 156,058 27,943 16,219 63,054 (19,250) 244,024\n不可分配收益和费用 (9,445)\n营业利润 234,579\n折旧、折耗和摊销费用 186,238 27,746 17,727 4,551 1,576 237,838\n资产减值损失 13,119 986 1,519 2,067 - 17,691\n信用减值损失 279 141 37 239 - 696\n资本性支出 205,094 47,772 8,216 4,987 3,020 269,089\n2025年12月31日\n分部资产 1,737,570 516,010 609,851 420,212 1,648,786 4,932,429\n其他资产 42,911\n分部间抵销(ii) (2,147,323)\n资产总额 2,828,017\n分部负债 762,520 235,742 328,556 133,474 586,895 2,047,187\n其他负债 77,564\n分部间抵销(ii) (1,096,282)\n负债总额 1,028,469\n- 176 -"
  },
  "cum": "FY",
+ "ratios": [
+  {
+   "key": "net_margin",
+   "ptype": "Q",
+   "value": 0.04462373402108419,
+   "prev": null,
+   "change_pp": null,
+   "pages": [
+    8
+   ]
+  },
+  {
+   "key": "gross_margin",
+   "ptype": "FY",
+   "value": 0.21586828134638567,
+   "prev": 0.22558280669616312,
+   "change_pp": -0.9714525349777459,
+   "pages": [
+    109
+   ]
+  },
+  {
+   "key": "net_margin",
+   "ptype": "FY",
+   "value": 0.05491488998484536,
+   "prev": 0.05605073688359455,
+   "change_pp": -0.1135846898749189,
+   "pages": [
+    109
+   ]
+  }
+ ],
+ "summary": {
+  "n": 8,
+  "ok": 7,
+  "warn": 1,
+  "bad": []
+ },
+ "cards": [
+  {
+   "key": "revenue",
+   "ptype": "FY",
+   "field": "revenue",
+   "raw": "2,864,469",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
+   "status": "✅",
+   "yoy": {
+    "pct": -0.02502126460314073,
+    "note": null,
+    "prev_raw": "2,937,981",
+    "prev_value": 2937981000000.0,
+    "prev_page": 109,
+    "prev_derived": false
+   },
+   "page": 109
+  },
+  {
+   "key": "net_income_parent",
+   "ptype": "FY",
+   "field": "net_income_parent",
+   "raw": "157,302",
+   "unit_zh": "百万人民币",
+   "unit_en": "RMB millions",
+   "status": "✅",
+   "yoy": {
+    "pct": -0.044778838446403846,
+    "note": null,
+    "prev_raw": "164,676",
+    "prev_value": 164676000000.0,
+    "prev_page": 109,
+    "prev_derived": false
+   },
+   "page": 109
+  },
+  {
+   "key": "gross_margin",
+   "ptype": "FY",
+   "ratio": {
+    "key": "gross_margin",
+    "ptype": "FY",
+    "value": 0.21586828134638567,
+    "prev": 0.22558280669616312,
+    "change_pp": -0.9714525349777459,
+    "pages": [
+     109
+    ]
+   }
+  },
+  {
+   "key": "eps_basic",
+   "ptype": "FY",
+   "field": "eps_basic",
+   "raw": "0.86",
+   "unit_zh": "人民币/股",
+   "unit_en": "RMB per share",
+   "status": "✅",
+   "yoy": {
+    "pct": -0.04444444444444448,
+    "note": null,
+    "prev_raw": "0.90",
+    "prev_value": 0.9,
+    "prev_page": 109,
+    "prev_derived": false
+   },
+   "page": 109
+  }
+ ],
+ "comparatives_log": {
+  "kept": 5,
+  "rejected": [],
+  "not_found": [
+   "revenue (period_type=Q)",
+   "net_income_parent (period_type=Q)",
+   "operating_cash_flow (period_type=Q)",
+   "gross_profit (period_type=FY)"
+  ],
+  "error": null
+ },
  "metrics_translated": {
   "model": "deepseek-flash",
   "note": "name / rationale only; numbers and quotes untouched"
+ },
+ "highlights": {
+  "points": [
+   {
+    "text_zh": "全年营业收入为 2,864,469 百万人民币，上年同期为 2,937,981 百万人民币，同比下降 2.5%。",
+    "text_en": "Full year revenue was 2,864,469 RMB millions, compared to 2,937,981 RMB millions in the prior year, down 2.5%.",
+    "pages": [
+     109
+    ]
+   },
+   {
+    "text_zh": "全年归母净利润为 157,302 百万人民币，上年同期为 164,676 百万人民币，同比下降 4.5%。",
+    "text_en": "Full year net income attributable was 157,302 RMB millions, compared to 164,676 RMB millions in the prior year, down 4.5%.",
+    "pages": [
+     109
+    ]
+   },
+   {
+    "text_zh": "全年基本每股收益为 0.86 人民币/股，上年同期为 0.90 人民币/股，同比下降 4.4%。",
+    "text_en": "Full year basic EPS was 0.86 RMB per share, compared to 0.90 RMB per share in the prior year, down 4.4%.",
+    "pages": [
+     109
+    ]
+   },
+   {
+    "text_zh": "全年经营活动现金流量净额为 412,510 百万人民币，上年同期为 406,532 百万人民币，同比增长 1.5%。",
+    "text_en": "Full year operating cash flow was 412,510 RMB millions, compared to 406,532 RMB millions in the prior year, up 1.5%.",
+    "pages": [
+     110
+    ]
+   },
+   {
+    "text_zh": "全年毛利率为 21.6%，上年同期为 22.6%，减少 1.0 个百分点。",
+    "text_en": "Full year gross margin was 21.6%, compared to 22.6% in the prior year, down 1.0 percentage points.",
+    "pages": [
+     109
+    ]
+   }
+  ],
+  "dropped": []
  },
  "example": true,
  "from_cache": true

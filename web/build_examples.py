@@ -4,6 +4,8 @@ The model replies are the cached eval1 DeepSeek replies (salt "eval1"); verifica
 current product rules (R1-R6). Industry-metric names and rationales (free text written by the model, in
 whatever language it chose) are then written in both Chinese and English by one small DeepSeek call per
 example, so the page shows them in the interface language; numbers and quotes are untouched.
+Prior-year figures (one extra call, checked by C1–C3) and the bilingual highlights (one call, checked by code)
+are made as in the live app (web/insights.py), charged to the same ledger.
 Any extraction prompt not in the cache would be a real call, charged to the same $20 ledger. The pages referenced by the result are kept so the page drawer works without a download.
 
   .venv/bin/python -m web.build_examples
@@ -16,8 +18,10 @@ warnings.filterwarnings("ignore")
 
 from earnings_agent import config  # noqa: E402
 from earnings_agent.budget import Budget  # noqa: E402
+from earnings_agent.llm_client import cached_complete_json  # noqa: E402
 from earnings_agent.parse import load_doc_pages  # noqa: E402
-from earnings_agent.pipeline import extract  # noqa: E402
+from earnings_agent.pipeline import extract, prepare  # noqa: E402
+from web import insights  # noqa: E402
 from web.core import payload  # noqa: E402
 
 TRANSLATE = """下面是一份财报抽取结果里的“行业指标”列表，每项有 name（指标名）和 rationale（为什么重要）。
@@ -57,13 +61,25 @@ def main():
     for m, c, p in EXAMPLES:
         res = extract(m, c, p, providers=["deepseek"], budget=budget, salt="eval1")
         res["_pages"] = load_doc_pages(res["doc"])
+
+        def complete(system, user, what):
+            return cached_complete_json(system, user, providers=["deepseek"], budget=budget, label=f"examples:{c}:{what}",
+                                        salt="examples-v2")["data"]
+        res["comparatives"] = insights.comparatives(prepare(m, c, p), res, lambda s, u: complete(s, u, "prior"))
         pl = payload(res)
         bilingual(pl)
+        pl["highlights"] = insights.highlights(pl, lambda s, u: complete(s, u, "highlights"))
         pl["example"] = True
         pl["from_cache"] = res["llm"]["from_cache"]
         (OUT / f"{m}_{c}.json").write_text(json.dumps(pl, ensure_ascii=False, indent=1, default=str))
         print(m, c, pl["counts"], "core", pl["core_counts"], "cached" if pl["from_cache"] else "NEW CALL",
               f"pages kept {len(pl['pages'])}")
+        print("   prior-year kept", pl["comparatives_log"]["kept"], "rejected", pl["comparatives_log"]["rejected"],
+              "| yoy", [(i["field"], i["ptype"], i["yoy"] and i["yoy"]["pct"]) for i in pl["items"] if not i["aux"]])
+        print("   ratios", [(r["key"], r["ptype"], round(r["value"], 4), r["prev"] and round(r["prev"], 4)) for r in pl["ratios"]])
+        print("   highlights", len(pl["highlights"]["points"]), "dropped", [d["why"] for d in pl["highlights"]["dropped"]])
+        for h in pl["highlights"]["points"]:
+            print("     -", h["text_zh"], "|", h["text_en"], h["pages"])
     print(f"ledger: ${budget.status()['spent'] - before:.4f} spent by this build")
 
 

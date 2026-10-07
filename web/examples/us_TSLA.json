@@ -8,7 +8,12 @@
   "title": "10-Q 2026-06-30",
   "doc_kind": "10-Q",
   "filed": "2026-07-23",
-  "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm"
+  "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+  "period_label": {
+   "zh": "2026 年第二季度",
+   "en": "Q2 2026",
+   "fiscal": false
+  }
  },
  "uploaded": false,
  "template": "general",
@@ -40,6 +45,8 @@
    "raw": "1,114",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 1114000000.0,
    "currency": "USD",
    "page": 5,
@@ -58,6 +65,14 @@
     "value": 1116000000.0,
     "source": "SEC companyfacts",
     "field": "NetIncomeLossAvailableToCommonStockholdersBasic"
+   },
+   "yoy": {
+    "pct": null,
+    "note": "current_flagged",
+    "prev_raw": "1,172",
+    "prev_value": 1172000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -70,6 +85,8 @@
    "raw": "1,591",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 1591000000.0,
    "currency": "USD",
    "page": 5,
@@ -88,6 +105,14 @@
     "value": 1593000000.0,
     "source": "SEC companyfacts",
     "field": "NetIncomeLossAvailableToCommonStockholdersBasic"
+   },
+   "yoy": {
+    "pct": null,
+    "note": "current_flagged",
+    "prev_raw": "1,581",
+    "prev_value": 1581000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -100,6 +125,8 @@
    "raw": "23,485",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 23485000000.0,
    "currency": "USD",
    "page": 5,
@@ -112,7 +139,15 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": {
+    "pct": 0.2614136856805242,
+    "note": null,
+    "prev_raw": "18,618",
+    "prev_value": 18618000000.0,
+    "prev_page": 5,
+    "prev_derived": false
+   }
   },
   {
    "field": "weighted_avg_shares_basic",
@@ -124,6 +159,8 @@
    "raw": "3,237",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 3237000000.0,
    "currency": "USD",
    "page": 13,
@@ -136,7 +173,8 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": null
   },
   {
    "field": "cost_of_revenue",
@@ -148,6 +186,8 @@
    "raw": "41,152",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 41152000000.0,
    "currency": "USD",
    "page": 5,
@@ -160,7 +200,15 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": {
+    "pct": 0.1825287356321839,
+    "note": null,
+    "prev_raw": "34,800",
+    "prev_value": 34800000000.0,
+    "prev_page": 5,
+    "prev_derived": false
+   }
   },
   {
    "field": "weighted_avg_shares_basic",
@@ -172,6 +220,8 @@
    "raw": "3,235",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 3235000000.0,
    "currency": "USD",
    "page": 13,
@@ -184,7 +234,8 @@
    "derived": false,
    "formula": null,
    "components": [],
-   "bench": null
+   "bench": null,
+   "yoy": null
   },
   {
    "field": "revenue",
@@ -196,6 +247,8 @@
    "raw": "28,236",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 28236000000.0,
    "currency": "USD",
    "page": 5,
@@ -212,6 +265,14 @@
     "value": 28236000000.0,
     "source": "SEC companyfacts",
     "field": "RevenueFromContractWithCustomerExcludingAssessedTax"
+   },
+   "yoy": {
+    "pct": 0.25515647226173543,
+    "note": null,
+    "prev_raw": "22,496",
+    "prev_value": 22496000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -224,6 +285,8 @@
    "raw": "50,623",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 50623000000.0,
    "currency": "USD",
    "page": 5,
@@ -240,6 +303,14 @@
     "value": 50623000000.0,
     "source": "SEC companyfacts",
     "field": "RevenueFromContractWithCustomerExcludingAssessedTax"
+   },
+   "yoy": {
+    "pct": 0.21017905381176638,
+    "note": null,
+    "prev_raw": "41,831",
+    "prev_value": 41831000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -252,6 +323,8 @@
    "raw": "1,114",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 1114000000.0,
    "currency": "USD",
    "page": 5,
@@ -268,6 +341,14 @@
     "value": 1114000000.0,
     "source": "SEC companyfacts",
     "field": "NetIncomeLoss"
+   },
+   "yoy": {
+    "pct": -0.04948805460750853,
+    "note": null,
+    "prev_raw": "1,172",
+    "prev_value": 1172000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -280,6 +361,8 @@
    "raw": "1,591",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 1591000000.0,
    "currency": "USD",
    "page": 5,
@@ -296,6 +379,14 @@
     "value": 1591000000.0,
     "source": "SEC companyfacts",
     "field": "NetIncomeLoss"
+   },
+   "yoy": {
+    "pct": 0.006325110689437065,
+    "note": null,
+    "prev_raw": "1,581",
+    "prev_value": 1581000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -308,6 +399,8 @@
    "raw": "0.34",
    "unit": "per share data",
    "currency_raw": "$",
+   "unit_zh": "美元/股",
+   "unit_en": "USD per share",
    "value": 0.34,
    "currency": "USD",
    "page": 5,
@@ -324,6 +417,14 @@
     "value": 0.34,
     "source": "SEC companyfacts",
     "field": "EarningsPerShareBasic"
+   },
+   "yoy": {
+    "pct": -0.055555555555555455,
+    "note": null,
+    "prev_raw": "0.36",
+    "prev_value": 0.36,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -336,6 +437,8 @@
    "raw": "0.49",
    "unit": "per share data",
    "currency_raw": "$",
+   "unit_zh": "美元/股",
+   "unit_en": "USD per share",
    "value": 0.49,
    "currency": "USD",
    "page": 5,
@@ -352,6 +455,14 @@
     "value": 0.49,
     "source": "SEC companyfacts",
     "field": "EarningsPerShareBasic"
+   },
+   "yoy": {
+    "pct": 0.0,
+    "note": null,
+    "prev_raw": "0.49",
+    "prev_value": 0.49,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -364,6 +475,8 @@
    "raw": "4,751",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 4751000000.0,
    "currency": "USD",
    "page": 5,
@@ -380,6 +493,14 @@
     "value": 4751000000.0,
     "source": "SEC companyfacts",
     "field": "GrossProfit"
+   },
+   "yoy": {
+    "pct": 0.22511603919546158,
+    "note": null,
+    "prev_raw": "3,878",
+    "prev_value": 3878000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -392,6 +513,8 @@
    "raw": "9,471",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 9471000000.0,
    "currency": "USD",
    "page": 5,
@@ -408,6 +531,14 @@
     "value": 9471000000.0,
     "source": "SEC companyfacts",
     "field": "GrossProfit"
+   },
+   "yoy": {
+    "pct": 0.3470345612288437,
+    "note": null,
+    "prev_raw": "7,031",
+    "prev_value": 7031000000.0,
+    "prev_page": 5,
+    "prev_derived": false
    }
   },
   {
@@ -420,6 +551,8 @@
    "raw": "8,634",
    "unit": "in millions",
    "currency_raw": "$",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "value": 8634000000.0,
    "currency": "USD",
    "page": 9,
@@ -436,6 +569,14 @@
     "value": 8634000000.0,
     "source": "SEC companyfacts",
     "field": "NetCashProvidedByUsedInOperatingActivities"
+   },
+   "yoy": {
+    "pct": 0.8385860306643952,
+    "note": null,
+    "prev_raw": "4,696",
+    "prev_value": 4696000000.0,
+    "prev_page": 9,
+    "prev_derived": false
    }
   }
  ],
@@ -446,13 +587,15 @@
    "lang": null,
    "raw": "25,097",
    "unit": "in millions",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "ptype": "Q",
    "page": 27,
    "quote": "Revenues $ 25,097 $ 19,707 $ 45,076 $ 36,312",
    "status": "⚠️",
    "reason_zh": "",
-   "name_zh": "汽车业务收入",
-   "rationale_zh": "汽车业务（车辆销售、租赁和监管积分）是特斯拉最大的可报告分部，并贡献了大部分收入和毛利润。",
+   "name_zh": "汽车分部收入",
+   "rationale_zh": "汽车（车辆销售、租赁和监管积分）是特斯拉最大的可报告分部，并驱动了大部分收入和毛利润。",
    "name_en": "Automotive segment revenue",
    "rationale_en": "Automotive (vehicle sales, leasing and regulatory credits) is Tesla's largest reportable segment and drives the majority of revenue and gross profit."
   },
@@ -462,12 +605,14 @@
    "lang": null,
    "raw": "3,139",
    "unit": "in millions",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "ptype": "Q",
    "page": 27,
    "quote": "Revenues $ 3,139 $ 2,789 $ 5,547 $ 5,519",
    "status": "⚠️",
    "reason_zh": "",
-   "name_zh": "能源发电和储能分部收入",
+   "name_zh": "能源发电与储能分部收入",
    "rationale_zh": "储能是特斯拉的第二个可报告分部，其增长和利润率状况是整体盈利能力的关键波动因素。",
    "name_en": "Energy generation and storage segment revenue",
    "rationale_en": "Energy storage is Tesla's second reportable segment and its growth and margin profile are a key swing factor for overall profitability."
@@ -478,13 +623,15 @@
    "lang": null,
    "raw": "146",
    "unit": "in millions",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "ptype": "Q",
    "page": 5,
    "quote": "Automotive regulatory credits 146 439 526 1,034",
    "status": "⚠️",
    "reason_zh": "",
    "name_zh": "汽车监管积分收入",
-   "rationale_zh": "监管积分销售对特斯拉而言几乎是纯利润收入，并且对其他汽车制造商的合规需求高度敏感。",
+   "rationale_zh": "监管积分销售对特斯拉而言几乎是纯利润率收入，并且对其他汽车制造商的合规需求高度敏感。",
    "name_en": "Automotive regulatory credits revenue",
    "rationale_en": "Regulatory credit sales are almost pure-margin revenue for Tesla and are highly sensitive to other automakers' compliance demand."
   },
@@ -494,13 +641,15 @@
    "lang": null,
    "raw": "20.4",
    "unit": "%",
+   "unit_zh": "美元",
+   "unit_en": "USD",
    "ptype": "Q",
    "page": 32,
    "quote": "Gross margin energy generation and storage segment 20.4 % 30.3 % 28.7 % 29.6 %",
    "status": "⚠️",
    "reason_zh": "",
-   "name_zh": "能源发电和储能分部毛利率",
-   "rationale_zh": "储能毛利率波动较大，反映其相对于电池电芯成本上涨的定价能力，这是一个关键的盈利驱动因素。",
+   "name_zh": "能源发电与储能分部毛利率",
+   "rationale_zh": "储能毛利率波动较大，并表明相对于电池电芯成本通胀的定价能力，这是关键的盈利驱动因素。",
    "name_en": "Energy generation and storage segment gross margin",
    "rationale_en": "Storage gross margin is volatile and indicates pricing power versus battery cell cost inflation, a key earnings driver."
   },
@@ -510,13 +659,15 @@
    "lang": null,
    "raw": "(8,282)",
    "unit": "in millions",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "ptype": "H",
    "page": 9,
    "quote": "Purchases of property and equipment excluding finance leases, net of sales (8,282) (3,886)",
    "status": "⚠️",
    "reason_zh": "",
-   "name_zh": "购置物业和设备（资本支出）",
-   "rationale_zh": "特斯拉在人工智能、工厂和基础设施上的高额资本支出驱动其自由现金流和产能扩张前景。",
+   "name_zh": "购置物业及设备（资本支出）",
+   "rationale_zh": "特斯拉在人工智能、工厂和基础设施上的巨额资本支出驱动了其自由现金流和产能扩张前景。",
    "name_en": "Purchases of property and equipment (capital expenditures)",
    "rationale_en": "Tesla's heavy capex on AI, factories and infrastructure drives its free cash flow and capacity expansion outlook."
   },
@@ -526,12 +677,14 @@
    "lang": null,
    "raw": "10,823",
    "unit": "in millions",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
    "ptype": "PIT",
    "page": 18,
    "quote": "AI infrastructure 10,823 6,816",
    "status": "⚠️",
    "reason_zh": "",
-   "name_zh": "人工智能基础设施（物业、厂房和设备）",
+   "name_zh": "人工智能基础设施（物业、厂房及设备）",
    "rationale_zh": "人工智能基础设施资产表明特斯拉在自动驾驶和机器人技术上的投资，这是其长期战略的核心部分。",
    "name_en": "AI infrastructure (property, plant and equipment)",
    "rationale_en": "AI infrastructure assets signal Tesla's investment in autonomy and robotics, a central part of its long-term strategy."
@@ -546,9 +699,173 @@
   "32": "Table of Contents\nCost of Revenues and Gross Margin\nThree Months Ended June 30, Change Six Months Ended June 30, Change \n(Dollars in millions) 2026 2025 $ % 2026 2025 $ % \nCost of revenues \nAutomotive sales $ 16,866 $ 13,567 $ 3,299 24 % $ 29,482 $ 25,028 $ 4,454 18 % \nAutomotive leasing 187 228 (41) (18) % 383 467 (84) (18) % \nTotal automotive cost of revenues 17,053 13,795 3,258 24 % 29,865 25,495 4,370 17 % \nServices and other 3,933 2,880 1,053 37 % 7,332 5,417 1,915 35 % \nTotal automotive & services and other segment cost of revenues 20,986 16,675 4,311 26 % 37,197 30,912 6,285 20 % \nEnergy generation and storage segment 2,499 1,943 556 29 % 3,955 3,888 67 2 % \nTotal cost of revenues $ 23,485 $ 18,618 $ 4,867 26 % $ 41,152 $ 34,800 $ 6,352 18 % \nGross profit total automotive $ 3,463 $ 2,866 $ 6,885 $ 5,133 \nGross margin total automotive 16.9 % 17.2 % 18.7 % 16.8 % \nGross profit total automotive & services and other segment $ 4,111 $ 3,032 $ 7,879 $ 5,400 \nGross margin total automotive & services and other segment 16.4 % 15.4 % 17.5 % 14.9 % \nGross profit energy generation and storage segment $ 640 $ 846 $ 1,592 $ 1,631 \nGross margin energy generation and storage segment 20.4 % 30.3 % 28.7 % 29.6 % \nTotal gross profit $ 4,751 $ 3,878 $ 9,471 $ 7,031 \nTotal gross margin 16.8 % 17.2 % 18.7 % 16.8 % \nAutomotive & Services and Other Segment\nCost of automotive sales revenue increased $3.30 billion, or 24%, in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025, due to the increase in deliveries year over year as discussed above.\nCost of automotive sales revenue increased $4.45 billion, or 18%, in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025, due to the increase in deliveries year over year as discussed above. Average cost per unit was relatively consistent due to unfavorable sales mix and a negative impact from the weakening of the United States dollar when compared to foreign currencies year over year, offset by favorable impacts related to warranty adjustments and tariffs.\nCost of services and other revenue increased $1.05 billion, or 37%, in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025. Cost of services and other revenue increased $1.92 billion, or 35%, in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025. These increases were primarily due to increases in used vehicle sales volume, cost related to non-warranty maintenance services and collision revenue and cost of paid Supercharging sessions.\nGross margin for total automotive decreased from 17.2% to 16.9% in the three months ended June 30, 2026 as compared to the three months ended June 30, 2025. Gross margin for total automotive increased from 16.8% to 18.7% in the six months ended June 30, 2026 as compared to the six months ended June 30, 2025. The fluctuations are primarily due to the changes in automotive sales revenue and cost of automotive sales revenue and a decrease in regulatory credits revenue, as discussed above.\n32"
  },
  "cum": "H",
+ "ratios": [
+  {
+   "key": "gross_margin",
+   "ptype": "Q",
+   "value": 0.16826037682391273,
+   "prev": 0.17238620199146515,
+   "change_pp": -0.4125825167552416,
+   "pages": [
+    5
+   ]
+  },
+  {
+   "key": "net_margin",
+   "ptype": "Q",
+   "value": 0.039453180337158236,
+   "prev": 0.05209815078236131,
+   "change_pp": -1.2644970445203074,
+   "pages": [
+    5
+   ]
+  },
+  {
+   "key": "gross_margin",
+   "ptype": "H",
+   "value": 0.18708887264682061,
+   "prev": 0.1680810881881858,
+   "change_pp": 1.9007784458634824,
+   "pages": [
+    5
+   ]
+  },
+  {
+   "key": "net_margin",
+   "ptype": "H",
+   "value": 0.031428402109712976,
+   "prev": 0.03779493676938156,
+   "change_pp": -0.6366534659668583,
+   "pages": [
+    5
+   ]
+  }
+ ],
+ "summary": {
+  "n": 9,
+  "ok": 9,
+  "warn": 0,
+  "bad": []
+ },
+ "cards": [
+  {
+   "key": "revenue",
+   "ptype": "Q",
+   "field": "revenue",
+   "raw": "28,236",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
+   "status": "✅",
+   "yoy": {
+    "pct": 0.25515647226173543,
+    "note": null,
+    "prev_raw": "22,496",
+    "prev_value": 22496000000.0,
+    "prev_page": 5,
+    "prev_derived": false
+   },
+   "page": 5
+  },
+  {
+   "key": "net_income_parent",
+   "ptype": "Q",
+   "field": "net_income_parent",
+   "raw": "1,114",
+   "unit_zh": "百万美元",
+   "unit_en": "USD millions",
+   "status": "✅",
+   "yoy": {
+    "pct": -0.04948805460750853,
+    "note": null,
+    "prev_raw": "1,172",
+    "prev_value": 1172000000.0,
+    "prev_page": 5,
+    "prev_derived": false
+   },
+   "page": 5
+  },
+  {
+   "key": "gross_margin",
+   "ptype": "Q",
+   "ratio": {
+    "key": "gross_margin",
+    "ptype": "Q",
+    "value": 0.16826037682391273,
+    "prev": 0.17238620199146515,
+    "change_pp": -0.4125825167552416,
+    "pages": [
+     5
+    ]
+   }
+  },
+  {
+   "key": "eps_basic",
+   "ptype": "Q",
+   "field": "eps_basic",
+   "raw": "0.34",
+   "unit_zh": "美元/股",
+   "unit_en": "USD per share",
+   "status": "✅",
+   "yoy": {
+    "pct": -0.055555555555555455,
+    "note": null,
+    "prev_raw": "0.36",
+    "prev_value": 0.36,
+    "prev_page": 5,
+    "prev_derived": false
+   },
+   "page": 5
+  }
+ ],
+ "comparatives_log": {
+  "kept": 13,
+  "rejected": [],
+  "not_found": [],
+  "error": null
+ },
  "metrics_translated": {
   "model": "deepseek-flash",
   "note": "name / rationale only; numbers and quotes untouched"
+ },
+ "highlights": {
+  "points": [
+   {
+    "text_zh": "第二季度营业收入为 28,236 百万美元，同比增长 25.5%；上半年累计营业收入为 50,623 百万美元，同比增长 21.0%。",
+    "text_en": "Q2 revenue was 28,236 USD millions, up 25.5% year-over-year; six months revenue was 50,623 USD millions, up 21.0% year-over-year.",
+    "pages": [
+     5
+    ]
+   },
+   {
+    "text_zh": "第二季度归母净利润为 1,114 百万美元，同比下降 4.9%；基本每股收益为 0.34 美元/股，同比下降 5.6%。上半年累计归母净利润为 1,591 百万美元，同比增长 0.6%；基本每股收益为 0.49 美元/股，持平。",
+    "text_en": "Q2 net income attributable was 1,114 USD millions, down 4.9% year-over-year; basic EPS was 0.34 USD per share, down 5.6% year-over-year. Six months net income attributable was 1,591 USD millions, up 0.6% year-over-year; basic EPS was 0.49 USD per share, flat.",
+    "pages": [
+     5
+    ]
+   },
+   {
+    "text_zh": "第二季度毛利为 4,751 百万美元，同比增长 22.5%；上半年累计毛利为 9,471 百万美元，同比增长 34.7%。",
+    "text_en": "Q2 gross profit was 4,751 USD millions, up 22.5% year-over-year; six months gross profit was 9,471 USD millions, up 34.7% year-over-year.",
+    "pages": [
+     5
+    ]
+   },
+   {
+    "text_zh": "上半年累计经营活动现金流量净额为 8,634 百万美元，同比增长 83.9%。",
+    "text_en": "Six months operating cash flow was 8,634 USD millions, up 83.9% year-over-year.",
+    "pages": [
+     9
+    ]
+   },
+   {
+    "text_zh": "第二季度毛利率为 16.8%，减少 0.4 个百分点；归母净利率为 3.9%，减少 1.3 个百分点。上半年累计毛利率为 18.7%，增加 1.9 个百分点；归母净利率为 3.1%，减少 0.6 个百分点。",
+    "text_en": "Q2 gross margin was 16.8%, down 0.4 percentage points; net margin (attributable) was 3.9%, down 1.3 percentage points. Six months gross margin was 18.7%, up 1.9 percentage points; net margin (attributable) was 3.1%, down 0.6 percentage points.",
+    "pages": [
+     5
+    ]
+   }
+  ],
+  "dropped": []
  },
  "example": true,
  "from_cache": true

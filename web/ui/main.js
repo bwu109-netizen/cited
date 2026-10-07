@@ -43,9 +43,23 @@
     log: [], lastStage: null, lastJobId: null, renderedSig: ""
   };
 
+  // ------------------------------------------------------------------ theme (light / dark)
+  // Default follows the system (prefers-color-scheme); an explicit choice is remembered in this browser.
+  var THEME_KEY = "cited-theme";
+  function savedTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+  function systemTheme() { try { return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"; } catch (e) { return "dark"; } }
+  function applyTheme(th) { S.theme = th; document.documentElement.setAttribute("data-theme", th); }
+  applyTheme(savedTheme() || systemTheme());
+  try {
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function () {
+      if (!savedTheme()) { applyTheme(systemTheme()); render(); }
+    });
+  } catch (e) { /* old browsers: keep the initial theme */ }
+
   // ------------------------------------------------------------------ i18n
   var T = {
     brand: ["有据", "Cited"],
+    theme_to_light: ["切换到浅色", "Switch to light mode"], theme_to_dark: ["切换到深色", "Switch to dark mode"],
     nav_home: ["首页 / 示例", "Home"], nav_analyze: ["单家分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
     hero_eyebrow: ["美股 · A 股 · 港股定期报告", "US · A-SHARE · HK FILINGS"],
@@ -247,7 +261,9 @@
       plus: '<path d="M12 5v14M5 12h14"/>', trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
       grid: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
       term: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10l3 2-3 2M13 15h4"/>',
-      menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', code: '<path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/>', refresh: '<path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/>'
+      menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+      sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+      moon: '<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>', code: '<path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/>', refresh: '<path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/>'
     }[name] || "";
     return '<svg class="icon ' + (cls || "") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + "</svg>";
   }
@@ -369,7 +385,8 @@
       '<div class="tabs' + (S.menu ? " open" : "") + '">' + tabs.map(function (x) {
         return '<a data-go="' + x[0] + '" class="' + (on === x[0] ? "on" : "") + '">' + t(x[1]) + "</a>";
       }).join("") + (S.menu ? '<a href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">GitHub ↗</a>' : "") + "</div>" +
-      '<div class="right"><button class="chip-btn" data-act="lang"><b>' + (S.lang === "zh" ? "中" : "EN") + "</b> / " + (S.lang === "zh" ? "EN" : "中") + "</button>" +
+      '<div class="right"><button class="chip-btn" data-act="theme" aria-label="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '" title="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '">' + ic(S.theme === "light" ? "moon" : "sun", "sm") + "</button>" +
+      '<button class="chip-btn" data-act="lang"><b>' + (S.lang === "zh" ? "中" : "EN") + "</b> / " + (S.lang === "zh" ? "EN" : "中") + "</button>" +
       '<a class="chip-btn gh" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + '<span class="lbl-long">GitHub</span></a>' +
       '<button class="chip-btn menu-btn" data-act="menu" aria-label="menu">' + ic("menu", "sm") + "</button></div>" +
       "</div></div>";
@@ -569,7 +586,7 @@
       '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px" data-go="home">' + ic("grid") + '<div style="flex:1"><b>' + t("a_side_ex") + '</b><div class="hint">' + t("a_side_ex_d") + "</div></div>" + ic("arrow") + "</a>" +
       '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px;margin-top:12px" data-go="verify">' + ic("term") + '<div style="flex:1"><b>' + t("a_side_ver") + '</b><div class="hint">' + t("a_side_ver_d") + "</div></div>" + ic("arrow") + "</a></div>" +
       '<div class="card"><div class="lbl" style="margin-bottom:14px">' + t("a_how") + "</div>" + [1, 2, 3].map(function (n) {
-        return '<div class="step" style="margin-top:' + (n > 1 ? 10 : 0) + 'px"><span class="ring mono" style="color:var(--accent)">0' + n + "</span><div><h4>" + t("a_how" + n) + "</h4><p>" + t("a_how" + n + "_d") + "</p></div></div>";
+        return '<div class="step" style="margin-top:' + (n > 1 ? 10 : 0) + 'px"><span class="ring mono" style="color:var(--accent-text)">0' + n + "</span><div><h4>" + t("a_how" + n) + "</h4><p>" + t("a_how" + n + "_d") + "</p></div></div>";
       }).join("") + "</div></div></div></div>";
   }
   function runbar(done) {
@@ -734,7 +751,7 @@
       return '<div class="tbl-card" style="padding:12px"><div class="scrollx"><table class="mtx"><thead><tr><th>' + t("th_tier") + "</th><th>" + t("th_strict") + "</th><th>" + t("th_silent") + "</th><th>" + t("th_work") + "</th><th>" + t("th_recall") + "</th></tr></thead><tbody>" + keys.map(function (k) { return row(k, tiers[k]); }).join("") + "</tbody></table></div></div>";
     }
     function mk(x, title, tone, why) {
-      var col = tone === "ok" ? "var(--accent)" : "var(--warn)";
+      var col = tone === "ok" ? "var(--accent-text)" : "var(--warn)";
       return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>' + title + "</h2>" + (tone !== "ok" ? '<span class="badge warn">' + t("mt_lower") + "</span>" : "") + '</div><div class="grid2" style="margin-top:18px"><div class="card tight" style="background:var(--surface-2)"><div class="lbl">' + t("mt_withc4") + '</div><div class="big" style="font-size:48px;color:' + col + '">' + pct(x.recall) + '</div></div><div class="card tight" style="background:var(--surface-2)"><div class="lbl">' + t("mt_noc4") + '</div><div class="big" style="font-size:48px">' + pct(x.recall_no_c4) + "</div></div></div>" +
         '<p class="hint" style="margin:14px 0 6px">' + t("mt_hk_errs", { e: x.errors, f: Math.round((x.recall || 0) * x.errors) }) + "</p>" + why.map(function (w) { return '<p class="muted" style="margin:6px 0 0;font-size:13px">' + w + "</p>"; }).join("") + "</div>";
     }
@@ -850,6 +867,11 @@
     if (d.comp) { S.openComps[d.comp] = !S.openComps[d.comp]; render(); return; }
     if (d.cup) { var inp = document.getElementById("cf-" + d.cup); if (inp) inp.click(); return; }
     var a = d.act;
+    if (a === "theme") {
+      var th = S.theme === "light" ? "dark" : "light";
+      try { localStorage.setItem(THEME_KEY, th); } catch (e) { /* private mode: applies for this visit only */ }
+      applyTheme(th); render(); return;
+    }
     if (a === "lang") { S.lang = S.lang === "zh" ? "en" : "zh"; send("lang", { lang: S.lang }); render(); }
     else if (a === "menu") { S.menu = !S.menu; render(); }
     else if (a === "scroll-ex") { var x = document.getElementById("examples"); if (x) x.scrollIntoView({ behavior: "smooth" }); }

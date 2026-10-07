@@ -1,0 +1,180 @@
+{
+ "source": "docs/eval_results.md",
+ "frozen_eval1": {
+  "section": "§1.1",
+  "label_zh": "eval1 全量三地 · 冻结版 · DeepSeek · 60 份",
+  "label_en": "eval1, all three markets · frozen rules · DeepSeek · 60 filings",
+  "tiers": {
+   "ds_simple": {
+    "items": 379,
+    "strict": 331,
+    "strict_acc": 0.8733509234828496,
+    "silent": 6,
+    "silent_rate": 0.0158311345646438,
+    "workload": 0.0,
+    "errors": 48,
+    "flagged": 0
+   },
+   "ds_direct": {
+    "items": 379,
+    "strict": 368,
+    "strict_acc": 0.9709762532981531,
+    "silent": 1,
+    "silent_rate": 0.002638522427440633,
+    "workload": 0.0,
+    "errors": 11,
+    "flagged": 0
+   },
+   "ds_pipeline": {
+    "items": 379,
+    "strict": 351,
+    "strict_acc": 0.9261213720316622,
+    "silent": 3,
+    "silent_rate": 0.0079155672823219,
+    "workload": 0.16358839050131926,
+    "errors": 28,
+    "flagged": 62,
+    "recall": 0.8928571428571429,
+    "recall_no_c4": 0.8214285714285714,
+    "false_alarm": 0.5967741935483871
+   }
+  }
+ },
+ "recall_by_market": {
+  "section": "§1.2b",
+  "label_zh": "流水线 · 冻结版",
+  "label_en": "Pipeline · frozen rules",
+  "us_a": {
+   "items": 266,
+   "strict": 248,
+   "strict_acc": 0.9323308270676691,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "workload": 0.15037593984962405,
+   "errors": 18,
+   "flagged": 40,
+   "recall": 1.0,
+   "recall_no_c4": 0.9444444444444444,
+   "false_alarm": 0.55
+  },
+  "hk": {
+   "items": 113,
+   "strict": 103,
+   "strict_acc": 0.911504424778761,
+   "silent": 3,
+   "silent_rate": 0.02654867256637168,
+   "workload": 0.19469026548672566,
+   "errors": 10,
+   "flagged": 22,
+   "recall": 0.7,
+   "recall_no_c4": 0.6,
+   "false_alarm": 0.6818181818181818
+  }
+ },
+ "holdout": {
+  "section": "§3",
+  "label_zh": "留出集 · 40 份美股 + A 股 · 修订版规则 · DeepSeek",
+  "label_en": "Holdout · 40 US + A-share filings · revised rules · DeepSeek",
+  "tiers": {
+   "ds_simple": {
+    "items": 205,
+    "strict": 188,
+    "strict_acc": 0.9170731707317074,
+    "silent": 5,
+    "silent_rate": 0.024390243902439025,
+    "workload": 0.0,
+    "errors": 17,
+    "flagged": 0
+   },
+   "ds_direct": {
+    "items": 205,
+    "strict": 200,
+    "strict_acc": 0.975609756097561,
+    "silent": 5,
+    "silent_rate": 0.024390243902439025,
+    "workload": 0.0,
+    "errors": 5,
+    "flagged": 0
+   },
+   "ds_pipeline": {
+    "items": 205,
+    "strict": 197,
+    "strict_acc": 0.9609756097560975,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "workload": 0.04878048780487805,
+    "errors": 8,
+    "flagged": 10,
+    "recall": 1.0,
+    "recall_no_c4": 0.375,
+    "false_alarm": 0.2
+   },
+   "ds_verified": {
+    "items": 205,
+    "strict": 199,
+    "strict_acc": 0.9707317073170731,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "workload": 0.17073170731707318,
+    "errors": 6,
+    "flagged": 35,
+    "recall": 1.0,
+    "recall_no_c4": 0.3333333333333333,
+    "false_alarm": 0.8285714285714286
+   }
+  }
+ },
+ "fable": {
+  "section": "§1.5",
+  "label_zh": "Fable 5.1 · 9 份小样本 · 冻结版",
+  "label_en": "Fable 5.1 · 9-filing sample · frozen rules",
+  "tiers": {
+   "fable_direct": {
+    "items": 60,
+    "strict": 57,
+    "strict_acc": 0.95,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "workload": 0.0,
+    "errors": 3,
+    "flagged": 0
+   },
+   "fable_pipeline": {
+    "items": 60,
+    "strict": 52,
+    "strict_acc": 0.8666666666666667,
+    "silent": 1,
+    "silent_rate": 0.016666666666666666,
+    "workload": 0.26666666666666666,
+    "errors": 8,
+    "flagged": 16,
+    "recall": 0.75,
+    "recall_no_c4": 0.75,
+    "false_alarm": 0.625
+   },
+   "ds_direct": {
+    "items": 60,
+    "strict": 58,
+    "strict_acc": 0.9666666666666667,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "workload": 0.0,
+    "errors": 2,
+    "flagged": 0
+   },
+   "ds_pipeline": {
+    "items": 60,
+    "strict": 51,
+    "strict_acc": 0.85,
+    "silent": 1,
+    "silent_rate": 0.016666666666666666,
+    "workload": 0.36666666666666664,
+    "errors": 9,
+    "flagged": 22,
+    "recall": 0.8888888888888888,
+    "recall_no_c4": 0.8888888888888888,
+    "false_alarm": 0.6363636363636364
+   }
+  }
+ }
+}

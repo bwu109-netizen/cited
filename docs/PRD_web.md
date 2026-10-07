@@ -566,3 +566,22 @@ flowchart TD
 - [ ] 375px 走完 §9 的验收路径，没有意外的横向滚动
 - [ ] key 不写入任何文件或日志（实测检查）
 - [ ] `earnings_agent/`、`eval/`、`tests/` 没有被改动（git diff 为空）
+
+## 16. 实现记录（2026-10-07，本地版）
+
+- **路线 A**：整页一个 Streamlit 自定义组件（`web/ui/`：`index.html`、`style.css`、`main.js`，无构建步骤）。Python 侧代码在 `web/`：
+  - `web_app.py`：事件、后台线程、进度推送；
+  - `core.py`：调用流水线，用访客自己的 key，不写共享缓存；
+  - `paste.py`：核验页的粘贴解析；
+  - `fx.py`：汇率；
+  - `build_examples.py`、`build_eval_numbers.py`：生成示例和评估数字。
+  核心模块只 import，`earnings_agent/`、`eval/`、`tests/` 没有改动。
+- **视觉**：按用户确认的深色原型（`docs/stitch/*_dark.png` 和 S3–S12）实现，包括荧光绿主按钮；只做深色版。没有拿到原型 HTML（Stitch 下载需要登录），所以是按截图和 `DESIGN.md` 重写的 CSS，没有使用 Tailwind CDN。
+- **原型里有、按决定不做的**：头像、主题切换、历史记录、采纳 / 调账按钮、节点诊断面板、统一美元、洞察图表、测试样例文件、PDF URL 输入、“置信度 / 延迟 / 隐私风险 0%”等数字。
+- **汇率**：国家外汇管理局人民币汇率中间价（AKShare `currency_boc_safe`），取报告期末当日或之前最近一个发布日的期末汇率；取不到就不换算，标“汇率缺失”。
+- **原文页抽屉**：
+  - 实时下载的 PDF：显示页面渲染图加解析文字；
+  - SEC HTML、示例和上传文件：只显示解析文字（上传的 PDF 解析后即删除）。
+- **示例**：TSLA 2026Q2、中国石油 2025FY、小米 2026H1。模型回复取自 eval1 缓存，按当前规则（R1–R6）重新核验，构建花费 $0。
+- **评估数字**：`web/eval_numbers.json` 由 `eval/analysis.py` 从评分文件生成，与 `docs/eval_results.md` 对应节一致。
+

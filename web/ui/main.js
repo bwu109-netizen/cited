@@ -200,7 +200,13 @@
     v_lead: ["上传财报 PDF，粘贴 AI 按通用提示词给出的结果（JSON 或表格）。纯代码检查：C1–C3 + 合理性检查；美股和 A 股填了代码、能取到结构化数据时加 C4。",
       "Upload the filing PDF and paste an AI's answer (JSON or a table). Code-only checks: C1–C3 + consistency; C4 too for US and A-share when a ticker is given and structured data is available."],
     v_pdf: ["原始财报 PDF", "Filing PDF"], v_paste: ["粘贴 AI 的结果", "Paste the AI's answer"],
-    v_prompt: ["通用提示词：明天提供", "Universal prompt: coming soon"],
+    v_copy: ["复制通用提示词", "Copy the universal prompt"], v_copied: ["已复制", "Copied"],
+    v_copy_fail: ["复制失败，请在下方手动选择复制", "Copy failed; select the text below and copy it"],
+    v_howto: ["用法：在任意 AI（GPT、Claude、DeepSeek、豆包等）里上传财报 + 贴提示词 → 把它的回答整段贴回这里核验。",
+      "How to use: in any AI (GPT, Claude, DeepSeek, Doubao…) upload the filing and paste the prompt → paste its whole reply back here."],
+    v_prompt_eval: ["提示词由评估中的 R3 写法改成：R3 在 DeepSeek 上的留出集严格正确率为 {p}（美股 + A 股，输入为解析文本）；这份通用版本身和其他模型都未经评估。",
+      "Adapted from the R3 wording in the evaluation: R3 scored {p} strict accuracy on the DeepSeek holdout (US + A-share, parsed-text input). This universal version itself, and other models, are not evaluated."],
+    v_absent: ["AI 标明原文没有：{l}", "The AI says these are not in the report: {l}"],
     v_fmt_json: ["JSON", "JSON"], v_fmt_table: ["表格", "Table"], v_fmt_wait: ["等待输入", "Waiting for input"],
     v_ph: ["粘贴 AI 的回答……\n\n表格示例：\n| 指标 | 数值 | 单位 | 期间 | 页码 | 原文 |\n|---|---|---|---|---|---|\n| 营业收入 | 28,236 | in millions | 单季 | 5 | Total revenues 28,236 22,496 50,623 41,831 |\n\nJSON 示例：\n{\"items\": [{\"field\": \"revenue\", \"raw_value\": \"28,236\", \"raw_unit\": \"in millions\", \"raw_currency\": \"$\", \"period_type\": \"Q\", \"page\": 5, \"quote\": \"Total revenues 28,236 ...\"}]}",
       "Paste the AI's answer…\n\nTable example:\n| Metric | Value | Unit | Period | Page | Quote |\n|---|---|---|---|---|---|\n| Revenue | 28,236 | in millions | Q | 5 | Total revenues 28,236 22,496 50,623 41,831 |\n\nJSON example:\n{\"items\": [{\"field\": \"revenue\", \"raw_value\": \"28,236\", \"raw_unit\": \"in millions\", \"raw_currency\": \"$\", \"period_type\": \"Q\", \"page\": 5, \"quote\": \"Total revenues 28,236 ...\"}]}"],
@@ -221,6 +227,11 @@
     // method
     mt_src: ["本页数字全部来自 docs/eval_results.md。", "Every number on this page comes from docs/eval_results.md."],
     mt_toc: ["本页目录", "On this page"], mt_eval: ["评估", "Evaluation"],
+    mt_prompt: ["通用提示词", "Universal prompt"],
+    mt_prompt_d1: ["核验页可以复制一份通用提示词（中英文两版，在仓库 prompts/ 目录），在任何 AI 里和财报一起使用，再把回答贴回核验页。它要求每个数给出页码和原文整行，原文没有的指标明确写“原文没有”，输出 JSON 加一张可读表格。",
+      "The Verify page offers a universal prompt (Chinese and English, in the repository's prompts/ folder) to use with any AI together with the filing; paste the reply back into Verify. It asks for a page and the full source line for every number, an explicit \"not disclosed\" where the report has no such line, and JSON plus a readable table."],
+    mt_prompt_d2: ["它由评估中“专业直接问 + 核验层”（R3）的提问改写而来。R3 在 DeepSeek 留出集上的严格正确率为 {p}（美股 + A 股 {n} 条，输入是解析后的文本，不是上传 PDF）。通用版改了输出格式，本身没有单独评估；其他模型（GPT、Claude、豆包等）都未经评估。",
+      "It is adapted from the question of the \"direct question + verification\" tier (R3). R3 scored {p} strict accuracy on the DeepSeek holdout (US + A-share, {n} rows, parsed text as input, not an uploaded PDF). The universal version changes the output format and has not been evaluated on its own; other models (GPT, Claude, Doubao…) are not evaluated."],
     mt_lead: ["在 DeepSeek 上，专业写法的直接问严格正确率最高。流水线的价值在于每个数都有页码和原文，可疑的数被标出来，需要人工复核的范围能缩小。本页如实列出三档对比和局限。",
       "On DeepSeek, a carefully worded direct question had the highest strict accuracy. The pipeline's value is that every number has a page and a quote and suspicious numbers are flagged, narrowing what a person must re-check. This page lists the comparison and the limits as measured."],
     mt_main: ["三档对比（冻结版，主结果）", "Three tiers (frozen rules, main result)"],
@@ -776,30 +787,61 @@
     }
     var fmt = fmtDetect(v.text);
     var can = v.pdf && v.text.trim();
-    return head + mapping + '<div class="grid2 vgrid"><div class="card" style="display:flex;flex-direction:column;gap:18px"><h2><span class="pill" style="margin-right:8px">1</span>' + t("v_pdf") + "</h2>" +
+    var prompt = (S.cfg.prompts || {})[S.lang] || "";
+    var strip = prompt ? '<div class="card pstrip"><div class="pstrip-row"><div><p>' + t("v_howto") + '</p><p class="hint">' + t("v_prompt_eval", { p: pct(S.cfg.eval.holdout.tiers.ds_verified.strict_acc) }) + "</p></div>" +
+      '<div class="pstrip-btns"><button class="btn primary sm" data-act="copy-prompt">' + ic(S.copied === "ok" ? "check" : "file", "sm") + (S.copied === "ok" ? t("v_copied") : t("v_copy")) + "</button>" +
+      '<button class="btn ghost sm" data-act="show-prompt" aria-label="show prompt">' + (S.showPrompt ? "▴" : "▾") + "</button></div></div>" +
+      (S.copied === "fail" ? '<div class="hint tx-warn">' + t("v_copy_fail") + "</div>" : "") +
+      (S.showPrompt || S.copied === "fail" ? '<textarea class="input mono" id="v-prompt" readonly spellcheck="false">' + esc(prompt) + "</textarea>" : "") + "</div>" : "";
+    return head + strip + mapping +'<div class="grid2 vgrid"><div class="card" style="display:flex;flex-direction:column;gap:18px"><h2><span class="pill" style="margin-right:8px">1</span>' + t("v_pdf") + "</h2>" +
       '<div class="drop" id="drop2"><div class="circle">' + ic("upload") + "</div><h3>" + (v.pdf ? esc(v.pdfName) + ' <span class="faint mono" style="font-size:12px">' + (v.pdfSize / 1048576).toFixed(1) + " MB</span>" : t("ff_drop")) + '</h3><input type="file" id="file2" accept="application/pdf" class="hidden"><button class="btn ghost sm" style="margin-top:12px" data-act="pick2">' + ic("file", "sm") + t("ff_choose") + "</button></div>" +
       '<div class="note">' + ic("lock", "sm") + t("v_no_upload_store") + "</div>" +
       '<div class="lbl">' + t("v_meta") + '</div><div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-vmarket="' + m + '" class="' + (v.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
       '<div class="grid2"><div class="field"><label>' + t("f_period") + '</label><select class="input" id="v-period">' + PERIODS.map(function (p) { return '<option value="' + p + '"' + (p === v.period ? " selected" : "") + ">" + periodLabel(p) + "</option>"; }).join("") + "</select></div>" +
       '<div class="field"><label>' + t("v_tpl") + '</label><select class="input" id="v-tpl">' + ["auto", "general", "bank", "insurance"].map(function (x) { return '<option value="' + x + '"' + (x === v.template ? " selected" : "") + ">" + (x === "auto" ? t("v_tpl_auto") : tplName(x)) + "</option>"; }).join("") + "</select></div></div>" +
       '<div class="field"><label>' + t("v_code_opt") + '</label><input class="input" id="v-code" value="' + esc(v.code) + '" placeholder="' + t("ph_" + v.market) + '"></div></div>' +
-      '<div class="card" style="display:flex;flex-direction:column;gap:14px"><h2 style="display:flex;justify-content:space-between;align-items:center"><span><span class="pill" style="margin-right:8px">2</span>' + t("v_paste") + '</span><span class="hint" style="font-weight:400">' + t("v_prompt") + "</span></h2>" +
+      '<div class="card" style="display:flex;flex-direction:column;gap:14px"><h2><span class="pill" style="margin-right:8px">2</span>' + t("v_paste") + "</h2>" +
       '<div style="display:flex;gap:6px">' + ["json", "table"].map(function (k) { return '<span class="badge ' + (fmt === k ? "ok" : "grey") + '">' + t("v_fmt_" + k) + "</span>"; }).join("") + (fmt ? "" : '<span class="badge grey">' + t("v_fmt_wait") + "</span>") + "</div>" +
       '<textarea class="input" id="v-text" spellcheck="false" placeholder="' + esc(t("v_ph")) + '">' + esc(v.text) + '</textarea><div class="hint" style="text-align:right">' + t("v_chars", { n: v.text.length.toLocaleString("en-US") }) + "</div>" +
       '<button class="btn primary block" data-act="ver-run"' + (can ? "" : " disabled") + ">" + ic("play") + t("v_run") + "</button>" +
       (!can ? '<div class="hint">' + (!v.pdf ? t("v_need_pdf") : t("v_need_text")) + "</div>" : "") + "</div></div>" +
       '<p class="hint" style="max-width:1040px;margin:0">' + t("v_lead") + "</p></div>";
   }
+  var FIELD_NAMES = { revenue: ["营业收入", "Revenue"], net_income_parent: ["归母净利润", "Net income attributable"], eps_basic: ["基本每股收益", "Basic EPS"],
+    gross_profit: ["毛利", "Gross profit"], operating_cash_flow: ["经营活动现金流量净额", "Operating cash flow"], net_interest_income: ["净利息收入", "Net interest income"],
+    ppop: ["拨备前利润", "Pre-provision profit"], insurance_revenue: ["保险服务收入", "Insurance revenue"], insurance_service_result: ["保险服务业绩", "Insurance service result"],
+    cost_of_revenue: ["营业成本", "Cost of revenue"] };
+  function fieldName(f) { var n = FIELD_NAMES[f]; return n ? L(n[0], n[1]) : f; }
+  // the component runs in an iframe: the async clipboard API may be blocked there, so fall back to a hidden
+  // textarea + execCommand, and if both fail show the prompt for manual copying
+  function copyPrompt() {
+    var text = (S.cfg.prompts || {})[S.lang] || "";
+    function done(ok) { S.copied = ok ? "ok" : "fail"; render(); if (ok) setTimeout(function () { if (S.copied === "ok") { S.copied = null; render(); } }, 2000); }
+    function legacy() {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, legacy);
+      else legacy();
+    } catch (e) { legacy(); }
+  }
   function verifyResult(r) {
     var vx = r.verify || {}, c = r.counts;
     var checks = vx.c4 ? t("v_checks_c4") : t("v_checks_noc4_" + (vx.c4_reason === "hk" ? "hk" : vx.c4_reason === "no_code" ? "code" : "data"));
-    var bad = vx.bad_rows || [];
+    var bad = vx.bad_rows || [], absent = vx.absent || [];
+    var absentLine = absent.length ? '<p class="hint" style="margin:14px 2px 0">' + t("v_absent", { l: absent.map(function (a) { return esc(fieldName(a.field)) + (a.period_type ? "（" + ptype(a.period_type) + "）" : "") + (a.note ? "：" + esc(a.note) : ""); }).join("；") }) + "</p>" : "";
     return '<div class="runbar"><span style="width:9px;height:9px;border-radius:50%;background:var(--ok)"></span><div class="what">' + esc(S.ver.pdfName) + ' <span class="pill">' + r.pages_total + L(" 页", " pages") + "</span></div>" +
       '<span class="hint">' + checks + '</span><div style="margin-left:auto;display:flex;gap:10px"><button class="btn ghost sm" data-act="csv">' + t("r_export_csv") + '</button><button class="btn primary sm" data-act="reset">' + t("v_again") + "</button></div></div>" +
       '<div class="grid4" style="margin-top:20px">' + [["bad", "❌", "x"], ["warn", "⚠️", "warn"], ["ok", "✅", "check"]].map(function (x) {
         return '<div class="sumcard ' + x[0] + '"><div class="ic">' + ic(x[2]) + '</div><div><div class="lab">' + t("status_" + x[0]) + '</div><div class="num">' + c[x[1]] + "</div></div></div>";
       }).join("") + '<div class="sumcard"><div class="ic" style="background:var(--surface-2);color:var(--muted)">' + ic("warn") + '</div><div><div class="lab muted">' + t("v_unparsed") + '</div><div class="num">' + bad.length + "</div></div></div></div>" +
-      (bad.length ? '<div class="alert" style="margin-top:20px"><span class="ic" style="background:var(--warn-soft);color:var(--warn)">' + ic("warn") + "</span><div><h3>" + t("v_badrows", { l: bad.map(function (b) { return b.line; }).join(", ") }) + "</h3>" + bad.map(function (b) { return '<p class="mono" style="font-size:12px">#' + b.line + " · " + esc(b.why) + (b.text ? " · " + esc(b.text) : "") + "</p>"; }).join("") + "</div></div>" : "") +
+      (bad.length ? '<div class="alert" style="margin-top:20px"><span class="ic" style="background:var(--warn-soft);color:var(--warn)">' + ic("warn") + "</span><div><h3>" + t("v_badrows", { l: bad.map(function (b) { return b.line; }).join(", ") }) + "</h3>" + bad.map(function (b) { return '<p class="mono" style="font-size:12px">#' + b.line + " · " + esc(b.why) + (b.text ? " · " + esc(b.text) : "") + "</p>"; }).join("") + "</div></div>" : "") + absentLine +
       '<div class="tbl-card"><div class="tbl-head"><h2>' + t("r_core") + '</h2><span class="hint">' + t("r_core_sub") + "</span></div>" + rtable(r.items, "job") + "</div>" + caveat();
   }
 
@@ -819,7 +861,8 @@
         '<p class="hint" style="margin:14px 0 6px">' + t("mt_hk_errs", { e: x.errors, f: Math.round((x.recall || 0) * x.errors) }) + "</p>" + why.map(function (w) { return '<p class="muted" style="margin:6px 0 0;font-size:13px">' + w + "</p>"; }).join("") + "</div>";
     }
     var mods = [["C1", "c1"], ["C2", "c2"], ["C3", "c3"], ["C4", "c4"], ["S1–S5", "sx"]].map(function (m) { return '<div class="mod"><div class="k">' + m[0] + "</div><h3>" + t(m[1] + "_t") + "</h3><p>" + t(m[1] + "_d") + "</p></div>"; }).join("");
-    var toc = [["m-about", t("about_eyebrow")], ["m-summary", t("eval_title")], ["m-main", t("mt_main")], ["m-hold", t("mt_hold")], ["m-mk", t("mt_mk")], ["m-fable", t("mt_fable")], ["m-checks", t("mt_checks")], ["m-limits", t("mt_limits")]];
+    var toc = [["m-about", t("about_eyebrow")], ["m-summary", t("eval_title")], ["m-main", t("mt_main")], ["m-hold", t("mt_hold")], ["m-mk", t("mt_mk")], ["m-fable", t("mt_fable")], ["m-checks", t("mt_checks")], ["m-prompt", t("mt_prompt")], ["m-limits", t("mt_limits")]];
+    var R3 = H.ds_verified;
     return '<div class="wrap pt mlayout"><article class="mbody">' + about() +
       '<section class="msec" id="m-eval"><div class="card" style="display:flex;gap:16px">' + ic("info") + '<p style="margin:0" class="muted">' + t("mt_lead") + " " + t("mt_src") + "</p></div></section>" +
       '<section class="section" id="m-main"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.frozen_eval1.label_zh, E.frozen_eval1.label_en)) + "</div><h2>" + t("mt_main") + '</h2></div><span class="hint">docs/eval_results.md ' + E.frozen_eval1.section + "</span></div>" + tbl(F, ["ds_simple", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("silent_def") + "</p></section>" +
@@ -828,6 +871,7 @@
       '<div class="grid2">' + mk(M.us_a, t("mt_usa"), "ok", [t("mt_usa_why")]) + mk(M.hk, t("mt_hk"), "warn", [t("mt_hk_why1"), t("mt_hk_why2")]) + "</div></section>" +
       '<section class="section" id="m-fable"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.fable.label_zh, E.fable.label_en)) + "</div><h2>" + t("mt_fable") + '</h2></div><span class="hint">docs/eval_results.md ' + E.fable.section + "</span></div>" + tbl(FB, ["fable_direct", "fable_pipeline", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("mt_fable_note") + "</p></section>" +
       '<section class="section" id="m-checks"><div class="section-head"><div><h2>' + t("mt_checks") + '</h2></div></div><div class="grid3">' + mods + "</div></section>" +
+      '<section class="section" id="m-prompt"><div class="section-head"><div><h2>' + t("mt_prompt") + '</h2></div><a class="link" data-go="verify">' + t("nav_verify") + ' →</a></div><div class="card"><p style="margin:0">' + t("mt_prompt_d1") + '</p><p class="muted" style="margin:10px 0 0">' + t("mt_prompt_d2", { p: pct(R3.strict_acc), n: R3.items }) + "</p></div></section>" +
       '<section class="section" id="m-limits"><div class="section-head"><div><h2>' + t("mt_limits") + '</h2></div></div><div class="card"><div class="lim">' + [1, 2, 3, 4].map(function (n) { return '<div><span class="n">' + n + "</span><div><h4>" + t("l" + n + "_t") + "</h4><p>" + t("l" + n + "_d") + "</p></div></div>"; }).join("") + "</div>" +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><a class="btn ghost sm" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + " GitHub</a><span class='pill'>docs/eval_design.md · " + t("mt_links") + "</span><span class='pill'>docs/eval_results.md · " + t("mt_links2") + "</span></div></div></section></article>" +
       '<nav class="mtoc"><div class="lbl">' + t("mt_toc") + "</div>" + toc.map(function (x) { return '<a data-toc="' + x[0] + '">' + x[1] + "</a>"; }).join("") + "</nav></div>";
@@ -953,6 +997,8 @@
     }
     else if (a === "hist-clear") { try { localStorage.removeItem(HIST_KEY); } catch (e3) { /* nothing stored */ } S.hist = null; S.histCur = null; render(); }
     else if (a === "prov") { S.provOpen = !S.provOpen; render(); }
+    else if (a === "show-prompt") { S.showPrompt = !S.showPrompt; render(); }
+    else if (a === "copy-prompt") { copyPrompt(); }
     else if (a === "panel-hide") { S.panelHidden = true; render(); }
     else if (a === "panel-show") { S.panelHidden = false; render(); }
     else if (a === "eye") { S.form.showKey = !S.form.showKey; render(); }

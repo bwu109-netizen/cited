@@ -30,6 +30,8 @@ HERE = Path(__file__).resolve().parent
 _component = components.declare_component("cited", path=str(HERE / "ui"))
 EXAMPLES = {p.stem: json.loads(p.read_text()) for p in sorted((HERE / "examples").glob("*.json"))}
 EVAL = json.loads((HERE / "eval_numbers.json").read_text())
+# universal prompt for any AI (Verify page "copy" button); the interface language picks the version
+PROMPTS = {lang: (HERE.parent / "prompts" / f"universal_prompt_{lang}.md").read_text() for lang in ("zh", "en")}
 GITHUB = "https://github.com/bwu109-netizen/cited"
 
 PAGE_CSS = """<style>
@@ -178,7 +180,7 @@ def _verify(job, ev, pdf_bytes):
                "pages_total": len(ctx["pages"]), "pages_sent": [], "llm": {}, "_pages": ctx["pages"]}
         pl = core.payload(res)
         did_c4 = bool(ctx["benchmarks"])
-        pl["verify"] = {"bad_rows": parsed["bad"], "format": parsed["format"], "c4": did_c4,
+        pl["verify"] = {"bad_rows": parsed["bad"], "absent": parsed["absent"], "format": parsed["format"], "c4": did_c4,
                         "c4_reason": None if did_c4 else ("hk" if market == "hk" else "no_code" if not code else "no_data"),
                         "n_rows": len(parsed["items"]) + len(parsed["bad"])}
         job["_ctx"] = ctx
@@ -252,7 +254,7 @@ def main():
     running = ss.job.get("status") == "running"
     cfg = {"providers": {k: {"label": v["label"], "model": v.get("model", ""), "key_url": v.get("key_url", ""),
                              "base": bool(v.get("base_url"))} for k, v in PROVIDERS.items()},
-           "examples": EXAMPLES, "eval": EVAL, "github": GITHUB}
+           "examples": EXAMPLES, "eval": EVAL, "github": GITHUB, "prompts": PROMPTS}
 
     def ui_body():
         job = ss.job

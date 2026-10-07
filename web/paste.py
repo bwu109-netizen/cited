@@ -4,6 +4,8 @@ earnings_agent.verify.verify_report. Pure code, no model calls.
 Accepted:
 - JSON: {"items": [...]} or a bare list, items in the pipeline extraction format
   (field, raw_value, raw_unit, raw_currency, period_type, period_end, page, quote[, derivation, components]).
+  The whole reply of the universal prompt (prompts/) can be pasted: the first ```json block is used and the
+  readable table after it is ignored. Items with status "not_disclosed" are listed as absent, not as errors.
 - Tables: Markdown (| a | b |) or tab-separated (copied from a web page). Columns are recognised from the
   header row; unknown columns can be mapped by the user (`mapping`: {column index: role}).
 Rows that cannot be parsed are returned separately with their line number, never dropped silently.
@@ -98,11 +100,23 @@ def _is_rule(cells):
     return all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c)
 
 
+_FENCED_JSON = re.compile(r"```(?:json|JSON)?\s*\n(.*?)\n\s*```", re.S)
+
+
+def json_block(text):
+    """The JSON part of a pasted reply: the first fenced block that looks like JSON, else the text itself."""
+    for m in _FENCED_JSON.finditer(text or ""):
+        body = m.group(1).strip()
+        if body[:1] in "[{":
+            return body
+    return (text or "").strip()
+
+
 def detect(text):
     t = (text or "").strip()
     if not t:
         return "empty"
-    if t[0] in "[{" or t.startswith("```"):
+    if t[0] in "[{" or t.startswith("```") or json_block(t)[:1] in "[{":
         return "json"
     return "table"
 
@@ -115,11 +129,11 @@ def parse(text, cum, period_end_iso, mapping=None):
     """Returns {"items": raw items, "bad": [{"line", "text", "why"}], "columns": [...], "roles": [...],
     "format": "json"|"table"|"empty", "needs_mapping": bool}."""
     kind = detect(text)
-    out = {"items": [], "bad": [], "columns": [], "roles": [], "format": kind, "needs_mapping": False}
+    out = {"items": [], "bad": [], "absent": [], "columns": [], "roles": [], "format": kind, "needs_mapping": False}
     if kind == "empty":
         return out
     if kind == "json":
-        s = text.strip().strip("`")
+        s = json_block(text).strip("`")
         s = re.sub(r"^json\s*", "", s)
         try:
             data = json.loads(s)
@@ -167,6 +181,10 @@ def _add(out, line, text, r, cum, period_end_iso):
         out["bad"].append({"line": line, "text": text, "why": f"指标名无法识别：{r.get('field') or r.get('metric')!r}"})
         return
     raw = str(r.get("raw_value") if r.get("raw_value") is not None else r.get("value") or "").strip()
+    if str(r.get("status") or "").lower() == "not_disclosed" or nfkc(raw).lower() in ("原文没有", "not disclosed"):
+        out["absent"].append({"line": line, "field": field, "period_type": period_of(r.get("period_type") or r.get("period"), cum),
+                              "note": str(r.get("note") or "")[:200]})
+        return
     try:
         digits_of(raw)
     except UnitError:
@@ -208,4 +226,12 @@ if __name__ == "__main__":  # self-check
               '"quote":"Basic $ 0.34"}]}', "H", "2026-06-30")
     assert j["items"][0]["field"] == "eps_basic" and not j["bad"]
     assert parse("| a | b |\n|---|---|\n| 1 | 2 |", "H", "x")["needs_mapping"]
+    # a whole reply to the universal prompt: prose, a ```json block, then a readable table
+    reply = ('Here are the figures.\n\n```json\n{"items":[{"field":"revenue","period_type":"Q","status":"reported",'
+             '"raw_value":"28,236","raw_unit":"in millions","raw_currency":"$","page":5,"quote":"Total revenues 28,236"},'
+             '{"field":"operating_cash_flow","period_type":"Q","status":"not_disclosed","raw_value":null,'
+             '"note":"six months only"}]}\n```\n\n| 指标 | 期间 | 数值 |\n|---|---|---|\n| 营业收入 | 单季 | 28,236 |')
+    u = parse(reply, "H", "2026-06-30")
+    assert u["format"] == "json" and [i["field"] for i in u["items"]] == ["revenue"] and not u["bad"], u
+    assert [(a["field"], a["period_type"]) for a in u["absent"]] == [("operating_cash_flow", "Q")], u["absent"]
     print("paste self-check OK")

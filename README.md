@@ -36,6 +36,16 @@ Core figures from US, A-share and HK filings, each with its page and verbatim qu
   - 港股留出集未评分；
   - 修订是看过结果之后做的，冻结与修订的过程见 [docs/eval_design.md](docs/eval_design.md) §10。
 
+## 通用提示词
+
+[`prompts/`](prompts/) 里有一份中英文两版的通用提示词，可以在任何 AI（GPT、Claude、DeepSeek、豆包等）里使用。
+- 用法：上传财报，贴上提示词，再把 AI 的回答整段贴回网页的核验页，用代码核对每个数。
+- 要求：每个数给出 PDF 页序号和原文整行；原文没有的指标写 `not_disclosed`，不许估算；输出 JSON 加一张可读表格。
+
+评估情况：
+- 它由评估里“专业直接问 + 核验层”（R3）的提问改写而来。R3 在 DeepSeek 留出集上的严格正确率为 97.1%（美股 + A 股 205 条，输入是解析后的文本，见 [docs/eval_results.md](docs/eval_results.md) §3）。
+- 通用版改了输出格式，本身没有单独评估；其他模型都未经评估。
+
 ## 本地运行
 
 ```bash

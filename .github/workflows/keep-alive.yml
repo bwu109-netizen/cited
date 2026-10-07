@@ -1,0 +1,38 @@
+# Keeps the Streamlit Community Cloud app from staying asleep: every 6 hours (and on demand) it opens the
+# site, presses the wake-up button if the sleep page is shown, and checks that the app itself loads.
+# The site address comes from the repository variable APP_URL (Settings → Secrets and variables → Actions).
+# A failed run turns red and GitHub emails the repository owner.
+name: keep-alive
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Open the app (wake it if asleep)
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: python .github/scripts/keep_alive.py
+      - name: Keep the failure screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keep-alive-failure
+          path: keep-alive-failure.png
+          if-no-files-found: ignore

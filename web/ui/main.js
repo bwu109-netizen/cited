@@ -85,7 +85,7 @@
 
   // ------------------------------------------------------------------ i18n
   var T = {
-    brand: ["财报核验", "Earnings Verifier"],
+    brand: ["财报数字核验", "Earnings Verifier"],
     theme_to_light: ["切换到浅色", "Switch to light mode"], theme_to_dark: ["切换到深色", "Switch to dark mode"],
     nav_examples: ["示例", "Examples"], nav_analyze: ["分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
@@ -112,7 +112,7 @@
       "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for. Not flagged does not mean correct."],
     nokey_cta: ["没有 API key？看示例结果", "No API key? See example results"],
     verify_cta: ["已有其他 AI 的结果？去核验", "Have another AI's answer? Verify it"],
-    about_eyebrow: ["关于财报核验", "About Earnings Verifier"],
+    about_eyebrow: ["关于财报数字核验", "About Earnings Verifier"],
     sb_new: ["新分析", "New analysis"], sb_recent: ["最近的结果", "Recent results"], sb_local: ["仅保存在本机浏览器", "Kept only in this browser"],
     sb_empty: ["还没有结果。分析完成后会出现在这里。", "No results yet. Finished analyses appear here."], sb_clear: ["清空", "Clear"],
     sb_collapse: ["收起侧栏", "Collapse sidebar"], sb_expand: ["展开侧栏", "Expand sidebar"],

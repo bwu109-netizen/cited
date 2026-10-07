@@ -89,10 +89,9 @@
     theme_to_light: ["切换到浅色", "Switch to light mode"], theme_to_dark: ["切换到深色", "Switch to dark mode"],
     nav_examples: ["示例", "Examples"], nav_analyze: ["分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
-    hero_title: ["从财报里抄数，<br>每个数都带出处", "Numbers from filings,<br>each with its source"],
     hero_sub: ["美股、A 股、港股定期报告：抽取核心财务数字，附页码和原文，用代码核验，可疑的标红。",
       "US, A-share and HK filings: core figures with page and quote, checked by code, suspicious ones in red."],
-    ex_eyebrow: ["PRE-COMPUTED EXAMPLES", "PRE-COMPUTED EXAMPLES"], ex_title: ["示例结果", "Example results"],
+    ex_title: ["示例结果", "Example results"], ex_back: ["返回示例", "Back to examples"],
     ex_note: ["示例为预跑结果：模型回复来自评估时的缓存，核验按当前规则重新运行。示例里的条数是结果表里的条数，不是评估指标。",
       "Pre-computed: model replies cached from the evaluation, checks re-run with the current rules. Counts are rows in the result table, not evaluation metrics."],
     ex_open: ["查看完整结果", "Open full result"], ex_tag: ["示例为预跑结果", "Pre-computed example"],
@@ -109,10 +108,10 @@
     eval_silent: ["给了数但错了、且没被标出的条目", "Wrong numbers that were not flagged"],
     eval_note: ["出处：docs/eval_results.md §3。专业写法的直接问在同一样本上严格正确率为 {d}，更高；流水线的不同在于每个数都有页码和原文，可疑的数会被标出。",
       "Source: docs/eval_results.md §3. A carefully worded direct question to the same model scored {d} strict accuracy on the same sample, higher; the pipeline differs in giving every number a page and a quote and flagging suspicious ones."],
-    eval_link: ["方法与评估", "Method & evaluation"],
     caveat: ["核验只能确认数字在原文里、单位对、和其他数自洽，不能确认它就是你要的指标；未标红不等于正确。",
       "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for. Not flagged does not mean correct."],
     nokey_cta: ["没有 API key？看示例结果", "No API key? See example results"],
+    verify_cta: ["已有其他 AI 的结果？去核验", "Have another AI's answer? Verify it"],
     about_eyebrow: ["关于有据", "ABOUT CITED"],
     sb_new: ["新分析", "New analysis"], sb_recent: ["最近的结果", "Recent results"], sb_local: ["仅保存在本机浏览器", "Kept only in this browser"],
     sb_empty: ["还没有结果。分析完成后会出现在这里。", "No results yet. Finished analyses appear here."], sb_clear: ["清空", "Clear"],
@@ -182,7 +181,9 @@
     e_general: ["运行出错", "The run failed"], e_detail: ["服务商返回：{m}", "Provider returned: {m}"],
     e_stopped: ["已停止。", "Stopped."], e_again: ["返回修改", "Back to the form"],
     // compare
-    c_eyebrow: ["P3 · 批量对比", "P3 · COMPARE"], c_title: ["批量对比", "Compare filings"],
+    c_q: ["对比哪几家公司？", "Which companies should we compare?"],
+    c_ccy_hint: ["结果可在原币种和上市地货币之间切换；换算用国家外汇管理局人民币汇率中间价的期末汇率，取不到汇率就不换算。银行没有毛利行，毛利列写“不适用”。",
+      "Results switch between reporting and listing currency; conversion uses SAFE RMB central parity at period end, and nothing is converted without a rate. Banks have no gross-profit line (N/A)."],
     c_lead: ["多家公司同一报告期，口径统一的对比表。最多 10 家；服务商和 key 与单家分析共用。", "Several companies, one period, aligned definitions. Up to 10; provider and key are shared with Analyze."],
     c_rows: ["公司", "Companies"], c_add: ["添加一家", "Add a company"], c_run: ["开始对比", "Compare"],
     c_ccy_orig: ["原币种", "As reported"], c_ccy_local: ["上市地货币", "Listing currency"],
@@ -195,7 +196,7 @@
     c_failed: ["没拿到：{r}", "Not fetched: {r}"], c_upload_row: ["上传 PDF", "Upload PDF"],
     c_queued: ["排队中", "Queued"],
     // verify
-    v_eyebrow: ["P4 · 核验 · 免 KEY · 不调用任何模型", "P4 · VERIFY · NO KEY · NO MODEL"], v_title: ["核验别的 AI 给的数", "Check figures from any AI"],
+    v_title: ["核验别的 AI 给的数", "Check figures from any AI"], v_sub: ["不需要 key，不调用任何模型，纯代码检查。", "No key, no model: code-only checks."],
     v_lead: ["上传财报 PDF，粘贴 AI 按通用提示词给出的结果（JSON 或表格）。纯代码检查：C1–C3 + 合理性检查；美股和 A 股填了代码、能取到结构化数据时加 C4。",
       "Upload the filing PDF and paste an AI's answer (JSON or a table). Code-only checks: C1–C3 + consistency; C4 too for US and A-share when a ticker is given and structured data is available."],
     v_pdf: ["原始财报 PDF", "Filing PDF"], v_paste: ["粘贴 AI 的结果", "Paste the AI's answer"],
@@ -218,8 +219,8 @@
     role_period_type: ["期间", "Period"], role_page: ["页码", "Page"], role_quote: ["原文", "Quote"], role_none: ["忽略", "Ignore"],
     v_nosource: ["无出处", "No source"],
     // method
-    mt_eyebrow: ["P5 · 方法与评估 · 数字全部来自 docs/eval_results.md", "P5 · METHOD · ALL NUMBERS FROM docs/eval_results.md"],
-    mt_title: ["方法、核验规则与评估", "Method, checks and evaluation"],
+    mt_src: ["本页数字全部来自 docs/eval_results.md。", "Every number on this page comes from docs/eval_results.md."],
+    mt_toc: ["本页目录", "On this page"], mt_eval: ["评估", "Evaluation"],
     mt_lead: ["在 DeepSeek 上，专业写法的直接问严格正确率最高。流水线的价值在于每个数都有页码和原文，可疑的数被标出来，需要人工复核的范围能缩小。本页如实列出三档对比和局限。",
       "On DeepSeek, a carefully worded direct question had the highest strict accuracy. The pipeline's value is that every number has a page and a quote and suspicious numbers are flagged, narrowing what a person must re-check. This page lists the comparison and the limits as measured."],
     mt_main: ["三档对比（冻结版，主结果）", "Three tiers (frozen rules, main result)"],
@@ -464,25 +465,24 @@
         }).join("") + "</div>" +
         '<button class="btn ghost sm" style="width:100%">' + t("ex_open") + " " + ic("arrow", "sm") + "</button></div>";
     }).join("");
-    return '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("ex_eyebrow") + '</div><h1 class="page">' + t("ex_title") + '</h1><p class="lead">' + t("ex_note") + "</p>" +
-      '<div class="grid3" style="margin-top:36px">' + cards + "</div></div>";
+    return '<div class="wrap pt"><h1 class="ptitle">' + t("ex_title") + '</h1><p class="hint" style="max-width:760px;margin:6px 0 0">' + t("ex_note") + "</p>" +
+      '<div class="grid3" style="margin-top:24px">' + cards + "</div></div>";
   }
   // former home page, now the lower part of the analyze form page
   // the former home page, now the top of the method page
   function about() {
     var ev = S.cfg.eval, h = ev.holdout.tiers, p = h.ds_pipeline;
-    return '<section class="about"><div class="eyebrow"><span class="dot"></span>' + t("about_eyebrow") + "</div>" +
-      '<h1 class="about-title">' + t("hero_title") + '</h1><p class="lead">' + t("hero_sub") + "</p></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">PIPELINE</div><h2>' + t("how_title") + "</h2></div></div>" +
+    return '<section class="msec" id="m-about"><h2>' + t("about_eyebrow") + '</h2><p class="lead">' + t("hero_sub") + "</p>" +
       '<div class="steps3"><div><div class="n">01</div><h3>' + t("how1_t") + "</h3><p>" + t("how1_d") + '</p></div><div><div class="n">02</div><h3>' + t("how2_t") + "</h3><p>" + t("how2_d") + '</p></div><div><div class="n">03</div><h3>' + t("how3_t") + "</h3><p>" + t("how3_d") + "</p></div></div></section>" +
-      '<section class="section"><div class="card" style="padding:36px"><div class="section-head"><div><div class="eyebrow">' + esc(L(ev.holdout.label_zh, ev.holdout.label_en)) + "</div><h2>" + t("eval_title") + '</h2></div><a class="link" data-go="method">' + t("eval_link") + " →</a></div>" +
+      '<section class="msec" id="m-summary"><div class="card" style="padding:32px"><div class="section-head"><div><div class="eyebrow">' + esc(L(ev.holdout.label_zh, ev.holdout.label_en)) + "</div><h2>" + t("eval_title") + "</h2></div></div>" +
       '<div class="grid3"><div><div class="big ok">' + pct(p.strict_acc) + '</div><div class="kpi-cap">' + t("eval_strict") + '</div></div>' +
       '<div><div class="big">' + pct(p.workload) + '</div><div class="kpi-cap">' + t("eval_work") + "</div></div>" +
       '<div><div class="big">' + p.silent + '<span style="font-size:22px;color:var(--muted)"> / ' + p.items + '</span></div><div class="kpi-cap">' + t("eval_silent") + '</div><div class="hint">' + (function () { var hk = ev.recall_by_market.hk, e = hk.errors, u = e - Math.round((hk.recall || 0) * e);
-        return L("美股 + A 股留出集；港股 " + e + " 个错误中 " + u + ' 个未被标出，见<a class="link" data-go="method">方法页</a>',
-                 "US + A-share holdout; in HK, " + u + " of " + e + ' errors were not flagged; see <a class="link" data-go="method">Method</a>'); })() + "</div></div></div>" +
+        return L("美股 + A 股留出集；港股 " + e + " 个错误中 " + u + ' 个未被标出，见<a class="link" data-toc="m-mk">下文分市场的召回率</a>',
+                 "US + A-share holdout; in HK, " + u + " of " + e + ' errors were not flagged; see <a class="link" data-toc="m-mk">flag recall by market</a> below'); })() + "</div></div></div>" +
       '<p class="src">' + t("eval_note", { d: pct(h.ds_direct.strict_acc) }) + "</p></div></section>";
   }
+
 
   // ------------------------------------------------------------------ result component (R0 / R1 / R2)
   function result(r, src) {
@@ -576,7 +576,7 @@
   function example() {
     var r = S.cfg.examples[S.example];
     if (!r) { S.view = "examples"; return examples(); }
-    return '<div class="wrap">' + result(r, "example") + "</div>";
+    return '<div class="wrap"><div class="runbar"><button class="btn ghost sm" data-go="examples">' + ic("left", "sm") + t("ex_back") + '</button><span class="hint">' + t("ex_note") + "</span></div>" + result(r, "example") + "</div>";
   }
 
   // ------------------------------------------------------------------ P2 analyze
@@ -635,7 +635,7 @@
       (provOpen ? provFields(f) : "") +
       '<button class="btn primary block" data-act="start"' + (S.touched && Object.keys(formErrors()).length ? " disabled" : "") + ">" + ic("play") + t("start") + "</button>" +
       '<div class="hint">' + t("period_help") + "</div></div>" +
-      '<a class="stage-link" data-go="examples">' + t("nokey_cta") + " →</a></div>";
+      '<div class="stage-links"><a class="stage-link" data-go="examples">' + t("nokey_cta") + ' →</a><a class="stage-link" data-go="verify">' + t("verify_cta") + " →</a></div></div>";
   }
   function runbar(done) {
     var j = S.job, q = j.query || {}, m = j.meta || {};
@@ -698,13 +698,12 @@
   var CMP_NAMES = { revenue: ["营业收入", "Revenue"], net_income_parent: ["归母净利润", "Net income attrib."], gross_profit: ["毛利", "Gross profit"], operating_cash_flow: ["经营现金流", "Operating cash flow"], eps_basic: ["基本 EPS", "Basic EPS"] };
   function compare() {
     var j = S.job, c = S.cmp;
-    var head = '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("c_eyebrow") + '</div><h1 class="page">' + t("c_title") + '</h1><p class="lead">' + t("c_lead") + "</p>";
     if (j.kind === "compare" && j.rows && j.status !== "idle") {
       if (c.open != null) {
         var rr = j.rows[c.open];
-        return head + '<button class="btn ghost sm" style="margin-top:24px" data-act="cmp-back">' + ic("left", "sm") + L("返回对比表", "Back to comparison") + "</button>" + (rr && rr.result ? result(rr.result, "cmp" + c.open) : "") + "</div>";
+        return '<div class="wrap"><div class="runbar"><button class="btn ghost sm" data-act="cmp-back">' + ic("left", "sm") + L("返回对比表", "Back to comparison") + "</button></div>" + (rr && rr.result ? result(rr.result, "cmp" + c.open) : "") + "</div>";
       }
-      return head + cmpTable() + "</div>";
+      return '<div class="wrap pt">' + cmpTable() + "</div>";
     }
     var e = S.touched ? formErrors() : {};
     var rows = c.rows.map(function (r, i) {
@@ -712,11 +711,16 @@
         '<input class="input" id="c-code-' + i + '" data-ccode="' + i + '" value="' + esc(r.code) + '" placeholder="' + t("ph_" + r.market) + '"><button class="round" data-cdel="' + i + '" aria-label="remove">' + ic("trash", "sm") + "</button></div>";
     }).join("");
     var ok = c.rows.some(function (r) { return r.code.trim(); }) && !e.key && !e.model && !e.base;
-    return head + '<div class="split" style="margin-top:36px"><div class="card" style="display:flex;flex-direction:column;gap:18px"><div class="field"><label>' + t("c_rows") + '</label><div style="display:flex;flex-direction:column;gap:10px">' + rows + "</div>" +
+    var p = S.cfg.providers[S.form.provider] || {}, provOpen = S.provOpen || e.model || e.base;
+    return '<div class="stage"><h1 class="stage-title">' + t("c_q") + "</h1>" +
+      '<div class="card stage-card"><div class="field"><label>' + t("c_rows") + '</label><div style="display:flex;flex-direction:column;gap:10px">' + rows + "</div>" +
       (c.rows.length < 10 ? '<button class="btn ghost sm" style="align-self:flex-start" data-act="cadd">' + ic("plus", "sm") + t("c_add") + "</button>" : "") + "</div>" +
-      '<div class="field"><label>' + t("f_period") + '</label><select class="input" id="c-period">' + PERIODS.map(function (p) { return '<option value="' + p + '"' + (p === c.period ? " selected" : "") + ">" + periodLabel(p) + "</option>"; }).join("") + "</select></div>" +
-      keyFields(S.form) + '<button class="btn primary block" data-act="cmp-run"' + (S.touched && !ok ? " disabled" : "") + ">" + ic("play") + t("c_run") + "</button></div>" +
-      '<div class="card"><div class="lbl" style="margin-bottom:12px">' + t("c_ccy_local") + '</div><p class="muted" style="margin:0 0 10px">' + L("美股 USD、港股 HKD、A 股 CNY。换算用国家外汇管理局人民币汇率中间价的期末汇率（报告期末当日或之前最近一个发布日），每个换算后的数都标汇率来源、日期和类型，随时能切回原币种；取不到汇率就不换算。", "US in USD, HK in HKD, A-share in CNY. Conversion uses SAFE RMB central parity at period end (the last published rate on or before the period end); every converted figure shows source, date and type, and you can switch back; with no rate, nothing is converted.") + '</p><p class="hint" style="margin:0">' + L("银行没有毛利行，毛利列写“不适用”。", "Banks have no gross-profit line; that column shows N/A.") + "</p></div></div></div>";
+      '<div class="field"><label>' + t("f_period") + '</label><select class="input" id="c-period">' + PERIODS.map(function (x) { return '<option value="' + x + '"' + (x === c.period ? " selected" : "") + ">" + periodLabel(x) + "</option>"; }).join("") + "</select></div>" +
+      keyField(S.form) +
+      '<button class="prov-line" data-act="prov">' + t("a_model_line", { p: esc(p.label || S.form.provider), m: esc(S.form.model || p.model || "—") }) + " " + (provOpen ? "▴" : "▾") + "</button>" +
+      (provOpen ? provFields(S.form) : "") +
+      '<button class="btn primary block" data-act="cmp-run"' + (S.touched && !ok ? " disabled" : "") + ">" + ic("play") + t("c_run") + "</button>" +
+      '<div class="hint">' + t("c_lead") + " " + t("c_ccy_hint") + "</div></div></div>";
   }
   function fxFor(row, it) {
     var r = row.rates && it.currency ? row.rates[it.currency] : null;
@@ -759,16 +763,16 @@
   function fmtDetect(s) { s = (s || "").trim(); if (!s) return null; return /^[\[{`]/.test(s) ? "json" : "table"; }
   function verify() {
     var j = S.job, v = S.ver;
-    var head = '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("v_eyebrow") + '</div><h1 class="page">' + t("v_title") + '</h1><p class="lead">' + t("v_lead") + "</p>";
-    if (j.kind === "verify" && j.status === "running") return head + '<div class="runbar"><span class="live"></span><div class="what">' + esc(v.pdfName) + "</div></div></div>";
-    if (j.kind === "verify" && j.status === "done" && j.result) return head + verifyResult(j.result) + "</div>";
+    var head = '<div class="stage wide"><h1 class="stage-title">' + t("v_title") + '</h1><p class="hint" style="margin:-6px 0 0;text-align:center">' + t("v_sub") + "</p>";
+    if (j.kind === "verify" && j.status === "running") return '<div class="wrap"><div class="runbar"><span class="live"></span><div class="what">' + esc(v.pdfName) + "</div></div></div>";
+    if (j.kind === "verify" && j.status === "done" && j.result) return '<div class="wrap">' + verifyResult(j.result) + "</div>";
     if (j.kind === "verify" && (j.status === "error" || j.status === "fetch_failed")) {
-      head += '<div class="alert"><span class="ic">' + ic("x") + "</span><div><h3>" + (j.error_kind === "scanned" ? t("scanned") : t("e_general")) + "</h3><p class='mono' style='font-size:12px'>" + esc(j.error || "") + "</p></div></div>";
+      head += '<div class="alert" style="width:100%;max-width:1040px"><span class="ic">' + ic("x") + "</span><div><h3>" + (j.error_kind === "scanned" ? t("scanned") : t("e_general")) + "</h3><p class='mono' style='font-size:12px'>" + esc(j.error || "") + "</p></div></div>";
     }
     var mapping = "";
     if (j.kind === "verify" && j.status === "needs_mapping" && j.result) {
       var cols = j.result.columns, roles = j.result.roles;
-      mapping = '<div class="card" style="margin-top:24px"><h2>' + t("v_map_t") + '</h2><div class="grid4" style="margin-top:14px">' + cols.map(function (c, i) {
+      mapping = '<div class="card" style="width:100%;max-width:1040px"><h2>' + t("v_map_t") + '</h2><div class="grid4" style="margin-top:14px">' + cols.map(function (c, i) {
         var cur = v.mapping[String(i)] || roles[i] || "";
         return '<div class="field"><label>' + esc(c) + '</label><select class="input" data-map="' + i + '">' + ["", "field", "raw_value", "raw_unit", "raw_currency", "period_type", "page", "quote"].map(function (r) {
           return '<option value="' + r + '"' + (r === cur ? " selected" : "") + ">" + t(r ? "role_" + r : "role_none") + "</option>";
@@ -777,7 +781,7 @@
     }
     var fmt = fmtDetect(v.text);
     var can = v.pdf && v.text.trim();
-    return head + mapping + '<div class="grid2" style="margin-top:32px;align-items:start"><div class="card" style="display:flex;flex-direction:column;gap:18px"><h2><span class="pill" style="margin-right:8px">1</span>' + t("v_pdf") + "</h2>" +
+    return head + mapping + '<div class="grid2 vgrid"><div class="card" style="display:flex;flex-direction:column;gap:18px"><h2><span class="pill" style="margin-right:8px">1</span>' + t("v_pdf") + "</h2>" +
       '<div class="drop" id="drop2"><div class="circle">' + ic("upload") + "</div><h3>" + (v.pdf ? esc(v.pdfName) + ' <span class="faint mono" style="font-size:12px">' + (v.pdfSize / 1048576).toFixed(1) + " MB</span>" : t("ff_drop")) + '</h3><input type="file" id="file2" accept="application/pdf" class="hidden"><button class="btn ghost sm" style="margin-top:12px" data-act="pick2">' + ic("file", "sm") + t("ff_choose") + "</button></div>" +
       '<div class="note">' + ic("lock", "sm") + t("v_no_upload_store") + "</div>" +
       '<div class="lbl">' + t("v_meta") + '</div><div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-vmarket="' + m + '" class="' + (v.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
@@ -788,7 +792,8 @@
       '<div style="display:flex;gap:6px">' + ["json", "table"].map(function (k) { return '<span class="badge ' + (fmt === k ? "ok" : "grey") + '">' + t("v_fmt_" + k) + "</span>"; }).join("") + (fmt ? "" : '<span class="badge grey">' + t("v_fmt_wait") + "</span>") + "</div>" +
       '<textarea class="input" id="v-text" spellcheck="false" placeholder="' + esc(t("v_ph")) + '">' + esc(v.text) + '</textarea><div class="hint" style="text-align:right">' + t("v_chars", { n: v.text.length.toLocaleString("en-US") }) + "</div>" +
       '<button class="btn primary block" data-act="ver-run"' + (can ? "" : " disabled") + ">" + ic("play") + t("v_run") + "</button>" +
-      (!can ? '<div class="hint">' + (!v.pdf ? t("v_need_pdf") : t("v_need_text")) + "</div>" : "") + "</div></div></div>";
+      (!can ? '<div class="hint">' + (!v.pdf ? t("v_need_pdf") : t("v_need_text")) + "</div>" : "") + "</div></div>" +
+      '<p class="hint" style="max-width:1040px;margin:0">' + t("v_lead") + "</p></div>";
   }
   function verifyResult(r) {
     var vx = r.verify || {}, c = r.counts;
@@ -819,16 +824,18 @@
         '<p class="hint" style="margin:14px 0 6px">' + t("mt_hk_errs", { e: x.errors, f: Math.round((x.recall || 0) * x.errors) }) + "</p>" + why.map(function (w) { return '<p class="muted" style="margin:6px 0 0;font-size:13px">' + w + "</p>"; }).join("") + "</div>";
     }
     var mods = [["C1", "c1"], ["C2", "c2"], ["C3", "c3"], ["C4", "c4"], ["S1–S5", "sx"]].map(function (m) { return '<div class="mod"><div class="k">' + m[0] + "</div><h3>" + t(m[1] + "_t") + "</h3><p>" + t(m[1] + "_d") + "</p></div>"; }).join("");
-    return '<div class="wrap" style="padding-top:44px">' + about() + '<section class="section"><div class="eyebrow"><span class="dot"></span>' + t("mt_eyebrow") + '</div><h1 class="page">' + t("mt_title") + "</h1></section>" +
-      '<div class="card" style="margin-top:24px;display:flex;gap:16px">' + ic("info") + '<p style="margin:0" class="muted">' + t("mt_lead") + "</p></div>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.frozen_eval1.label_zh, E.frozen_eval1.label_en)) + "</div><h2>" + t("mt_main") + '</h2></div><span class="hint">docs/eval_results.md ' + E.frozen_eval1.section + "</span></div>" + tbl(F, ["ds_simple", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("silent_def") + "</p></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.holdout.label_zh, E.holdout.label_en)) + "</div><h2>" + t("mt_hold") + '</h2></div><span class="hint">docs/eval_results.md ' + E.holdout.section + "</span></div>" + tbl(H, ["ds_simple", "ds_direct", "ds_pipeline", "ds_verified"]) + '<p class="src">' + t("mt_hold_note") + "</p></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(M.label_zh, M.label_en)) + "</div><h2>" + t("mt_mk") + '</h2></div><span class="hint">' + t("mt_mk_note") + " · docs/eval_results.md " + M.section + "</span></div>" +
+    var toc = [["m-about", t("about_eyebrow")], ["m-summary", t("eval_title")], ["m-main", t("mt_main")], ["m-hold", t("mt_hold")], ["m-mk", t("mt_mk")], ["m-fable", t("mt_fable")], ["m-checks", t("mt_checks")], ["m-limits", t("mt_limits")]];
+    return '<div class="wrap pt mlayout"><article class="mbody">' + about() +
+      '<section class="msec" id="m-eval"><div class="card" style="display:flex;gap:16px">' + ic("info") + '<p style="margin:0" class="muted">' + t("mt_lead") + " " + t("mt_src") + "</p></div></section>" +
+      '<section class="section" id="m-main"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.frozen_eval1.label_zh, E.frozen_eval1.label_en)) + "</div><h2>" + t("mt_main") + '</h2></div><span class="hint">docs/eval_results.md ' + E.frozen_eval1.section + "</span></div>" + tbl(F, ["ds_simple", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("silent_def") + "</p></section>" +
+      '<section class="section" id="m-hold"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.holdout.label_zh, E.holdout.label_en)) + "</div><h2>" + t("mt_hold") + '</h2></div><span class="hint">docs/eval_results.md ' + E.holdout.section + "</span></div>" + tbl(H, ["ds_simple", "ds_direct", "ds_pipeline", "ds_verified"]) + '<p class="src">' + t("mt_hold_note") + "</p></section>" +
+      '<section class="section" id="m-mk"><div class="section-head"><div><div class="eyebrow">' + esc(L(M.label_zh, M.label_en)) + "</div><h2>" + t("mt_mk") + '</h2></div><span class="hint">' + t("mt_mk_note") + " · docs/eval_results.md " + M.section + "</span></div>" +
       '<div class="grid2">' + mk(M.us_a, t("mt_usa"), "ok", [t("mt_usa_why")]) + mk(M.hk, t("mt_hk"), "warn", [t("mt_hk_why1"), t("mt_hk_why2")]) + "</div></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.fable.label_zh, E.fable.label_en)) + "</div><h2>" + t("mt_fable") + '</h2></div><span class="hint">docs/eval_results.md ' + E.fable.section + "</span></div>" + tbl(FB, ["fable_direct", "fable_pipeline", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("mt_fable_note") + "</p></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">VERIFICATION</div><h2>' + t("mt_checks") + '</h2></div></div><div class="grid3">' + mods + "</div></section>" +
-      '<section class="section"><div class="section-head"><div><div class="eyebrow">LIMITATIONS</div><h2>' + t("mt_limits") + '</h2></div></div><div class="card"><div class="lim">' + [1, 2, 3, 4].map(function (n) { return '<div><span class="n">' + n + "</span><div><h4>" + t("l" + n + "_t") + "</h4><p>" + t("l" + n + "_d") + "</p></div></div>"; }).join("") + "</div>" +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><a class="btn ghost sm" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + " GitHub</a><span class='pill'>docs/eval_design.md · " + t("mt_links") + "</span><span class='pill'>docs/eval_results.md · " + t("mt_links2") + "</span></div></div></section></div>";
+      '<section class="section" id="m-fable"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.fable.label_zh, E.fable.label_en)) + "</div><h2>" + t("mt_fable") + '</h2></div><span class="hint">docs/eval_results.md ' + E.fable.section + "</span></div>" + tbl(FB, ["fable_direct", "fable_pipeline", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("mt_fable_note") + "</p></section>" +
+      '<section class="section" id="m-checks"><div class="section-head"><div><h2>' + t("mt_checks") + '</h2></div></div><div class="grid3">' + mods + "</div></section>" +
+      '<section class="section" id="m-limits"><div class="section-head"><div><h2>' + t("mt_limits") + '</h2></div></div><div class="card"><div class="lim">' + [1, 2, 3, 4].map(function (n) { return '<div><span class="n">' + n + "</span><div><h4>" + t("l" + n + "_t") + "</h4><p>" + t("l" + n + "_d") + "</p></div></div>"; }).join("") + "</div>" +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px"><a class="btn ghost sm" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + " GitHub</a><span class='pill'>docs/eval_design.md · " + t("mt_links") + "</span><span class='pill'>docs/eval_results.md · " + t("mt_links2") + "</span></div></div></section></article>" +
+      '<nav class="mtoc"><div class="lbl">' + t("mt_toc") + "</div>" + toc.map(function (x) { return '<a data-toc="' + x[0] + '">' + x[1] + "</a>"; }).join("") + "</nav></div>";
   }
 
   // ------------------------------------------------------------------ exports
@@ -914,10 +921,11 @@
     var b = document.querySelector('[data-act="start"]'); if (b) b.disabled = Object.keys(formErrors()).length > 0;
   }
   function onClick(e) {
-    var el = e.target.closest("[data-go],[data-act],[data-hist],[data-ex],[data-page],[data-dpage],[data-market],[data-vmarket],[data-ccy],[data-copen],[data-cdel],[data-quote],[data-comp],[data-cup]");
+    var el = e.target.closest("[data-go],[data-act],[data-hist],[data-toc],[data-ex],[data-page],[data-dpage],[data-market],[data-vmarket],[data-ccy],[data-copen],[data-cdel],[data-quote],[data-comp],[data-cup]");
     if (!el) return;
     var d = el.dataset;
     if (d.go) { go(d.go); return; }
+    if (d.toc) { var sec = document.getElementById(d.toc); if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     if (d.hist) {
       S.menu = false; S.drawer = null; S.auxOpen = false; S.view = "analyze"; S.scrollTop0 = true;
       S.hist = d.hist === S.saved[S.job.id] ? null : d.hist;   // the live result keeps its page images

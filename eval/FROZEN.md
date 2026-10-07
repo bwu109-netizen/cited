@@ -3,7 +3,7 @@
 > 状态：见 `eval/FROZEN.json`（由 `python eval/check_frozen.py --write` 生成，记录 git commit 号和每个文件的 sha256）。
 > 之后每次运行评估前，都先执行 `python eval/check_frozen.py`。任何一个冻结文件变了就拒绝运行。规则修订后重跑，必须用 `--revision "原因"` 显式登记，并按 eval_design §7.2 同时报告修订前后两套结果。
 
-- 冻结 commit：`b282e43`（清单 `eval/FROZEN.json` 提交于 `e7bced2`；git 标签 `eval-frozen-v1` 指向 `cba5dba`，它只多改了核对表的展示，冻结文件与 `b282e43` 相同）
+- 冻结 commit：`b282e43`（重写后 `d560e2c`）（清单 `eval/FROZEN.json` 提交于 `e7bced2`（重写后 `8b742a7`）；git 标签 `eval-frozen-v1` 指向 `cba5dba`（重写后 `7856b69`），它只多改了核对表的展示，冻结文件与 `b282e43`（重写后 `d560e2c`） 相同）
 - 冻结时间：2026-10-06 22:23 UTC
 - 冻结版的运行位置：工作树 `.worktrees/frozen-v1`（`git worktree add --detach .worktrees/frozen-v1 eval-frozen-v1`；`data/` 下的 cache、eval、raw、output 用软链接指回主目录，共用缓存和同一本 $20 账本）。主目录已经包含修订（§6），**冻结版的 Fable 两批和港股核对后的冻结版评分都必须在这个工作树里跑**。
 
@@ -76,4 +76,53 @@
 - 修订版冻结 commit：见 `eval/FROZEN_REV1.json` 的 `commit` 字段。
 - **第二次修订冻结（取代 REV1）**：登记 R4、R5 之后，修订版重新冻结在 `eval/FROZEN_REV2.json`，主目录的 `run_eval.py` 改认这份清单。`FROZEN_REV1.json` 保留作为记录。修订版 eval1 和留出集都用 REV2 的规则（R1–R5）。
 - **R6（产品专用，2026-10-06）**：仙 / 美分换算，提交在 REV2 之后。它不属于任何评估规则，主目录因此不再通过 REV2 检查。修订版评估的规则保存在标签 `eval-revised-v2`，冻结版保存在 `eval-frozen-v1`。
+
+## 7. 历史改写（2026-10-07，推送到 GitHub 之前）
+
+### 7.1 为什么改写
+
+公开仓库不应包含两类文件：
+- Stitch 原型截图：含编造数字；
+- `data/review/hk_answer_key_demo.html`：港股核对表示例，含财报原文片段。
+
+这两类文件在早期提交里出现过，所以用 `git filter-branch --index-filter` 从所有提交里删除了它们，**其他内容一个字节都没变**。
+
+### 7.2 改写的影响
+
+- 从 `75ef327` 起的提交哈希都变了，下表是对照。
+- 两个标签 `eval-frozen-v1`、`eval-revised-v2` 已移到改写后的对应提交。
+- 冻结清单里记录的是每个冻结文件的 sha256，不受影响：在改写后的标签上运行 `python eval/check_frozen.py`（或带 `--manifest`）仍然通过。
+- 文档里引用的旧哈希都注明了“重写后”的新哈希。
+- JSON 冻结清单保留原 `commit` 字段，另加 `commit_rewritten` 字段。
+
+### 7.3 新旧哈希对照
+
+| 旧 | 新 | 提交说明 |
+|---|---|---|
+| `9ed1abd` | `9ed1abd` | Phase 0: data source feasibility scripts and findings |
+| `50e41a1` | `50e41a1` | Phase 1/1.5: extraction pipeline, verification layer, sanity checks |
+| `bdcd278` | `bdcd278` | Phase 2 design: eval_design.md, 60-company candidate check, fetch/locate fixes |
+| `75ef327` | `e150e5e` | Phase 2 prep: budget plan, frozen subsets, spend cap, HK review table |
+| `cc96dd7` | `a4964b0` | Remove unused preview launch config |
+| `33562e4` | `f5d2491` | Direct-ask cell, answer parser, scorer, Anthropic batch client; dev validation |
+| `b282e43` | `d560e2c` | Eval runner: simple direct-ask cell, three-tier DeepSeek, Fable split by cell; f |
+| `e7bced2` | `8b742a7` | Freeze evaluation rules (eval/FROZEN.json) |
+| `cba5dba` | `7856b69` | Review table: show revenue/cost components for code-derived gross profit; disput |
+| `886f98b` | `327c3c7` | Revisions R1-R3 after frozen eval1 (eval_design §10); holdout list; analysis and |
+| `36edcd6` | `1e224c3` | Log revisions R1-R3 against frozen v1; freeze revised rules (eval/FROZEN_REV1.js |
+| `7c11143` | `fb426a9` | R2: withdraw bundled 'dollars'=USD rule (out of the approved scope); re-freeze b |
+| `ef602c5` | `7df5621` | Re-freeze revised rules after withdrawing the out-of-scope R2 add-on |
+| `0ec1d14` | `ec57ec8` | Draft docs/eval_results.md: frozen results with new metrics, false-alarm analysi |
+| `8be8268` | `ade3814` | Revisions R4 (bare 'dollars' = USD in US filings) and R5 (S5 prior ignores TTM), |
+| `3b8ffee` | `1aa6912` | Freeze revised rules R1-R5 (eval/FROZEN_REV2.json) |
+| `f7fe10a` | `4b0241e` | eval_results.md: Fable costs, revised eval1 (R1-R5 + R3 cell), holdout four cell |
+| `b171cc7` | `029ba50` | Manual answer key from the review export (128 pick, 6 edit, 12 na) |
+| `22968a4` | `6210498` | eval_results.md: full three-market eval1 (frozen + revised) with HK manual key,  |
+| `58ce693` | `bbe59f3` | R6 (product only): per-share figures in 仙 / cents / 美分 convert at 0.01; limitati |
+| `235fab5` | `1d0b737` | PRD draft: verification page (no key, no model calls) |
+| `16c1e49` | `ee61529` | PRD_web.md (5 pages, verify page merged); web/CLAUDE.md with Ponytail rules summ |
+| `730c344` | `7020206` | PRD_web: visual tokens from the Stitch reference (visual only), general Stitch p |
+| `c633e5e` | `314dcf0` | Web app (phase 4): Streamlit custom component, 5 pages, examples, eval numbers,  |
+| `d472046` | `6d071d9` | Web: plain-language fetch-failure reasons |
+| `395f8a5` | `58c51b5` | Rename to 有据 / Cited; HK unflagged note on home; industry metrics in the interfa |
 

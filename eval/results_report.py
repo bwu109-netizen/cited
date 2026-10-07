@@ -294,12 +294,17 @@ def section_frozen():
 """
 
 
+def _cm(c, rw):
+    """Commit id as recorded, plus the id after the pre-publication history rewrite (eval/FROZEN.md §7)."""
+    return f"`{c[:10]}`" + (f"（重写后 `{rw[:7]}`）" if rw else "")
+
+
 def section_revisions():
     fz, rv = load("eval1"), load("eval1_rev1")
     design = (ROOT / "docs" / "eval_design.md").read_text()
     rev_tbl = design[design.index("### 10.2"):design.index("### 10.3")]
     manifest = json.loads((ROOT / "eval" / "FROZEN.json").read_text())
-    log = "\n".join(f"- {r['at'][:19]} UTC，commit `{r['commit'][:10]}`：{r['reason']}（改动文件 {len(r['changed'])} 个）"
+    log = "\n".join(f"- {r['at'][:19]} UTC，commit {_cm(r['commit'], r.get('commit_rewritten'))}：{r['reason']}（改动文件 {len(r['changed'])} 个）"
                     for r in manifest.get("revisions", []))
     rev1 = json.loads((ROOT / "eval" / "FROZEN_REV2.json").read_text()) if (ROOT / "eval" / "FROZEN_REV2.json").exists() else {}
     body = f"""## 2. 修订记录（看过冻结版结果之后）
@@ -311,7 +316,7 @@ def section_revisions():
 
 {log or '（尚未登记）'}
 
-修订版规则冻结于 commit `{(rev1.get('commit') or '—')[:10]}`（`eval/FROZEN_REV2.json`，{(rev1.get('frozen_at') or '')[:19]} UTC）。
+修订版规则冻结于 commit {_cm(rev1.get('commit') or '—', rev1.get('commit_rewritten'))}（`eval/FROZEN_REV2.json`，{(rev1.get('frozen_at') or '')[:19]} UTC）。
 
 **修订过程中的更正**：第一版修订冻结 `886f98b` 在 R2 里附带了“美股单独 dollars=USD”。这条超出了授权范围：它会改变全部美股金额字段的 C3，消掉冻结版 21 条误报中的 17 条。所以在留出集运行之前撤回，重新冻结（`7c11143`）。用第一版冻结跑出的 eval1_rev1 已作废重跑。
 
@@ -469,10 +474,24 @@ def replacement_table():
     return "## 附：名单替换留痕\n\n" + d[s:d.index("\n\n", s)] + "\n\n留出集没有替换（`eval/holdout_config.json` 的 `unavailable` 为空时）。\n"
 
 
+def annotate_hashes(text):
+    """Old commit ids (before the pre-publication history rewrite) get their new id appended once."""
+    import re
+    hm = json.loads((ROOT / "eval" / "hash_map.json").read_text())["map"]
+
+    def rep(mo):
+        h, tail = mo.group(1), mo.group(2)
+        hits = [n for o, n in hm.items() if o.startswith(h)]
+        if len(hits) != 1 or mo.string[mo.end():].startswith("（重写后"):
+            return mo.group(0)
+        return h + tail + f"（重写后 `{hits[0][:7]}`）"
+    return re.sub(r"(?<![0-9a-f])([0-9a-f]{7,40})(?![0-9a-f])(`?)", rep, text)
+
+
 def main():
     parts = ["# 第 2 阶段评估结果\n\n> 由 `eval/results_report.py` 生成。各节顺序：冻结版主结果 → 修订记录 → 留出集 → 局限。\n",
              section_frozen(), section_revisions(), section_holdout(), LIMITS, replacement_table()]
-    (ROOT / "docs" / "eval_results.md").write_text("\n".join(parts))
+    (ROOT / "docs" / "eval_results.md").write_text(annotate_hashes("\n".join(parts)))
     print("wrote docs/eval_results.md")
 
 

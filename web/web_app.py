@@ -32,7 +32,7 @@ EXAMPLES = {p.stem: json.loads(p.read_text()) for p in sorted((HERE / "examples"
 EVAL = json.loads((HERE / "eval_numbers.json").read_text())
 # universal prompt for any AI (Verify page "copy" button); the interface language picks the version
 PROMPTS = {lang: (HERE.parent / "prompts" / f"universal_prompt_{lang}.md").read_text() for lang in ("zh", "en")}
-GITHUB = "https://github.com/bwu109-netizen/cited"
+GITHUB = "https://github.com/bwu109-netizen/earnings-verifier"
 
 PAGE_CSS = """<style>
 header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], footer {display:none !important;}

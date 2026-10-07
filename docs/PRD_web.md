@@ -1,9 +1,9 @@
-# 有据：网页产品需求文档（PRD）
+# 财报核验：网页产品需求文档（PRD）
 
 | 项目 | 内容 |
 |---|---|
-| 产品 | 有据 / Cited（2026-10-07 定名）：从美股、A 股、港股的定期报告里抽取核心财务数字，每个数字附页码和原文，并用纯代码核验，把可疑的数标红 |
-| 线上地址 / 代码 | 部署后填写（Streamlit Community Cloud）/ https://github.com/bwu109-netizen/cited |
+| 产品 | 财报核验 / Earnings Verifier（2026-10-07 由“有据 / Cited”改名）：从美股、A 股、港股的定期报告里抽取核心财务数字，每个数字附页码和原文，并用纯代码核验，把可疑的数标红 |
+| 线上地址 / 代码 | 部署后填写（Streamlit Community Cloud）/ https://github.com/bwu109-netizen/earnings-verifier |
 | 版本 | v0.1，2026-10-06，初稿。已并入 `docs/prd_verify_page.md`（核验页），该文件随后删除，以本文件为准 |
 | 风格参考 | 用户的 Stitch 项目「Financial Trading Dashboard UI」的设计系统（只借视觉，不借内容，见 §6） |
 | 范围 | 只做网页呈现和交互。抽取、核验、评估逻辑全部复用 `earnings_agent/`，不改核心模块（deny 规则见 `.claude/settings.local.json`）。网页代码全部放在 `web/` |
@@ -547,7 +547,7 @@ flowchart TD
 | 示例按哪版规则核验 | 待定。建议按当前产品规则（R1–R6）重新核验，并注明“示例不是评估数字” |
 | 汇率数据源 | 待定。建议：人民币相关用中国外汇交易中心人民币汇率中间价（AKShare 可取）；港元对美元按联系汇率区间实际汇率，来源同上或香港金管局。期末汇率和期间平均汇率都要能取到 |
 | 首页 M4 放哪 3 个数 | 待定，§11.3 有建议 |
-| 产品名 | 已定（2026-10-07）：有据 / Cited |
+| 产品名 | 已定（2026-10-07）：有据 / Cited；同日改名为 财报核验 / Earnings Verifier，仓库改名为 earnings-verifier |
 | GitHub 仓库名、公开文件清单 | 部署前单独确认 |
 
 ---

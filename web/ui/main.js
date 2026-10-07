@@ -1,4 +1,4 @@
-/* Cited — single-page UI inside one Streamlit component.
+/* Earnings Verifier — single-page UI inside one Streamlit component.
    Layout and visuals follow docs/stitch (dark screens); every number and claim comes from the job result,
    the pre-computed examples or eval_numbers.json (docs/eval_results.md). PRD: docs/PRD_web.md. */
 (function () {
@@ -85,7 +85,7 @@
 
   // ------------------------------------------------------------------ i18n
   var T = {
-    brand: ["有据", "Cited"],
+    brand: ["财报核验", "Earnings Verifier"],
     theme_to_light: ["切换到浅色", "Switch to light mode"], theme_to_dark: ["切换到深色", "Switch to dark mode"],
     nav_examples: ["示例", "Examples"], nav_analyze: ["分析", "Analyze"], nav_compare: ["批量对比", "Compare"],
     nav_verify: ["核验", "Verify"], nav_method: ["方法与评估", "Method"],
@@ -112,7 +112,7 @@
       "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for. Not flagged does not mean correct."],
     nokey_cta: ["没有 API key？看示例结果", "No API key? See example results"],
     verify_cta: ["已有其他 AI 的结果？去核验", "Have another AI's answer? Verify it"],
-    about_eyebrow: ["关于有据", "ABOUT CITED"],
+    about_eyebrow: ["关于财报核验", "About Earnings Verifier"],
     sb_new: ["新分析", "New analysis"], sb_recent: ["最近的结果", "Recent results"], sb_local: ["仅保存在本机浏览器", "Kept only in this browser"],
     sb_empty: ["还没有结果。分析完成后会出现在这里。", "No results yet. Finished analyses appear here."], sb_clear: ["清空", "Clear"],
     sb_collapse: ["收起侧栏", "Collapse sidebar"], sb_expand: ["展开侧栏", "Expand sidebar"],
@@ -430,7 +430,7 @@
       return '<a class="hist' + (S.hist === h.id || (!S.hist && S.view === "analyze" && S.saved[S.job.id] === h.id) ? " on" : "") + '" data-hist="' + esc(h.id) + '"><span class="hn">' + esc(h.name || h.code) + '</span><span class="hm mono">' + esc(h.code) + " · " + esc(h.period) +
         (c["❌"] ? ' · <span class="tx-bad">' + c["❌"] + "</span>" : "") + "</span></a>";
     }).join("") : '<div class="hint" style="padding:4px 10px">' + t("sb_empty") + "</div>";
-    return '<aside class="side"><div class="side-top"><a class="brand" data-act="new"><span class="logo">' + ic("shield") + "</span>" + t("brand") + '<span class="ver">v0.1</span></a>' +
+    return '<aside class="side"><div class="side-top"><a class="brand" data-act="new"><span class="logo">' + ic("shield") + "</span>" + t("brand") + "</a>" +
       '<button class="icon-btn" data-act="side" aria-label="' + t("sb_collapse") + '" title="' + t("sb_collapse") + '">' + ic("side", "sm") + "</button></div>" +
       '<button class="new-btn" data-act="new">' + ic("plus", "sm") + t("sb_new") + "</button>" +
       '<nav class="side-nav">' + tabs.map(function (x) { return '<a data-go="' + x[0] + '" class="' + (on === x[0] ? "on" : "") + '">' + ic(x[2], "sm") + t(x[1]) + "</a>"; }).join("") + "</nav>" +

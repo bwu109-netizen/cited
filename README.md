@@ -1,10 +1,10 @@
-# 有据 / Cited
+# 财报核验 / Earnings Verifier
 
 从美股、A 股、港股的定期报告里抽取核心财务数字（营业收入、归母净利润、基本 EPS、毛利、经营现金流；银行、保险另有模板），每个数字附页码和原文引用，再用纯代码核验，把可疑的数标红。
 
 Core figures from US, A-share and HK filings, each with its page and verbatim quote, checked by code; suspicious ones are flagged in red.
 
-- 线上地址：https://boxiao-cited.streamlit.app/
+- 线上地址：重新部署后填写（Streamlit Community Cloud）
 - 示例和核验页不需要 API key；单家分析和批量对比用你自己的 key（默认 DeepSeek，支持多家服务商）
 
 ## 它做什么，不做什么

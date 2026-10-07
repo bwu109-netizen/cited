@@ -1,4 +1,4 @@
-/* Cited — dark version of the Stitch prototypes (docs/stitch/*_dark.png, S3–S12).
+/* Earnings Verifier — dark version of the Stitch prototypes (docs/stitch/*_dark.png, S3–S12).
    Tokens: PRD_web.md §6 as overridden by the approved Robinhood-style prototypes. */
 :root {
   --bg: #0d0e11; --surface: #16171b; --surface-2: #1d1e23; --surface-3: #25262c;
@@ -49,7 +49,7 @@ input, select, textarea { font: inherit; color: var(--text); }
 .side { width: 264px; flex: none; display: flex; flex-direction: column; gap: 6px; padding: 14px 12px; background: var(--surface); border-right: 1px solid var(--line); overflow-y: auto; }
 .side-off .side { display: none; }
 .side-top { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 8px; }
-.side .brand { font-size: 17px; cursor: pointer; }
+.side .brand { font-size: 16px; cursor: pointer; min-width: 0; white-space: nowrap; overflow: hidden; }
 .icon-btn { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--muted); flex: none; }
 .icon-btn:hover { background: var(--surface-2); color: var(--text); }
 .new-btn { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 12px; font-weight: 600; color: var(--text); }

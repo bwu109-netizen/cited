@@ -40,8 +40,35 @@
     upload: null,                         // {name, data} for the fetch-failed fallback
     drawer: null,                         // {src: "example"|"job", n, item}
     auxOpen: false, openQuotes: {}, openComps: {},
-    log: [], lastStage: null, lastJobId: null, renderedSig: ""
+    log: [], lastStage: null, lastJobId: null, renderedSig: "",
+    side: true,                           // left sidebar open (desktop); remembered in this browser
+    hist: null, histCur: null,            // id of the saved result being shown from this browser's list
+    saved: {}, provOpen: false, panelHidden: false
   };
+  try { S.side = localStorage.getItem("cited-side") !== "0"; } catch (e) { /* default open */ }
+
+  // ------------------------------------------------------------------ results kept in this browser only
+  // Finished single analyses are kept in localStorage (never sent anywhere). Page texts referenced by the
+  // result are included, so the source-page panel works offline (text only, no page image).
+  // ponytail: 20 entries, oldest dropped first when the browser quota is hit
+  var HIST_KEY = "cited-history", HIST_MAX = 20, TAB = Math.random().toString(36).slice(2, 8);
+  function histLoad() { try { return JSON.parse(localStorage.getItem(HIST_KEY) || "[]") || []; } catch (e) { return []; } }
+  function histSave(list) {
+    while (list.length) { try { localStorage.setItem(HIST_KEY, JSON.stringify(list)); return; } catch (e) { list.pop(); } }
+    try { localStorage.removeItem(HIST_KEY); } catch (e) { /* storage unavailable */ }
+  }
+  function histAdd(job) {
+    var r = job.result, q = job.query || {}, id = TAB + "-" + job.id;
+    var list = histLoad().filter(function (h) { return h.id !== id; });
+    list.unshift({ id: id, ts: Date.now(), market: r.doc.market || q.market, code: r.doc.code || q.code, period: q.period || "", name: r.doc.name || "", counts: r.counts, result: r });
+    histSave(list.slice(0, HIST_MAX));
+    return id;
+  }
+  function histGet(id) {
+    if (S.histCur && S.histCur.id === id) return S.histCur;
+    S.histCur = histLoad().filter(function (h) { return h.id === id; })[0] || null;
+    return S.histCur;
+  }
 
   // ------------------------------------------------------------------ theme (light / dark)
   // Default follows the system (prefers-color-scheme); an explicit choice is remembered in this browser.
@@ -86,8 +113,16 @@
     caveat: ["核验只能确认数字在原文里、单位对、和其他数自洽，不能确认它就是你要的指标；未标红不等于正确。",
       "Checks confirm a number is in the filing, in the right unit and consistent, not that it is the metric you asked for. Not flagged does not mean correct."],
     nokey_cta: ["没有 API key？看示例结果", "No API key? See example results"],
-    nokey_cta_d: ["预跑的美股 TSLA、A 股中国石油、港股小米，不需要 key", "Pre-computed US TSLA, A-share PetroChina and HK Xiaomi; no key needed"],
     about_eyebrow: ["关于有据", "ABOUT CITED"],
+    sb_new: ["新分析", "New analysis"], sb_recent: ["最近的结果", "Recent results"], sb_local: ["仅保存在本机浏览器", "Kept only in this browser"],
+    sb_empty: ["还没有结果。分析完成后会出现在这里。", "No results yet. Finished analyses appear here."], sb_clear: ["清空", "Clear"],
+    sb_collapse: ["收起侧栏", "Collapse sidebar"], sb_expand: ["展开侧栏", "Expand sidebar"],
+    key_none: ["未填写 API key", "No API key entered"], key_set: ["{p} key 已填 · 刷新页面即清空", "{p} key entered · cleared on reload"],
+    a_q: ["分析哪一份财报？", "Which filing should we check?"],
+    a_model_line: ["模型：{p} · {m}", "Model: {p} · {m}"],
+    run_main: ["正在分析，结果会显示在这里。", "Analyzing; the result will appear here."], run_show: ["查看进度", "Show progress"],
+    pn_checks: ["本次做的检查", "Checks in this run"], pn_hk_c4: ["港股没有可靠的结构化数据，这一项不做。", "HK has no reliable structured data; skipped."],
+    h_saved: ["保存在本机浏览器 · {t}", "Saved in this browser · {t}"],
     status_bad: ["需要复核", "Needs review"], status_warn: ["无可比数据", "No external figure"], status_ok: ["通过核验", "Passed checks"],
     col_status: ["状态", "Status"], col_metric: ["指标", "Metric"], col_value: ["数值", "Value"], col_unit: ["单位", "Unit"],
     col_period: ["期间", "Period"], col_page: ["页码", "Page"], col_quote: ["原文引用", "Quote"],
@@ -108,23 +143,14 @@
     d_loading: ["正在载入这一页……", "Loading this page…"], d_textonly: ["这一页只保留了解析出的文字。", "Only the parsed text of this page is kept."],
     d_open: ["打开原文", "Open source"],
     // analyze
-    a_eyebrow: ["美股 · A 股 · 港股定期报告", "US · A-SHARE · HK FILINGS"], a_title: ["分析一份财报", "Analyze a filing"],
-    a_lead: ["输入市场、代码和报告期，自动下载财报，抽取核心数字，附页码和原文，再用代码核验。", "Pick market, ticker and period: the filing is fetched, core figures are extracted with page and quote, then checked by code."],
-    a_card: ["单家财报抽取与核验", "Extract and check one filing"],
-    f_market: ["1. 市场", "1. MARKET"], f_code: ["2. 代码", "2. TICKER"], f_period: ["3. 报告期", "3. PERIOD"],
-    f_provider: ["4. 模型服务商", "4. PROVIDER"], f_model: ["5. 模型", "5. MODEL"], f_base: ["Base URL", "Base URL"], f_key: ["6. API KEY", "6. API KEY"],
+    f_market: ["市场", "MARKET"], f_code: ["代码", "TICKER"], f_period: ["报告期", "PERIOD"],
+    f_provider: ["模型服务商", "PROVIDER"], f_model: ["模型", "MODEL"], f_base: ["Base URL", "Base URL"], f_key: ["API KEY", "API KEY"],
     m_us: ["美股", "US"], m_a: ["A 股", "A-share"], m_hk: ["港股", "HK"],
     ph_us: ["例如 AAPL", "e.g. AAPL"], ph_a: ["例如 600519", "e.g. 600519"], ph_hk: ["例如 00700（自动补齐 5 位）", "e.g. 00700 (padded to 5 digits)"],
     period_help: ["报告期按公司自己的财年标注：例如 MSFT 的 2026FY 截至 2026 年 6 月，NVDA 的 2027Q2 截至 2026 年 7 月。", "Periods use the company's own fiscal year: MSFT 2026FY ends June 2026, NVDA 2027Q2 ends July 2026."],
     key_where: ["去哪里申请", "Get a key"], key_note: ["只用于本次请求，不写入服务器文件。", "Used for this request only; not written to any file on the server."],
     model_default: ["默认：{m}", "Default: {m}"], model_need: ["这个服务商需要填写模型名", "This provider needs a model name"],
     start: ["开始分析", "Start"], err_code: ["请填代码", "Enter a ticker"], err_key: ["请填 API key", "Enter an API key"], err_base: ["请填 Base URL", "Enter the base URL"],
-    a_side_t: ["没有 key？", "No key?"], a_side_d: ["示例和核验页都不需要 key。", "The examples and the Verify page need no key."],
-    a_side_ver: ["核验别的 AI 给的数", "Check figures from another AI"], a_side_ver_d: ["上传 PDF + 粘贴结果，纯代码检查", "Upload the PDF + paste the answer; code-only checks"],
-    a_how: ["流水线做什么", "What the pipeline does"],
-    a_how1: ["定位报表页", "Locate statement pages"], a_how1_d: ["按标题和表头找利润表、现金流量表，只把这些页送给模型。", "Finds the income and cash-flow statements by title and headers; only those pages go to the model."],
-    a_how2: ["照抄，不换算", "Copy, never convert"], a_how2_d: ["模型给出原文数字、单位、页码和整行引用；换算由代码做。", "The model returns the printed number, unit, page and full line; code does the conversion."],
-    a_how3: ["核验 C1–C4 + 合理性检查", "Checks C1–C4 + consistency"], a_how3_d: ["引用在页上、数字在页上、单位可解析、与 SEC XBRL / 东财比对（美股、A 股）。", "Quote on page, number on page, unit parses, compared with SEC XBRL / Eastmoney (US, A-share)."],
     // progress
     run_title: ["执行进度", "Progress"], run_stop: ["停止", "Stop"], run_edit: ["修改条件", "Edit"],
     run_tokens: ["已用 tokens {t} · 花费 ≈ ${c}", "Tokens {t} · cost ≈ ${c}"],
@@ -259,6 +285,7 @@
       plus: '<path d="M12 5v14M5 12h14"/>', trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
       grid: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
       term: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10l3 2-3 2M13 15h4"/>',
+      side: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>',
       menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
       sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
       moon: '<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>', code: '<path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/>', refresh: '<path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/>'
@@ -312,10 +339,12 @@
       if (bigEventId && a.handled >= bigEventId) { bigEventId = 0; send("ack"); }
     }
     trackLog(prevJob);
+    var J = S.job;
+    if (J.kind === "single" && J.status === "done" && J.result && !S.saved[J.id]) { S.saved[J.id] = histAdd(J); S.histCur = null; }
     if (S.job.kind && S.job.id !== S.lastJobId && S.job.status !== "idle") {
       S.lastJobId = S.job.id;
       S.view = { single: "analyze", compare: "compare", verify: "verify" }[S.job.kind] || S.view;
-      S.drawer = null;
+      S.drawer = null; S.hist = null; S.panelHidden = false;
     }
     setHeight();
     var sig = JSON.stringify([S.job, S.pageView && S.pageView.n, S.pageView && !!S.pageView.img, S.lang]);
@@ -340,25 +369,30 @@
 
   function go(view) {
     S.view = view; S.menu = false; S.drawer = null;
+    if (view !== "analyze") S.hist = null;
+    S.scrollTop0 = true;
     render();
-    document.getElementById("scroller").scrollTop = 0;
   }
 
   function render() {
     if (!S.cfg) return;
-    var v = S.view, html = nav();
-    if (v === "examples") html += examples();
-    else if (v === "example") html += example();
-    else if (v === "analyze") html += analyze();
-    else if (v === "compare") html += compare();
-    else if (v === "verify") html += verify();
-    else if (v === "method") html += method();
-    html += foot();
+    var v = S.view, body = "";
+    if (v === "examples") body = examples();
+    else if (v === "example") body = example();
+    else if (v === "analyze") body = analyze();
+    else if (v === "compare") body = compare();
+    else if (v === "verify") body = verify();
+    else if (v === "method") body = method();
+    var pn = panel();
+    var html = '<div class="shell' + (S.side ? "" : " side-off") + (S.menu ? " menu-open" : "") + (pn ? " has-panel" : "") + '">' + sidebar() +
+      '<div class="scrim side-scrim" data-act="menu"></div><main class="workspace" id="main">' + topbar() + body + "</main>" +
+      (pn ? '<div class="scrim panel-scrim" data-act="' + (S.drawer ? "close" : "panel-hide") + '"></div><aside class="panel">' + pn + "</aside>" : "") + "</div>";
     var app = document.getElementById("app");
-    var keep = captureFocus();
+    var keep = captureFocus(), m = document.getElementById("main"), top = m && !S.scrollTop0 ? m.scrollTop : 0;
+    S.scrollTop0 = false;
     app.innerHTML = html;
+    document.getElementById("main").scrollTop = top;
     restoreFocus(keep);
-    document.getElementById("overlay").innerHTML = drawer();
     bind();
   }
   function captureFocus() {
@@ -375,24 +409,31 @@
   }
 
   // ------------------------------------------------------------------ chrome
-  function nav() {
-    var tabs = [["analyze", "nav_analyze"], ["examples", "nav_examples"], ["compare", "nav_compare"], ["verify", "nav_verify"], ["method", "nav_method"]];
+  function sidebar() {
+    var tabs = [["analyze", "nav_analyze", "play"], ["compare", "nav_compare", "grid"], ["verify", "nav_verify", "term"], ["method", "nav_method", "info"], ["examples", "nav_examples", "file"]];
     var on = S.view === "example" ? "examples" : S.view;
-    return '<div class="nav"><div class="wrap">' +
-      '<a class="brand" data-go="analyze"><span class="logo">' + ic("shield") + "</span>" + t("brand") + '<span class="ver">v0.1</span></a>' +
-      '<div class="tabs' + (S.menu ? " open" : "") + '">' + tabs.map(function (x) {
-        return '<a data-go="' + x[0] + '" class="' + (on === x[0] ? "on" : "") + '">' + t(x[1]) + "</a>";
-      }).join("") + (S.menu ? '<a href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">GitHub ↗</a>' : "") + "</div>" +
-      '<div class="right"><button class="chip-btn" data-act="theme" aria-label="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '" title="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '">' + ic(S.theme === "light" ? "moon" : "sun", "sm") + "</button>" +
+    var list = histLoad(), p = S.cfg.providers[S.form.provider] || {};
+    var recent = list.length ? list.map(function (h) {
+      var c = h.counts || {};
+      return '<a class="hist' + (S.hist === h.id || (!S.hist && S.view === "analyze" && S.saved[S.job.id] === h.id) ? " on" : "") + '" data-hist="' + esc(h.id) + '"><span class="hn">' + esc(h.name || h.code) + '</span><span class="hm mono">' + esc(h.code) + " · " + esc(h.period) +
+        (c["❌"] ? ' · <span class="tx-bad">' + c["❌"] + "</span>" : "") + "</span></a>";
+    }).join("") : '<div class="hint" style="padding:4px 10px">' + t("sb_empty") + "</div>";
+    return '<aside class="side"><div class="side-top"><a class="brand" data-act="new"><span class="logo">' + ic("shield") + "</span>" + t("brand") + '<span class="ver">v0.1</span></a>' +
+      '<button class="icon-btn" data-act="side" aria-label="' + t("sb_collapse") + '" title="' + t("sb_collapse") + '">' + ic("side", "sm") + "</button></div>" +
+      '<button class="new-btn" data-act="new">' + ic("plus", "sm") + t("sb_new") + "</button>" +
+      '<nav class="side-nav">' + tabs.map(function (x) { return '<a data-go="' + x[0] + '" class="' + (on === x[0] ? "on" : "") + '">' + ic(x[2], "sm") + t(x[1]) + "</a>"; }).join("") + "</nav>" +
+      '<div class="side-sec"><div class="side-lbl"><span>' + t("sb_recent") + "</span>" + (list.length ? '<button data-act="hist-clear">' + t("sb_clear") + "</button>" : "") + '</div><div class="side-note">' + ic("lock", "sm") + t("sb_local") + "</div>" + recent + "</div>" +
+      '<div class="side-bottom"><a class="keystat" data-go="analyze"><span class="kdot' + (S.form.key ? " on" : "") + '"></span>' + (S.form.key ? t("key_set", { p: esc(p.label || S.form.provider) }) : t("key_none")) + "</a>" +
+      '<div class="side-btns"><button class="chip-btn" data-act="theme" aria-label="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '" title="' + (S.theme === "light" ? t("theme_to_dark") : t("theme_to_light")) + '">' + ic(S.theme === "light" ? "moon" : "sun", "sm") + "</button>" +
       '<button class="chip-btn" data-act="lang"><b>' + (S.lang === "zh" ? "中" : "EN") + "</b> / " + (S.lang === "zh" ? "EN" : "中") + "</button>" +
-      '<a class="chip-btn gh" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + '<span class="lbl-long">GitHub</span></a>' +
-      '<button class="chip-btn menu-btn" data-act="menu" aria-label="menu">' + ic("menu", "sm") + "</button></div>" +
-      "</div></div>";
+      '<a class="chip-btn" href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">' + ic("code", "sm") + "GitHub</a></div></div></aside>";
   }
   function caveat() { return '<p class="caveat">' + t("caveat") + "</p>"; }
-  function foot() {
-    return '<div class="foot"><div class="wrap"><span><b>' + t("brand") + "</b> · " + L("代码与评估开源", "Open-source code and evaluation") + " · MIT</span>" +
-      '<span><a data-go="method">' + t("nav_method") + '</a> · <a href="' + esc(S.cfg.github) + '" target="_blank" rel="noopener">GitHub</a></span></div></div>';
+  // shown on phones, and on desktop when the sidebar is collapsed
+  function topbar() {
+    return '<div class="topbar"><button class="icon-btn" data-act="' + (S.side ? "menu" : "side") + '" aria-label="' + t("sb_expand") + '">' + ic("side", "sm") + "</button>" +
+      '<a class="brand" data-act="new"><span class="logo">' + ic("shield") + "</span>" + t("brand") + "</a>" +
+      '<button class="icon-btn" data-act="new" aria-label="' + t("sb_new") + '" style="margin-left:auto">' + ic("plus", "sm") + "</button></div>";
   }
 
   // ------------------------------------------------------------------ P1 home
@@ -427,11 +468,11 @@
       '<div class="grid3" style="margin-top:36px">' + cards + "</div></div>";
   }
   // former home page, now the lower part of the analyze form page
-  // the former home page, now below the analyze form
+  // the former home page, now the top of the method page
   function about() {
     var ev = S.cfg.eval, h = ev.holdout.tiers, p = h.ds_pipeline;
-    return '<section class="section about"><div class="eyebrow"><span class="dot"></span>' + t("about_eyebrow") + "</div>" +
-      '<h2 class="about-title">' + t("hero_title") + '</h2><p class="lead">' + t("hero_sub") + "</p></section>" +
+    return '<section class="about"><div class="eyebrow"><span class="dot"></span>' + t("about_eyebrow") + "</div>" +
+      '<h1 class="about-title">' + t("hero_title") + '</h1><p class="lead">' + t("hero_sub") + "</p></section>" +
       '<section class="section"><div class="section-head"><div><div class="eyebrow">PIPELINE</div><h2>' + t("how_title") + "</h2></div></div>" +
       '<div class="steps3"><div><div class="n">01</div><h3>' + t("how1_t") + "</h3><p>" + t("how1_d") + '</p></div><div><div class="n">02</div><h3>' + t("how2_t") + "</h3><p>" + t("how2_d") + '</p></div><div><div class="n">03</div><h3>' + t("how3_t") + "</h3><p>" + t("how3_d") + "</p></div></div></section>" +
       '<section class="section"><div class="card" style="padding:36px"><div class="section-head"><div><div class="eyebrow">' + esc(L(ev.holdout.label_zh, ev.holdout.label_en)) + "</div><h2>" + t("eval_title") + '</h2></div><a class="link" data-go="method">' + t("eval_link") + " →</a></div>" +
@@ -489,6 +530,7 @@
   }
   function curResult(src) {
     if (src === "example") return S.cfg.examples[S.example];
+    if (src === "hist") { var h = histGet(S.hist); return h && h.result; }
     if (src === "job") return S.job.result;
     if (src && src.indexOf("cmp") === 0) { var r = S.job.rows && S.job.rows[+src.slice(3)]; return r && r.result; }
     return null;
@@ -512,13 +554,13 @@
     var focus = it ? '<div class="focus"><div class="row">' + stBadge(it.status) + '<b style="font-size:16px">' + esc(mname(it)) + '</b><span class="mono muted">' + ptype(it.ptype) + '</span><span class="mono" style="margin-left:auto;font-size:18px;font-weight:650">' + esc(it.raw) + " <small class='faint'>" + esc(it.unit || "") + "</small></span></div>" +
       ((S.lang === "zh" ? it.reason_zh : it.reason_en) ? '<div class="reason ' + stClass(it.status) + '">' + esc(S.lang === "zh" ? it.reason_zh : it.reason_en) + "</div>" : "") +
       (it.bench && it.bench.value != null ? '<div class="hint" style="margin-top:6px">' + t("r_bench") + "：" + esc(it.bench.source || "") + " " + esc(it.bench.field || "") + " = " + Number(it.bench.value).toLocaleString("en-US") + "</div>" : "") + "</div>" : "";
-    return '<div class="scrim" data-act="close"></div><div class="drawer" role="dialog"><div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint">' + esc(r.doc.name) + " · " + esc(r.doc.title) + "</div></div>" +
+    return '<div class="dh"><span class="round">' + ic("file") + "</span><div><h3>" + t("d_title") + '</h3><div class="hint">' + esc(r.doc.name) + " · " + esc(r.doc.title) + "</div></div>" +
       '<div class="pager"><button data-dpage="' + (prev || "") + '"' + (prev ? "" : " disabled") + ">" + ic("left", "sm") + "</button><span>" + t("d_page", { n: D.n, t: r.pages_total || "?" }) + '</span><button data-dpage="' + (next || "") + '"' + (next ? "" : " disabled") + ">" + ic("right", "sm") + "</button></div>" +
       (r.doc.url ? '<a class="round" href="' + esc(r.doc.url) + '" target="_blank" rel="noopener" title="' + t("d_open") + '">' + ic("ext", "sm") + "</a>" : "") +
       '<button class="round" data-act="close" aria-label="close">' + ic("close", "sm") + "</button></div>" +
       '<div class="db">' + focus + (img ? '<img class="pageimg" alt="page ' + D.n + '" src="data:image/png;base64,' + img + '">' : "") +
       (text ? '<div class="pagetext">' + highlight(text, hl, it && it.status === "❌") + "</div>" : '<div class="hint">' + (loading ? t("d_loading") : "—") + "</div>") +
-      (!live && text ? '<div class="hint">' + t("d_textonly") + "</div>" : "") + "</div></div>";
+      (!live && text ? '<div class="hint">' + t("d_textonly") + "</div>" : "") + "</div>";
   }
   function highlight(text, raw, bad) {
     var h = esc(text);
@@ -558,35 +600,42 @@
     if (!p.model && !f.model.trim()) e.model = t("model_need");
     return e;
   }
-  function keyFields(f) {
+  function keyFields(f) { return provFields(f) + keyField(f); }
+  function provFields(f) {
     var p = S.cfg.providers[f.provider] || {}, e = S.touched ? formErrors() : {};
     return '<div class="grid2"><div class="field"><label>' + t("f_provider") + '</label><select class="input" id="f-provider">' + provOpts(f.provider) + "</select></div>" +
       '<div class="field"><label>' + t("f_model") + '</label><input class="input' + (e.model ? " err" : "") + '" id="f-model" value="' + esc(f.model) + '" placeholder="' + esc(p.model ? t("model_default", { m: p.model }) : t("model_need")) + '"><div class="errtx">' + (e.model || "") + "</div></div></div>" +
-      (f.provider === "custom" ? '<div class="field"><label>' + t("f_base") + '</label><input class="input' + (e.base ? " err" : "") + '" id="f-base" value="' + esc(f.base_url) + '" placeholder="https://…/v1"><div class="errtx">' + (e.base || "") + "</div></div>" : "") +
-      '<div class="field"><label>' + t("f_key") + (p.key_url ? '<a class="link" href="' + esc(p.key_url) + '" target="_blank" rel="noopener" style="letter-spacing:0">' + t("key_where") + " ↗</a>" : "") + '</label><div class="pw"><input class="input' + (e.key ? " err" : "") + '" id="f-key" type="' + (f.showKey ? "text" : "password") + '" value="' + esc(f.key) + '" placeholder="sk-…" autocomplete="off"><button data-act="eye" aria-label="show key">' + ic(f.showKey ? "eyeoff" : "eye") + '</button></div><div class="errtx">' + (e.key || "") + '</div><div class="note">' + ic("lock", "sm") + t("key_note") + "</div></div>";
+      (f.provider === "custom" ? '<div class="field"><label>' + t("f_base") + '</label><input class="input' + (e.base ? " err" : "") + '" id="f-base" value="' + esc(f.base_url) + '" placeholder="https://…/v1"><div class="errtx">' + (e.base || "") + "</div></div>" : "");
+  }
+  function keyField(f) {
+    var p = S.cfg.providers[f.provider] || {}, e = S.touched ? formErrors() : {};
+    return '<div class="field"><label>' + t("f_key") + (p.key_url ? '<a class="link" href="' + esc(p.key_url) + '" target="_blank" rel="noopener" style="letter-spacing:0">' + t("key_where") + " ↗</a>" : "") + '</label><div class="pw"><input class="input' + (e.key ? " err" : "") + '" id="f-key" type="' + (f.showKey ? "text" : "password") + '" value="' + esc(f.key) + '" placeholder="sk-…" autocomplete="off"><button data-act="eye" aria-label="show key">' + ic(f.showKey ? "eyeoff" : "eye") + '</button></div><div class="errtx">' + (e.key || "") + '</div><div class="note">' + ic("lock", "sm") + t("key_note") + "</div></div>";
   }
   function analyze() {
     var j = S.job;
+    if (S.hist) {
+      var h = histGet(S.hist);
+      if (h) return '<div class="wrap"><div class="runbar"><span style="width:9px;height:9px;border-radius:50%;background:var(--faint)"></span><div class="what">' + mkName(h.market) + " · " + esc(h.code) + " · " + esc(h.period) + '</div><span class="hint">' + t("h_saved", { t: new Date(h.ts).toLocaleString(S.lang === "zh" ? "zh-CN" : "en-US") }) + "</span></div>" + result(h.result, "hist") + "</div>";
+      S.hist = null;
+    }
     if (j.kind === "single" && j.status !== "idle") {
-      if (j.status === "running") return '<div class="wrap">' + progress() + "</div>";
+      if (j.status === "running") return '<div class="wrap">' + runbar(false) + '<div class="card run-wait"><span class="live"></span><p>' + t("run_main") + "</p>" + (S.panelHidden ? '<button class="btn ghost sm" data-act="panel-show">' + t("run_show") + "</button>" : "") + "</div></div>";
       if (j.status === "fetch_failed") return '<div class="wrap">' + fetchFailed() + "</div>";
       if (j.status === "error" || j.status === "stopped") return '<div class="wrap">' + runError() + "</div>";
       if (j.status === "done" && j.result) return '<div class="wrap">' + runbar(true) + result(j.result, "job") + "</div>";
     }
-    var f = S.form, e = S.touched ? formErrors() : {};
-    return '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("a_eyebrow") + '</div><h1 class="page">' + t("a_title") + '</h1><p class="lead">' + t("a_lead") + "</p>" +
-      '<a class="nokey-cta" data-go="examples">' + ic("grid") + '<div><b>' + t("nokey_cta") + " →</b><span>" + t("nokey_cta_d") + "</span></div></a>" +
-      '<div class="split" style="margin-top:24px"><div class="card" style="padding:36px;display:flex;flex-direction:column;gap:22px"><h2>' + t("a_card") + "</h2>" +
-      '<div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-market="' + m + '" class="' + (f.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
+    var f = S.form, e = S.touched ? formErrors() : {}, p = S.cfg.providers[f.provider] || {};
+    var provOpen = S.provOpen || e.model || e.base;
+    return '<div class="stage"><h1 class="stage-title">' + t("a_q") + "</h1>" +
+      '<div class="card stage-card"><div class="field"><label>' + t("f_market") + '</label><div class="seg">' + ["us", "hk", "a"].map(function (m) { return '<button data-market="' + m + '" class="' + (f.market === m ? "on" : "") + '">' + mkName(m) + "</button>"; }).join("") + "</div></div>" +
       '<div class="grid2"><div class="field"><label>' + t("f_code") + '</label><input class="input' + (e.code ? " err" : "") + '" id="f-code" value="' + esc(f.code) + '" placeholder="' + t("ph_" + f.market) + '" autocomplete="off"><div class="errtx">' + (e.code || "") + "</div></div>" +
-      '<div class="field"><label>' + t("f_period") + '<span class="faint" title="' + esc(t("period_help")) + '">?</span></label><select class="input" id="f-period">' + PERIODS.map(function (p) { return '<option value="' + p + '"' + (p === f.period ? " selected" : "") + ">" + periodLabel(p) + "</option>"; }).join("") + '</select><div class="hint">' + t("period_help") + "</div></div></div>" +
-      keyFields(f) +
-      '<button class="btn primary block" data-act="start"' + (S.touched && Object.keys(formErrors()).length ? " disabled" : "") + ">" + ic("play") + t("start") + "</button></div>" +
-      '<div style="display:flex;flex-direction:column;gap:20px"><div class="card"><h2>' + t("a_side_t") + '</h2><p class="muted" style="margin:0 0 16px">' + t("a_side_d") + "</p>" +
-      '<a class="ex-card" style="flex-direction:row;align-items:center;background:var(--surface-2);padding:18px" data-go="verify">' + ic("term") + '<div style="flex:1"><b>' + t("a_side_ver") + '</b><div class="hint">' + t("a_side_ver_d") + "</div></div>" + ic("arrow") + "</a></div>" +
-      '<div class="card"><div class="lbl" style="margin-bottom:14px">' + t("a_how") + "</div>" + [1, 2, 3].map(function (n) {
-        return '<div class="step" style="margin-top:' + (n > 1 ? 10 : 0) + 'px"><span class="ring mono" style="color:var(--accent-text)">0' + n + "</span><div><h4>" + t("a_how" + n) + "</h4><p>" + t("a_how" + n + "_d") + "</p></div></div>";
-      }).join("") + "</div></div></div>" + about() + "</div>";
+      '<div class="field"><label>' + t("f_period") + '<span class="faint" title="' + esc(t("period_help")) + '">?</span></label><select class="input" id="f-period">' + PERIODS.map(function (x) { return '<option value="' + x + '"' + (x === f.period ? " selected" : "") + ">" + periodLabel(x) + "</option>"; }).join("") + "</select></div></div>" +
+      keyField(f) +
+      '<button class="prov-line" data-act="prov">' + t("a_model_line", { p: esc(p.label || f.provider), m: esc(f.model || p.model || "—") }) + " " + (provOpen ? "▴" : "▾") + "</button>" +
+      (provOpen ? provFields(f) : "") +
+      '<button class="btn primary block" data-act="start"' + (S.touched && Object.keys(formErrors()).length ? " disabled" : "") + ">" + ic("play") + t("start") + "</button>" +
+      '<div class="hint">' + t("period_help") + "</div></div>" +
+      '<a class="stage-link" data-go="examples">' + t("nokey_cta") + " →</a></div>";
   }
   function runbar(done) {
     var j = S.job, q = j.query || {}, m = j.meta || {};
@@ -595,7 +644,13 @@
       '<span class="pill">' + t("run_tokens", { t: (j.tokens || 0).toLocaleString("en-US"), c: money(j.cost || 0) }) + "</span>" +
       '<div style="margin-left:auto;display:flex;gap:10px">' + (done ? '<button class="btn ghost sm" data-act="reset">' + t("run_edit") + "</button>" : '<button class="btn ghost sm" data-act="stop">' + ic("stop", "sm") + t("run_stop") + "</button>") + "</div></div>";
   }
-  function progress() {
+  function panel() {
+    if (S.drawer) return drawer();
+    var j = S.job;
+    if (S.view === "analyze" && !S.hist && j.kind === "single" && j.status === "running" && !S.panelHidden) return progressPanel();
+    return "";
+  }
+  function progressPanel() {
     var j = S.job, q = j.query || {}, m = j.meta || {}, st = j.stage || 1;
     var prov = (S.cfg.providers[q.provider] || {}).label || q.provider;
     var steps = [1, 2, 3, 4, 5].map(function (n) {
@@ -604,13 +659,22 @@
       var d = { 1: t("s1_d", { src: srcName(q.market) }), 2: m.pages ? t("s2_d", { p: m.pages, s: m.selected, t: tplName(m.template) }) : "", 3: t("s3_d", { m: prov + (q.model ? " / " + q.model : "") }), 4: t("s4_d"), 5: t("s5_d") }[n];
       var lab = { done: t("st_done"), now: t("st_now"), wait: n === 5 ? t("st_skip") : t("st_wait") }[state];
       return '<div class="step ' + state + '"><span class="ring">' + (state === "done" ? ic("check") : state === "now" ? "" : '<span class="mono">' + n + "</span>") + "</span><div><h4>" + n + ". " + t("s" + n) + "</h4><p>" + esc(d) + "</p></div>" +
-        '<span class="st badge ' + (state === "done" ? "ok" : state === "now" ? "ok" : "grey") + '">' + lab + "</span></div>";
+        '<span class="st badge ' + (state === "done" || state === "now" ? "ok" : "grey") + '">' + lab + "</span></div>";
+    }).join("");
+    // the checks run in stage 4; C4 is never run for HK
+    var cst = st < 4 ? "wait" : st === 4 ? "now" : "done";
+    var checks = ["c1", "c2", "c3", "c4", "sx"].map(function (k) {
+      var skip = k === "c4" && q.market === "hk", state = skip ? "skip" : cst;
+      var lab = { done: t("st_done"), now: t("st_now"), wait: t("st_wait"), skip: t("st_skip") }[state];
+      return '<div class="chk ' + state + '"><div><h4>' + t(k + "_t") + "</h4><p>" + (skip ? t("pn_hk_c4") : t(k + "_d")) + '</p></div><span class="badge ' + (state === "done" || state === "now" ? "ok" : "grey") + '">' + lab + "</span></div>";
     }).join("");
     var pctv = Math.min(100, Math.round(((st - 1) / 4) * 100));
     var log = S.log.map(function (x) { return "<div>[" + x.t + "] <b>" + esc(T[x.k] ? t(x.k) : x.k) + "</b>" + (x.done ? " · " + t("st_done") : "") + "</div>"; }).join("");
-    return runbar(false) + '<div class="split" style="margin-top:24px"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>' + t("run_title") + '</h2><span class="pill">' + st + " / 5</span></div>" +
-      '<div class="progress"><div style="width:' + pctv + '%"></div></div><div class="steps">' + steps + "</div></div>" +
-      '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>' + t("run_log") + '</h2><span class="pill"><span class="live" style="width:7px;height:7px"></span>LIVE</span></div><div class="log">' + log + '</div><p class="hint">' + t("run_log_note") + "</p></div></div>";
+    return '<div class="dh"><div><h3>' + t("run_title") + '</h3><div class="hint">' + mkName(q.market || "us") + " · " + esc((q.code || "").toUpperCase()) + " · " + esc(q.period || "") + '</div></div><span class="pill" style="margin-left:auto">' + st + " / 5</span>" +
+      '<button class="round" data-act="panel-hide" aria-label="close">' + ic("close", "sm") + "</button></div>" +
+      '<div class="db"><div class="progress"><div style="width:' + pctv + '%"></div></div><div class="steps">' + steps + "</div>" +
+      '<div class="lbl">' + t("pn_checks") + '</div><div class="chks">' + checks + "</div>" +
+      '<div class="lbl">' + t("run_log") + '</div><div class="log">' + log + '</div><p class="hint">' + t("run_log_note") + "</p></div>";
   }
   function fetchFailed() {
     var j = S.job, q = j.query || {};
@@ -755,7 +819,7 @@
         '<p class="hint" style="margin:14px 0 6px">' + t("mt_hk_errs", { e: x.errors, f: Math.round((x.recall || 0) * x.errors) }) + "</p>" + why.map(function (w) { return '<p class="muted" style="margin:6px 0 0;font-size:13px">' + w + "</p>"; }).join("") + "</div>";
     }
     var mods = [["C1", "c1"], ["C2", "c2"], ["C3", "c3"], ["C4", "c4"], ["S1–S5", "sx"]].map(function (m) { return '<div class="mod"><div class="k">' + m[0] + "</div><h3>" + t(m[1] + "_t") + "</h3><p>" + t(m[1] + "_d") + "</p></div>"; }).join("");
-    return '<div class="wrap" style="padding-top:44px"><div class="eyebrow"><span class="dot"></span>' + t("mt_eyebrow") + '</div><h1 class="page">' + t("mt_title") + "</h1>" +
+    return '<div class="wrap" style="padding-top:44px">' + about() + '<section class="section"><div class="eyebrow"><span class="dot"></span>' + t("mt_eyebrow") + '</div><h1 class="page">' + t("mt_title") + "</h1></section>" +
       '<div class="card" style="margin-top:24px;display:flex;gap:16px">' + ic("info") + '<p style="margin:0" class="muted">' + t("mt_lead") + "</p></div>" +
       '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.frozen_eval1.label_zh, E.frozen_eval1.label_en)) + "</div><h2>" + t("mt_main") + '</h2></div><span class="hint">docs/eval_results.md ' + E.frozen_eval1.section + "</span></div>" + tbl(F, ["ds_simple", "ds_direct", "ds_pipeline"]) + '<p class="src">' + t("silent_def") + "</p></section>" +
       '<section class="section"><div class="section-head"><div><div class="eyebrow">' + esc(L(E.holdout.label_zh, E.holdout.label_en)) + "</div><h2>" + t("mt_hold") + '</h2></div><span class="hint">docs/eval_results.md ' + E.holdout.section + "</span></div>" + tbl(H, ["ds_simple", "ds_direct", "ds_pipeline", "ds_verified"]) + '<p class="src">' + t("mt_hold_note") + "</p></section>" +
@@ -817,8 +881,8 @@
     return { provider: f.provider, model: f.model.trim(), base_url: f.base_url.trim(), key: f.key.trim(), lang: S.lang };
   }
   function bind() {
-    var app = document.getElementById("app"), ov = document.getElementById("overlay");
-    [app, ov].forEach(function (root) { root.onclick = onClick; });
+    var app = document.getElementById("app");
+    app.onclick = onClick;
     function on(id, ev, fn) { var el = document.getElementById(id); if (el) el[ev] = fn; }
     on("f-code", "oninput", function (e) { S.form.code = e.target.value; refreshStart(); });
     on("f-key", "oninput", function (e) { S.form.key = e.target.value; refreshStart(); });
@@ -850,17 +914,22 @@
     var b = document.querySelector('[data-act="start"]'); if (b) b.disabled = Object.keys(formErrors()).length > 0;
   }
   function onClick(e) {
-    var el = e.target.closest("[data-go],[data-act],[data-ex],[data-page],[data-dpage],[data-market],[data-vmarket],[data-ccy],[data-copen],[data-cdel],[data-quote],[data-comp],[data-cup]");
+    var el = e.target.closest("[data-go],[data-act],[data-hist],[data-ex],[data-page],[data-dpage],[data-market],[data-vmarket],[data-ccy],[data-copen],[data-cdel],[data-quote],[data-comp],[data-cup]");
     if (!el) return;
     var d = el.dataset;
     if (d.go) { go(d.go); return; }
+    if (d.hist) {
+      S.menu = false; S.drawer = null; S.auxOpen = false; S.view = "analyze"; S.scrollTop0 = true;
+      S.hist = d.hist === S.saved[S.job.id] ? null : d.hist;   // the live result keeps its page images
+      render(); return;
+    }
     if (d.ex) { S.example = d.ex; S.auxOpen = false; go("example"); return; }
     if (d.page) { S.drawer = { src: d.src, n: +d.page, item: d.item || null }; if (d.src === "job") send("page", { n: +d.page }); render(); return; }
     if (d.dpage) { if (!d.dpage) return; S.drawer.n = +d.dpage; S.drawer.item = null; if (S.drawer.src === "job") send("page", { n: +d.dpage }); render(); return; }
     if (d.market) { S.form.market = d.market; render(); return; }
     if (d.vmarket) { S.ver.market = d.vmarket; render(); return; }
     if (d.ccy) { S.cmp.ccy = d.ccy; render(); return; }
-    if (d.copen) { S.cmp.open = +d.copen; S.auxOpen = false; render(); document.getElementById("scroller").scrollTop = 0; return; }
+    if (d.copen) { S.cmp.open = +d.copen; S.auxOpen = false; S.scrollTop0 = true; render(); return; }
     if (d.cdel) { S.cmp.rows.splice(+d.cdel, 1); if (!S.cmp.rows.length) S.cmp.rows.push({ market: "us", code: "" }); render(); return; }
     if (d.quote) { S.openQuotes[d.quote] = !S.openQuotes[d.quote]; render(); return; }
     if (d.comp) { S.openComps[d.comp] = !S.openComps[d.comp]; render(); return; }
@@ -873,6 +942,16 @@
     }
     if (a === "lang") { S.lang = S.lang === "zh" ? "en" : "zh"; send("lang", { lang: S.lang }); render(); }
     else if (a === "menu") { S.menu = !S.menu; render(); }
+    else if (a === "side") { S.side = !S.side; S.menu = false; try { localStorage.setItem("cited-side", S.side ? "1" : "0"); } catch (e2) { /* this visit only */ } render(); }
+    else if (a === "new") {
+      S.hist = null; S.drawer = null; S.touched = false;
+      if (S.job.kind === "single" && S.job.status !== "running") { send("reset"); S.job = { status: "idle" }; }
+      go("analyze");
+    }
+    else if (a === "hist-clear") { try { localStorage.removeItem(HIST_KEY); } catch (e3) { /* nothing stored */ } S.hist = null; S.histCur = null; render(); }
+    else if (a === "prov") { S.provOpen = !S.provOpen; render(); }
+    else if (a === "panel-hide") { S.panelHidden = true; render(); }
+    else if (a === "panel-show") { S.panelHidden = false; render(); }
     else if (a === "eye") { S.form.showKey = !S.form.showKey; render(); }
     else if (a === "start") {
       S.touched = true;
@@ -895,7 +974,7 @@
     else if (a === "reset") { S.cmp.open = null; send("reset"); S.job = { status: "idle" }; render(); }
     else if (a === "aux") { S.auxOpen = !S.auxOpen; render(); }
     else if (a === "close") { S.drawer = null; render(); }
-    else if (a === "csv" || a === "json") { var r = S.view === "example" ? S.cfg.examples[S.example] : S.view === "compare" ? curResult("cmp" + S.cmp.open) : S.job.result; if (r) exportResult(r, a); }
+    else if (a === "csv" || a === "json") { var r = S.view === "example" ? S.cfg.examples[S.example] : S.view === "compare" ? curResult("cmp" + S.cmp.open) : S.hist ? curResult("hist") : S.job.result; if (r) exportResult(r, a); }
     else if (a === "cmp-csv") { exportCompare(); }
     else if (a === "cmp-back") { S.cmp.open = null; render(); }
     else if (a === "cadd") { if (S.cmp.rows.length < 10) S.cmp.rows.push({ market: "us", code: "" }); render(); }

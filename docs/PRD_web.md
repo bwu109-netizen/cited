@@ -1,5 +1,7 @@
 # 财报数字核验：网页产品需求文档（PRD）
 
+> Internal process document (Chinese): product requirements for the web app, written before the Stitch prototypes. The current product is described in the [README](../README.md).
+
 | 项目 | 内容 |
 |---|---|
 | 产品 | 财报数字核验 / Earnings Verifier（2026-10-07 由“有据 / Cited”改名）：从美股、A 股、港股的定期报告里抽取核心财务数字，每个数字附页码和原文，并用纯代码核验，把可疑的数标红 |

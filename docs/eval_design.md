@@ -1,4 +1,21 @@
-# 第 2 阶段评估设计（eval design）v0.4
+# Phase 2 evaluation design v0.4
+
+## Summary (English)
+
+> Full text in Chinese below. §1–§9 are the frozen design, kept verbatim in the git tag `eval-frozen-v1`; §10 records the revisions made after the frozen run. Results are in [eval_results.md](eval_results.md).
+
+- **Goal**: on about 60 filings outside the 9-company development set, compare accuracy, fabrication, whether errors are flagged automatically, cost and stability of (a) the **pipeline** (page location → model extraction → code conversion → verification) and (b) a **direct question** (the whole report to the model, asked like a chat). A **simple direct question** tier was added in v0.3.
+- **Evaluation set (§1)**: 60 filings published in 2026, 20 each from US, A-shares and Hong Kong, covering general / bank / insurance templates, loss-making companies, several reporting currencies and units, documents of 11–408 pages, and non-calendar fiscal years. Every company's previous report was confirmed to exist (used later as the holdout).
+- **Answer key (§2)**: US from SEC XBRL companyfacts, A-shares from Eastmoney via AKShare, Hong Kong from a manual review table, because Eastmoney's Hong Kong data may be currency-converted.
+- **Models (§4)**: deepseek-flash (low reasoning effort) on all 60 filings for every tier; Claude Fable 5.1 via the Message Batches API on a fixed, seeded 9-filing subset only. Hard budget cap $20 for all model calls, enforced by a ledger that reserves the worst case before each call.
+- **Stability (§5)**: DeepSeek only, a seeded 15-filing subset, 3 runs per filing.
+- **Metrics (§6)**: strict accuracy (must reproduce the printed number within half a unit of its last digit; main metric) and approximate accuracy (within 1%), with bootstrap 95% CIs by filing; fabrication rate; flag recall of the pipeline, also reported **without C4** because US / A-share C4 uses the answer-key source; false-alarm share; silent error rate (wrong and not flagged); cost per filing.
+- **Freeze rules (§7)**: company list, prompts, verification and scoring rules, and model parameters were frozen before the first run (`eval/FROZEN.md`, `eval/check_frozen.py`). Rules may change afterwards only if every change is listed and the frozen result stays the main result, reported side by side with the revised one.
+- **Revisions (§10)**: R1–R5 were registered after the frozen run and re-frozen (FROZEN_REV2) before the holdout run; R3 is a new tier designed after seeing results; R6 is for the product only and enters no evaluation number. Only the holdout counts as evidence for the revisions.
+
+---
+
+# 第 2 阶段评估设计（eval design）v0.4（中文全文）
 
 > v0.4（2026-10-06，**冻结版跑完之后**）：新增 §10 修订记录，内容包括冻结版的收尾指标、登记的修订 R1–R3 和留出集验证。§1–§9 的冻结版规则一字未改，它们原样保存在 git 标签 `eval-frozen-v1` 里。
 >

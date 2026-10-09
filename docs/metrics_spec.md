@@ -1,155 +1,159 @@
-# 指标口径规范（metrics spec）v0.3
+# Metrics spec v0.3
 
-本文定义第 1 阶段抽取流水线要抽什么、按什么口径抽、怎么记录、怎么核验。
-规则必须对任意公司通用，不能为开发集（9 家）写特例。凡是“按公司判断”的地方，都写成可以从报表结构或公开分类代码推出的规则。
+> English translation of the Chinese original, content unchanged. The evaluation froze the Chinese text: it is
+> kept verbatim in the git tags `eval-frozen-v1` and `eval-revised-v2` (`git show eval-frozen-v1:docs/metrics_spec.md`).
+> Chinese terms are kept where they are the literal line names in filings.
+
+This document defines what the phase 1 extraction pipeline extracts, under which definitions, how each figure is recorded and how it is verified.
+Rules must work for any company and must not special-case the development set (9 companies). Wherever a rule "depends on the company", it is written so that it can be derived from the statement structure or from public classification codes.
 
 ---
 
-## 1. 行业模板
+## 1. Industry templates
 
-每家公司在抽取前先归入一个模板。不同模板的核心字段不同。
+Every company is assigned a template before extraction. Templates differ in their core fields.
 
-| 模板 | 判定规则（按顺序，命中即停） |
+| Template | Rule (in order; stop at the first match) |
 |---|---|
-| 银行 `bank` | ① 行业代码：SEC SIC 6021/6022/6029/6035/6036，或证监会行业 J66（货币金融服务），或 HKEX/恒生行业“银行”；② 报表结构：合并利润表里有“利息净收入 / 净利息收入 / Net interest income”行，且**没有**“营业成本 / 销售成本 / Cost of revenue”行 |
-| 保险 `insurance` | ① 行业代码：SIC 6311–6399/6411，或证监会 J68（保险业），或 HKEX/恒生“保险”；② 报表结构：利润表里有“保险服务收入 / Insurance revenue / 已赚保费 / Net premiums earned”行 |
-| 通用 `general` | 其他所有公司 |
+| Bank `bank` | ① Industry code: SEC SIC 6021/6022/6029/6035/6036, or CSRC industry J66 (monetary and financial services), or HKEX / Hang Seng industry "Banks"; ② statement structure: the consolidated income statement has a "利息净收入 / 净利息收入 / Net interest income" line and **no** "营业成本 / 销售成本 / Cost of revenue" line |
+| Insurance `insurance` | ① Industry code: SIC 6311–6399/6411, or CSRC J68 (insurance), or HKEX / Hang Seng "Insurance"; ② statement structure: the income statement has an "保险服务收入 / Insurance revenue / 已赚保费 / Net premiums earned" line |
+| General `general` | All other companies |
 
-- 行业代码优先，报表结构作为兜底和交叉检查。冲突时：行业代码明确是银行或保险的，按行业代码（v0.3 修订：中国平安这类保险集团合并了银行，利润表有净利息收入、没有营业成本，按结构会被误判为银行）；行业代码是“通用”或缺失的，按报表结构。都记录 `template_conflict`。
-- 证券、信托、多元金融暂时归入 `general`，第 1 阶段不单独设模板，结果里打上 `template_note`。
-- 模板判定由代码完成，不交给模型。
+- The industry code takes precedence; the statement structure is the fallback and a cross-check. On conflict: if the industry code clearly says bank or insurance, follow the code (v0.3 change: insurance groups such as Ping An consolidate a bank, so their income statement has net interest income and no cost of revenue and would be misread as a bank by structure). If the code says general or is missing, follow the structure. Every conflict is recorded in `template_conflict`.
+- Securities firms, trusts and diversified financials are `general` for now; phase 1 has no separate template for them, and the result carries a `template_note`.
+- The template is decided by code, never by the model.
 
-### 各模板的核心字段
+### Core fields by template
 
-| 字段 key | 中文 | general | bank | insurance |
+| Field key | Meaning | general | bank | insurance |
 |---|---|---|---|---|
-| `revenue` | 营业收入 | ✅ | ✅（口径见 2.1） | ✅ |
-| `net_income_parent` | 归母净利润 | ✅ | ✅ | ✅ |
-| `eps_basic` | 基本每股收益 | ✅ | ✅ | ✅ |
-| `gross_profit` | 毛利 | ✅ 可空 | ✗ 不抽 | ✗ 不抽 |
-| `operating_cash_flow` | 经营活动现金流量净额 | ✅ | ✅ | ✅ |
-| `net_interest_income` | 净利息收入 | — | ✅ | — |
-| `ppop` | 拨备前利润 | — | ✅ | — |
-| `insurance_revenue` | 保险服务收入 | — | — | ✅（可空，适用新准则 IFRS 17 / CAS 25） |
-| `insurance_service_result` | 保险服务业绩 | — | — | ✅ 可空 |
+| `revenue` | Revenue | ✅ | ✅ (definition in 2.1) | ✅ |
+| `net_income_parent` | Net income attributable to the parent | ✅ | ✅ | ✅ |
+| `eps_basic` | Basic earnings per share | ✅ | ✅ | ✅ |
+| `gross_profit` | Gross profit | ✅ may be empty | ✗ not extracted | ✗ not extracted |
+| `operating_cash_flow` | Net cash from operating activities | ✅ | ✅ | ✅ |
+| `net_interest_income` | Net interest income | — | ✅ | — |
+| `ppop` | Pre-provision profit | — | ✅ | — |
+| `insurance_revenue` | Insurance revenue | — | — | ✅ (may be empty; under the new standards IFRS 17 / CAS 25) |
+| `insurance_service_result` | Insurance service result | — | — | ✅ may be empty |
 
-经营现金流对银行和保险的分析意义有限，但仍然抽取，用于和标准答案核对。
+Operating cash flow says little about banks and insurers, but it is still extracted so that it can be compared with the reference answer.
 
 ---
 
-## 2. 字段口径（三地）
+## 2. Field definitions (three markets)
 
-总原则：
-- 取**合并报表**、**法定口径（reported / GAAP / IFRS）**，不取非公认会计准则（non-GAAP）、经调整、管理口径（managed basis / FTE）或按固定汇率口径的数。
-- 不取“扣非”。
-- 不取便利折算（convenience translation）的外币金额。
+General principles:
+- Use **consolidated** statements and **statutory** figures (reported / GAAP / IFRS). Do not use non-GAAP, adjusted, managed-basis (managed basis / FTE) or constant-currency figures.
+- Do not use figures "excluding non-recurring items" (扣非).
+- Do not use convenience-translation amounts in another currency.
 
-### 2.1 营业收入 `revenue`
+### 2.1 Revenue `revenue`
 
-| 市场 | general | bank | insurance |
+| Market | general | bank | insurance |
 |---|---|---|---|
-| A 股 | 合并利润表“**营业收入**”行，**不用“营业总收入”**。营业总收入含金融子公司利息收入等，例如茅台两者不同 | 合并利润表“营业收入”行。A 股银行的营业收入本身就在信用减值损失之前 | 合并利润表“营业收入”行 |
-| 港股 | 合并损益表的收入总额行（“收入 / 營業額 / Revenue”），**包括“其他”分部的收入**。对应东财口径的“营运收入”，不是东财的“营业额” | **扣除预期信贷损失前**的营业收益净额，例如汇丰的“未扣除预期信贷损失及其他信贷减值准备变动之营业收益净额”（即报告里的“收入”）。不用扣除 ECL 后的“营业收益净额” | 损益表收入总额行；新准则下若没有总额行，可空，以 `insurance_revenue` 为主 |
-| 美股 | 利润表 Total net sales / Total revenues / Revenues | Total net revenue（net of interest expense），取 reported 口径，不取 managed basis | Total revenues |
+| A-shares | The "**营业收入**" line of the consolidated income statement; **not "营业总收入"** (total operating revenue, which includes interest income of finance subsidiaries and the like; for example the two differ for Kweichow Moutai) | The "营业收入" line of the consolidated income statement. For A-share banks this line is already before credit impairment losses | The "营业收入" line of the consolidated income statement |
+| Hong Kong | The total revenue line of the consolidated income statement ("收入 / 營業額 / Revenue"), **including revenue of the "other" segment**. Corresponds to Eastmoney's "营运收入", not Eastmoney's "营业额" | Net operating income **before expected credit losses**, e.g. HSBC's "未扣除预期信贷损失及其他信贷减值准备变动之营业收益净额" (the "revenue" of the report). Not the "net operating income" after ECL | The total revenue line of the income statement; if there is no total line under the new standards it may be empty, with `insurance_revenue` as the main figure |
+| US | Income statement Total net sales / Total revenues / Revenues | Total net revenue (net of interest expense), reported basis, not managed basis | Total revenues |
 
-### 2.2 归母净利润 `net_income_parent`
+### 2.2 Net income attributable to the parent `net_income_parent`
 
-- 定义：归属于母公司所有者的净利润（A 股“归属于母公司股东的净利润”，IFRS “Profit attributable to owners/shareholders of the parent”，US GAAP “Net income attributable to [Company]”）。
-- 如果报告把母公司所有者再拆成“普通股股东”和“其他权益工具持有者”（永续债、优先股、AT1，例如汇丰），主字段取**合计**，另抽可选子字段 `net_income_common`（普通股股东应占）。
-  - 东财的港股数据对汇丰给的是普通股股东口径。核验时，若主字段对不上但 `net_income_common` 对上，记为“口径”差异。
-- 美股：us-gaap `NetIncomeLoss`（即归属于母公司），不是 `NetIncomeLossAvailableToCommonStockholdersBasic`。
+- Definition: net income attributable to owners of the parent (A-shares "归属于母公司股东的净利润", IFRS "Profit attributable to owners/shareholders of the parent", US GAAP "Net income attributable to [Company]").
+- If the report splits owners of the parent further into "ordinary shareholders" and "holders of other equity instruments" (perpetual bonds, preference shares, AT1, e.g. HSBC), the main field takes the **total**, and the optional sub-field `net_income_common` (attributable to ordinary shareholders) is extracted as well.
+  - Eastmoney's Hong Kong data gives HSBC on the ordinary-shareholder basis. In verification, if the main field does not match but `net_income_common` does, this is recorded as a "definition" difference.
+- US: us-gaap `NetIncomeLoss` (i.e. attributable to the parent), not `NetIncomeLossAvailableToCommonStockholdersBasic`.
 
-### 2.3 基本每股收益 `eps_basic`
+### 2.3 Basic earnings per share `eps_basic`
 
-- 定义：基本每股收益，每**普通股**，报告币种。
-- 存托凭证（ADS/ADR）发行人：主字段取每普通股。若报告同时披露每 ADS，另抽可选子字段 `eps_basic_per_ads`，并记录比例（如 1 ADS = 8 股）。
-- 期间必须与净利润一致。季报里单季和年初至今的 EPS 是两个不同的数。
-- 港股常见 3 位小数（如腾讯 12.639），照抄，不四舍五入。
+- Definition: basic earnings per **ordinary share**, in the reporting currency.
+- Depositary receipt (ADS/ADR) issuers: the main field is per ordinary share. If the report also discloses per-ADS figures, extract the optional sub-field `eps_basic_per_ads` and record the ratio (e.g. 1 ADS = 8 shares).
+- The period must match net income. In quarterly reports, single-quarter and year-to-date EPS are two different numbers.
+- Hong Kong reports often have 3 decimals (e.g. Tencent 12.639); copy as printed, no rounding.
 
-### 2.4 毛利 `gross_profit`（仅 general，可空）
+### 2.4 Gross profit `gross_profit` (general only; may be empty)
 
-| 情况 | 规则 |
+| Case | Rule |
 |---|---|
-| 报表上有毛利行（港股、美股常见：“毛利 / Gross profit / Gross margin”） | 照抄，`derivation = "reported"` |
-| 报表上没有毛利行，但有营业成本行（A 股常见） | 由代码推导：`revenue − cost_of_revenue`，`derivation = "derived"`。模型额外抽取 `cost_of_revenue`（A 股“营业成本”，不含税金及附加）。不扣税金及附加 |
-| 两者都没有（例如费用按性质列示的公司） | `null`，并写明原因 |
+| The statement has a gross profit line (common in Hong Kong and US: "毛利 / Gross profit / Gross margin") | Copy it, `derivation = "reported"` |
+| No gross profit line, but a cost of revenue line (common in A-shares) | Derived by code: `revenue − cost_of_revenue`, `derivation = "derived"`. The model also extracts `cost_of_revenue` (A-shares "营业成本", excluding taxes and surcharges). Taxes and surcharges are not deducted |
+| Neither (e.g. companies presenting expenses by nature) | `null`, with the reason |
 
-### 2.5 经营活动现金流量净额 `operating_cash_flow`
+### 2.5 Net cash from operating activities `operating_cash_flow`
 
-- 定义：合并现金流量表“经营活动产生的现金流量净额 / Net cash from operating activities”。
-- 季报、中报一般只有年初至今的数。期间类型照实标记，不要标成单季。
-- 港股有的公司把“经营产生的现金”和“已付税项”分开列示，要取**扣税后的净额**行。
+- Definition: "经营活动产生的现金流量净额 / Net cash from operating activities" in the consolidated cash flow statement.
+- Quarterly and interim reports usually give year-to-date figures only. Label the period as printed; do not label it as a single quarter.
+- Some Hong Kong companies show "cash generated from operations" and "tax paid" separately; take the **net line after tax**.
 
-### 2.6 银行字段
+### 2.6 Bank fields
 
-| 字段 | 口径 |
+| Field | Definition |
 |---|---|
-| `net_interest_income` | 净利息收入 / 利息净收入 / Net interest income（美股银行用 net interest income，不用 FTE 口径） |
-| `ppop` 拨备前利润 | 优先取报告里明示的“拨备前利润 / Pre-provision profit”（例如 JPM），`derivation = "reported"`。没有明示时由代码推导：`revenue（扣 ECL 前）− 营业支出总额`（不含信用减值损失和资产减值损失），`derivation = "derived"`，并记录所用组成项。A 股推导式：`营业收入 − 税金及附加 − 业务及管理费 − 其他业务成本`。模型只抽组成项，不算 |
+| `net_interest_income` | 净利息收入 / 利息净收入 / Net interest income (US banks: net interest income, not the FTE basis) |
+| `ppop` pre-provision profit | Prefer the "拨备前利润 / Pre-provision profit" stated in the report (e.g. JPM), `derivation = "reported"`. If not stated, derived by code: `revenue (before ECL) − total operating expenses` (excluding credit impairment and asset impairment losses), `derivation = "derived"`, with the components recorded. A-share formula: `营业收入 − 税金及附加 − 业务及管理费 − 其他业务成本` (revenue − taxes and surcharges − business and administrative expenses − other operating costs). The model only extracts the components and does not compute |
 
-### 2.7 保险字段
+### 2.7 Insurance fields
 
-| 字段 | 口径 |
+| Field | Definition |
 |---|---|
-| `insurance_revenue` | 保险服务收入（IFRS 17 / 新 CAS 25）。旧准则公司填 null，可改抽“已赚保费”作为行业指标 |
-| `insurance_service_result` | 保险服务业绩 = 保险服务收入 − 保险服务费用 ± 分出再保险净额；报告明示时照抄，否则 null |
+| `insurance_revenue` | Insurance revenue (IFRS 17 / new CAS 25). Companies under the old standards: null; "已赚保费" (net premiums earned) can be extracted as an industry metric instead |
+| `insurance_service_result` | Insurance service result = insurance revenue − insurance service expenses ± net reinsurance result; copy it if stated, otherwise null |
 
-新业务价值、内含价值、综合成本率等放进行业特色指标（第 5 节），不放进核心字段。
+Value of new business, embedded value, combined ratio and similar go into industry metrics (section 5), not core fields.
 
 ---
 
-## 3. 期间
+## 3. Periods
 
-每个数必须带期间，期间由三部分组成：
+Every number must carry a period, made of three parts:
 
-| 字段 | 取值 | 说明 |
+| Field | Values | Notes |
 |---|---|---|
-| `period_type` | `Q` 单季 / `H` 半年 / `YTD` 年初至今（9 个月等非半年累计） / `FY` 全年 / `PIT` 时点 | 半年报的 6 个月数标 `H`，不标 `YTD`。三季报的 9 个月数标 `YTD`，第三季度 3 个月的数标 `Q`。**`PIT`（时点）用于期末余额**：总资产、存款/贷款余额、资本充足率、不良率、现金余额等；`period_start` 为空，`period_end` 为结算日 |
-| `period_start`, `period_end` | ISO 日期 | 从原文表头读取，例如“截至二零二六年六月三十日止六个月” → 2026-01-01 ~ 2026-06-30 |
-| `fiscal_label` | 例如 `2026H1`、`FY2026Q3`、`FY2026` | 按公司财年。财年不等于自然年的公司（AAPL 9 月、BABA 3 月），label 用公司自己的财年；比较时以 start/end 为准 |
+| `period_type` | `Q` single quarter / `H` six months / `YTD` year to date (9 months and other non-half-year cumulative periods) / `FY` full year / `PIT` point in time | Six-month figures of interim reports are `H`, not `YTD`. Nine-month figures of Q3 reports are `YTD`; the three-month figures of the third quarter are `Q`. **`PIT` (point in time) is for period-end balances**: total assets, deposits / loans, capital adequacy ratio, NPL ratio, cash balance, etc.; `period_start` is empty and `period_end` is the balance-sheet date |
+| `period_start`, `period_end` | ISO dates | Read from the column header, e.g. "截至二零二六年六月三十日止六个月" (six months ended 30 June 2026) → 2026-01-01 ~ 2026-06-30 |
+| `fiscal_label` | e.g. `2026H1`, `FY2026Q3`, `FY2026` | Follows the company's fiscal year. For companies whose fiscal year differs from the calendar year (AAPL September, BABA March) the label uses the company's own fiscal year; comparisons use start / end |
 
-- 命令行的 `--period` 指目标报告期，例如 `2026H1`、`2026Q3`、`2026FY`。一份报告里会同时出现多个期间（单季 + 累计、本期 + 上年同期），模型要把每个数对应的期间都标出来，**只把目标期间的数作为结果**，同期对比数可以抽，但标成 `comparative`。
-- **单季和累计都披露时两个都抽**：原文同时披露单季和累计（美股 10-Q 的 three months / six or nine months，A 股三季报的“本报告期”和“年初至报告期末”，港股季度公告的三个月和六个月）时，两个数都抽，分别标 `Q` 和 `YTD`（半年累计标 `H`）。核验时按 `period_type` + `period_end` 去匹配标准答案里同一期间类型的值，不能拿单季数去比累计的标准答案。
-- 单季数不由代码从累计数相减推出（第 1 阶段不做跨期计算）。但会用结构化来源里上一季度末的累计数做一致性检查（§7.3 第 5 条）。
-- **缺期间补问一次**：代码按报告期算出“应有”的 (字段, 期间) 组合——必填字段的累计期间；标准答案里有的期间；利润表本身有单季列时（单季营收和累计营收出自同一页），营收、归母、EPS 的单季也必须有；只在摘要或正文里出现的单季数不触发这一条。第一次回答缺少的组合，用同样的页面再问一次，只问缺的部分；补问后仍缺，记为 ❌ 漏抽。补问的 token 和成本计入该份报告。
-
----
-
-## 4. 单位与币种
-
-### 4.1 单位
-
-- 模型**照抄原文数字字符串**（`raw_value`，如 `"(2,353)"`、`"90,703,260,964.48"`、`"12.639"`），以及该数字所在表格或段落声明的单位（`raw_unit`，如 `"人民币百万元"`、`"千元"`、`"RMB'000"`、`"$ in millions"`、`"元/股"`）。模型不做任何换算或符号处理。
-- 代码负责：
-  1. 解析 `raw_value`：去千分位，括号或前导“−/–/—”转为负数，保留原小数位数（用于计算误差容忍度）。
-  2. 解析 `raw_unit` → 倍数：元/US$/HK$ = 1，千元/'000/thousands = 1e3，万元 = 1e4，百万/millions/m = 1e6，亿元 = 1e8，十亿/billions/bn = 1e9；每股金额单位倍数为 1。
-  3. 输出 `value` = 原值 × 倍数，即以“1 个报告币种单位”计。
-- 单位表以外的写法 → 解析失败，状态 ❌，原因归为“单位”，不允许猜。
-
-### 4.2 币种
-
-1. **存储和核验一律用原文的报告币种，不换算。** `currency` 取报告币种的 ISO 代码（CNY / USD / HKD …）。例如腾讯、美团是 CNY，汇丰是 USD，BABA 是 CNY（20-F 里的 USD 便利折算值忽略）。币种从原文单位声明中读取（“人民币百万元” → CNY），由代码映射，模型照抄原文的币种字样。← **第 1 阶段只实现这一条**
-2. 展示和跨公司对比时，可以换算成上市地货币：美股 USD、港股 HKD、A 股 CNY。（网页阶段做）
-3. 换算后的数必须带：`fx_rate`、`fx_source`（如中国人民银行中间价、HKMA、美联储 H.10）、`fx_date`、`fx_basis`（`period_end` 期末汇率 / `period_avg` 期间平均汇率）。约定利润表和现金流量表用期间平均汇率，资产负债表用期末汇率。原币值始终保留，可以随时切回原币种。（网页阶段做）
-
-- 标准答案的币种和报告币种不同时（例如东财把汇丰换算成了人民币），核验层**不对标准答案做汇率还原**，标注“口径”差异并在原因里说明，避免用猜出来的汇率制造“已核验”。这种情况下该标准答案视为不可用：原文核验（C1–C3）通过的数记为 ⚠️ 只找到原文，而不是 ❌——错的是标准答案，不是抽取。
+- The command-line `--period` is the target reporting period, e.g. `2026H1`, `2026Q3`, `2026FY`. A report shows several periods at once (single quarter + cumulative, current + prior year). The model must label every number's period and **only target-period numbers are results**; comparative figures may be extracted but are labelled `comparative`.
+- **When both single-quarter and cumulative figures are disclosed, extract both**: when the filing discloses both (US 10-Q three months / six or nine months, A-share Q3 reports "本报告期" and "年初至报告期末", Hong Kong quarterly announcements three and six months), extract both numbers, labelled `Q` and `YTD` (`H` for six months). Verification matches the reference answer by `period_type` + `period_end`; a single-quarter number is never compared with a cumulative reference.
+- Single-quarter numbers are not derived by code by subtracting cumulative figures (phase 1 does no cross-period arithmetic). They are, however, checked for consistency against the prior quarter-end cumulative figure from the structured source (§7.3 item 5).
+- **Ask once more for missing periods**: code computes the "expected" (field, period) pairs from the reporting period: the cumulative period of the required fields; the periods present in the reference answer; and, when the income statement itself has a single-quarter column (single-quarter and cumulative revenue on the same page), the single quarter of revenue, net income attributable and EPS. A single-quarter number that appears only in a summary or in text does not trigger this. Pairs missing from the first reply are asked for once more with the same pages, only the missing ones; still missing after that, they are recorded as ❌ missing. Tokens and cost of the follow-up count towards that report.
 
 ---
 
-## 5. 行业特色指标
+## 4. Units and currencies
 
-- 模型根据公司的业务和报告内容，提出 3–6 个行业特色指标，例如：
-  - 白酒：直销收入占比
-  - 银行：净息差、不良率、拨备覆盖率、核心一级资本充足率
-  - 互联网：分部收入、MAU
-  - 保险：新业务价值、综合成本率
-- 每个指标的格式与核心字段相同（原文数字、单位、币种或“%”、期间、页码、引用），另加 `rationale`（为什么这个指标对该公司重要，1–2 句）。
-- 比率类（%、倍、bp）的 `raw_unit` 照抄，代码不换算。
-- 行业指标一般没有标准答案，最高状态是 ⚠️ 只找到原文。
+### 4.1 Units
+
+- The model **copies the number string as printed** (`raw_value`, e.g. `"(2,353)"`, `"90,703,260,964.48"`, `"12.639"`) and the unit declared for the table or paragraph containing it (`raw_unit`, e.g. `"人民币百万元"`, `"千元"`, `"RMB'000"`, `"$ in millions"`, `"元/股"`). The model does no conversion or sign handling.
+- Code is responsible for:
+  1. parsing `raw_value`: removing thousands separators, turning brackets or a leading "−/–/—" into a negative number, keeping the original number of decimals (used for the error tolerance);
+  2. parsing `raw_unit` → multiplier: 元 / US$ / HK$ = 1, 千元 / '000 / thousands = 1e3, 万元 = 1e4, 百万 / millions / m = 1e6, 亿元 = 1e8, 十亿 / billions / bn = 1e9; the multiplier of per-share amounts is 1;
+  3. output `value` = raw value × multiplier, i.e. in units of one reporting-currency unit.
+- Wording outside the unit table → parsing fails, status ❌, reason "unit"; no guessing.
+
+### 4.2 Currency
+
+1. **Storage and verification always use the reporting currency of the filing, without conversion.** `currency` is the ISO code of the reporting currency (CNY / USD / HKD …). For example Tencent and Meituan are CNY, HSBC is USD, BABA is CNY (USD convenience translations in the 20-F are ignored). The currency is read from the unit declaration in the filing ("人民币百万元" → CNY) and mapped by code; the model copies the currency wording as printed. ← **only this item is implemented in phase 1**
+2. For display and cross-company comparison, figures can be converted into the listing currency: USD for US, HKD for Hong Kong, CNY for A-shares. (web phase)
+3. Converted figures must carry `fx_rate`, `fx_source` (e.g. PBOC central parity, HKMA, Federal Reserve H.10), `fx_date` and `fx_basis` (`period_end` rate / `period_avg` average rate). By convention, income statement and cash flow use the period average rate and the balance sheet uses the period-end rate. The original-currency value is always kept, and the display can switch back at any time. (web phase)
+
+- When the reference answer's currency differs from the reporting currency (e.g. Eastmoney converted HSBC into RMB), the verification layer **does not convert the reference back**; it records a "definition" difference with the reason, so that no "verified" status is built on a guessed exchange rate. In that case the reference answer is treated as unusable: a number that passes the filing checks (C1–C3) is recorded as ⚠️ found in the filing only, not ❌ — the reference is wrong, not the extraction.
 
 ---
 
-## 6. 抽取输出 JSON（每个数一条）
+## 5. Industry metrics
+
+- Based on the company's business and the report, the model proposes 3–6 industry metrics, for example:
+  - baijiu: share of direct-sales revenue
+  - banks: net interest margin, NPL ratio, provision coverage, core tier 1 capital ratio
+  - internet: segment revenue, MAU
+  - insurance: value of new business, combined ratio
+- Each metric has the same format as the core fields (number as printed, unit, currency or "%", period, page, quote), plus `rationale` (why this metric matters for the company, 1–2 sentences).
+- For ratios (%, x, bp) `raw_unit` is copied and code does not convert.
+- Industry metrics usually have no reference answer; the best status is ⚠️ found in the filing only.
+
+---
+
+## 6. Extraction output JSON (one entry per number)
 
 ```json
 {
@@ -170,83 +174,83 @@
 }
 ```
 
-代码会补充这些字段：`value`、`unit_multiplier`、`currency`（ISO）、`status`、`status_reason`、`failure_category`、`benchmark`（标准答案的值、来源和字段名）。
+Code adds these fields: `value`, `unit_multiplier`, `currency` (ISO), `status`, `status_reason`, `failure_category`, `benchmark` (the reference value, its source and field name).
 
-页码的定义：
-- PDF：从 1 开始的物理页序号，不是页脚印刷的页码。
-- HTML：按章节切出的“页”的编号。
+Page definition:
+- PDF: the physical page index counted from 1, not the page number printed in the footer.
+- HTML: the number of the "page" cut out by section.
 
-`quote` 是原文中的一句话或表格的一行，要包含该数字。
+`quote` is one sentence or one table row of the filing that contains the number.
 
 ---
 
-## 7. 核验层（纯代码）
+## 7. Verification layer (code only)
 
-逐条检查以下四项：
+Each number is checked against these four items:
 
-| # | 检查 | 规则 |
+| # | Check | Rule |
 |---|---|---|
-| C1 | 引用在页内 | 页文本和引用都做 NFKC 规范化、繁体转简体（OpenCC t2s，模型常把港股繁体原文抄成简体），去掉全部空白，统一全角/半角标点和各种破折号或负号。匹配前去掉货币符号（$、US$、HK$、¥、€、£），因为 SEC 表格只在部分行打 $。先做精确子串匹配；其次允许引用由不超过 3 段逐字片段组成（PDF 表格把行名和数字拆到不同行）；再不命中才做模糊匹配（滑动窗口，相似度 ≥ 0.90）。也查相邻 ±1 页，命中邻页则记为页码偏差，C1 仍算通过，但附加原因“页码错” |
-| C2 | 数字在页内（精确） | `raw_value` 必须**精确**出现在原文那一页的规范化文本里（也就是 C1 命中的那一页），不能只出现在模型给的引用里。比较前去掉千分位、括号和负号，只保留数字串，并要求是完整数字：前后不能紧接其他数字。C1 的模糊匹配只用来确认“引用大致在这页”，数字必须单独精确命中。这样可以防止模型改了一位数字后，整句仍以 ≥ 0.90 的相似度蒙混过关。精确不命中，但在全文别的页命中 → “页码错”；全文都找不到 → “数字编造” |
-| C3 | 单位可解析 | `raw_unit` 能映射到倍数，`raw_currency` 能映射到 ISO 币种 |
-| C4 | 与标准答案一致 | 有标准答案时比较 `value`。容忍度 = 原文最后一位有效数字的半个单位（例如原文 401,243、单位百万 → ±0.5 百万；EPS 2.98 → ±0.005），另加 1e-9 的相对误差 |
+| C1 | Quote on the page | Page text and quote are both normalised: NFKC, traditional → simplified Chinese (OpenCC t2s; models often copy traditional Hong Kong text as simplified), all whitespace removed, full-width / half-width punctuation and all kinds of dashes or minus signs unified. Currency symbols ($, US$, HK$, ¥, €, £) are removed before matching, because SEC tables print $ on some rows only. First an exact substring match; then a quote made of up to 3 verbatim pieces is allowed (PDF tables split the row label and its numbers into different lines); only then a fuzzy match (sliding window, similarity ≥ 0.90). Neighbouring pages ±1 are also searched; a hit on a neighbouring page is recorded as a page offset, C1 still passes, with the extra reason "wrong page" |
+| C2 | Number on the page (exact) | `raw_value` must appear **exactly** in the normalised text of that page (the page where C1 matched), not only in the model's quote. Before comparing, thousands separators, brackets and minus signs are removed and only the digit string is kept, which must be a whole number: no digit directly before or after it. C1's fuzzy match only confirms that the quote is roughly on the page; the number itself must match exactly. This prevents a model from changing one digit and still passing with a sentence similarity ≥ 0.90. No exact match on the page but a match on another page → "wrong page"; no match anywhere → "fabricated number" |
+| C3 | Unit parses | `raw_unit` maps to a multiplier and `raw_currency` maps to an ISO currency |
+| C4 | Matches the reference answer | When a reference exists, compare `value`. Tolerance = half a unit of the last significant digit printed (e.g. 401,243 in millions → ±0.5 million; EPS 2.98 → ±0.005), plus a relative error of 1e-9 |
 
-### 状态
+### Status
 
-| 状态 | 条件 |
+| Status | Condition |
 |---|---|
-| ✅ 已核验 | C1、C2、C3 通过，且 C4 通过 |
-| ⚠️ 只找到原文 | C1、C2、C3 通过，但没有标准答案（行业指标、标准答案缺该字段） |
-| ❌ 对不上或找不到 | 任意一项失败，或合理性检查（§7.3）不通过 |
+| ✅ verified | C1, C2, C3 pass and C4 passes |
+| ⚠️ found in the filing only | C1, C2, C3 pass but there is no reference answer (industry metrics, field missing from the reference) |
+| ❌ does not match or not found | any item fails, or a consistency check (§7.3) fails |
 
-推导字段（`derivation = "derived"`）的状态取所有组成项状态中最差的一个；推导值再与标准答案比较（C4）。
+The status of a derived field (`derivation = "derived"`) is the worst status among its components; the derived value is then compared with the reference answer (C4).
 
-### ❌ 原因分类 `failure_category`
+### ❌ reason categories `failure_category`
 
-| 分类 | 例子 |
+| Category | Examples |
 |---|---|
-| 单位 | 单位串无法解析；倍数错（千元当成元） |
-| 口径 | 取了营业总收入而不是营业收入；标准答案是扣 ECL 后的收入；标准答案币种被换算 |
-| 期间 | 取了单季而不是累计，或取了上年同期 |
-| 页码错 | 引用在别的页（±1 页以外） |
-| 数字编造 | 数字在全文任何页都找不到（即使引用句模糊匹配通过） |
-| 引用改写 | 数字在原文那一页上，但引用句不是逐字照抄（改写、增删内容），C1 不通过 |
-| 漏抽 | 应有的 (字段, 期间) 补问后仍没有抽出 |
-| 口径/推导 | 合理性检查不通过（§7.3），例如推导符号错、取错归属口径 |
-| 解析问题 | PDF 抽字丢失或错位，导致原文中的正确数字无法匹配 |
+| Unit | Unit string cannot be parsed; wrong multiplier (thousands taken as units) |
+| Definition | Took total operating revenue instead of revenue; the reference is revenue after ECL; the reference currency was converted |
+| Period | Took the single quarter instead of the cumulative figure, or the prior year |
+| Wrong page | The quote is on another page (beyond ±1) |
+| Fabricated number | The number is on no page of the filing (even if the quote passed the fuzzy match) |
+| Rewritten quote | The number is on that page, but the quote is not verbatim (rewritten, text added or removed), C1 fails |
+| Missing | An expected (field, period) was still not extracted after the follow-up question |
+| Definition / derivation | A consistency check fails (§7.3), e.g. wrong sign in a derivation, wrong attribution basis |
+| Parsing problem | PDF text extraction lost or displaced characters, so the correct number in the filing cannot be matched |
 
-分类由代码按规则给出初判，例如：C1 失败但在全文其他页命中 → 页码错；数字全文都没有 → 数字编造；数字在页上、引用不符 → 引用改写。人工复核后可以在结果文档里改判并注明。
+Code gives an initial category by rule, for example: C1 fails but matches on another page → wrong page; the number is nowhere in the filing → fabricated number; the number is on the page but the quote differs → rewritten quote. A human reviewer may change the category in the result document with a note.
 
-### 7.3 合理性检查（纯代码）
+### 7.3 Consistency checks (code only)
 
-在 C1–C4 之后执行，任何一条不通过都把该数降为 ❌，归类“口径/推导”。只有所需输入都存在时才检查，缺输入就跳过。
+Run after C1–C4; any failure turns the number into ❌ with the category "definition / derivation". Each check runs only when all its inputs exist; otherwise it is skipped.
 
-| # | 检查 | 规则 | 标记在哪个数上 |
+| # | Check | Rule | Flagged on |
 |---|---|---|---|
-| 1 | 毛利 ≤ 营业收入；推导毛利所用营业成本 ≥ 0 | 同期间比较，允许两者的四舍五入误差 | 毛利 |
-| 1b | 拨备前利润 ≤ 营业收入（银行） | 同上 | 拨备前利润 |
-| 2 | 归母合计 ≥ 普通股股东应占（仅当存在永续债等时） | 只在普通股股东应占所在页列示了其他权益持有人（永续债、优先股、AT1 等）应占时检查：归母合计小于普通股股东应占，或两者相等（疑似只取了普通股口径），都不通过。没有其他权益持有人时不检查——US GAAP 下普通股股东应占可以合法地大于归母（如 BABA FY2026 105,904 vs 103,592，夹层权益调整） | 归母 |
-| 3 | 推导值 = 报告明示值 | 推导出的拨备前利润、毛利、归母合计，若全文有同名明示行（如“拨备前利润”“Pre-provision profit”“毛利”），该行的数按常见单位缩放后，至少有一个与推导值相差 ≤ 0.5% | 推导值 |
-| 4 | EPS × 加权平均股数 ≈ 归母 | 比值在 [0.5, 2] 之外即不通过，只抓数量级错误。分母优先用普通股股东应占。股数由模型额外抽取（`weighted_avg_shares_basic`），没抽到就跳过 | EPS |
-| 5 | 单季 + 上一季度末累计 ≈ 本期累计 | 上一季度末累计取自结构化来源（美股 companyfacts 同一财年起点、A 股/港股东财上一季度末），允许 0.2% + 四舍五入误差。只检查可加字段（营收、归母、毛利、净利息收入、经营现金流）；EPS 不可加，不检查。结构化来源被判定为换算过币种时跳过 | 单季和累计两个数都标 |
+| 1 | Gross profit ≤ revenue; cost of revenue used for a derived gross profit ≥ 0 | Same period, allowing the rounding of both figures | Gross profit |
+| 1b | Pre-provision profit ≤ revenue (banks) | As above | Pre-provision profit |
+| 2 | Parent total ≥ attributable to ordinary shareholders (only when perpetual bonds etc. exist) | Checked only when the page with the ordinary-shareholder line also lists other equity holders (perpetual bonds, preference shares, AT1 …): it fails if the parent total is smaller than, or equal to (suspected ordinary-shareholder basis only), the ordinary-shareholder figure. Not checked without other equity holders — under US GAAP the ordinary-shareholder figure can legitimately exceed the parent figure (e.g. BABA FY2026 105,904 vs 103,592, mezzanine equity adjustment) | Net income attributable |
+| 3 | Derived value = stated value | For derived pre-provision profit, gross profit or parent total: if the filing has a line with the same name (e.g. "拨备前利润", "Pre-provision profit", "毛利"), at least one number on that line, scaled by common units, must be within 0.5% of the derived value | Derived value |
+| 4 | EPS × weighted average shares ≈ net income attributable | Fails outside [0.5, 2]; only catches order-of-magnitude errors. The denominator prefers the ordinary-shareholder figure. Share count is extracted by the model (`weighted_avg_shares_basic`); skipped if not extracted | EPS |
+| 5 | Single quarter + prior quarter-end cumulative ≈ current cumulative | The prior quarter-end cumulative figure comes from the structured source (US companyfacts with the same fiscal-year start, A-share / Hong Kong Eastmoney prior quarter-end), tolerance 0.2% + rounding. Only additive fields are checked (revenue, net income attributable, gross profit, net interest income, operating cash flow); EPS is not additive and is not checked. Skipped when the structured source is judged to be currency-converted | Both the single-quarter and the cumulative number |
 
 ---
 
-## 8. 标准答案（benchmark）来源
+## 8. Reference answer (benchmark) sources
 
-| 市场 | 来源 | 字段映射 |
+| Market | Source | Field mapping |
 |---|---|---|
-| 美股 | SEC companyfacts（us-gaap，按 accession 和 period_end 匹配，并按 duration 区分 Q/H/YTD/FY） | revenue：候选 tag 列表（`Revenues`、`RevenueFromContractWithCustomerExcludingAssessedTax`、`RevenuesNetOfInterestExpense` …）；`NetIncomeLoss`；`EarningsPerShareBasic`；`GrossProfit`；`NetCashProvidedByUsedInOperatingActivities`；`InterestIncomeExpenseNet`。只取报告币种对应的 unit |
-| A 股 | AKShare 东财：`OPERATE_INCOME`、`PARENT_NETPROFIT`、`BASIC_EPS`、`NETCASH_OPERATE`、`OPERATE_COST`（用于推导毛利） | 单位为元 |
-| 港股 | AKShare 东财港股 F10：`营运收入`、`股东应占溢利`、`每股基本盈利`、`毛利`、`经营业务现金净额` | 东财的“币种”字段不可信。以 EPS 为探针：东财 EPS 与原文 EPS 之比若明显偏离 1，就判定标准答案已被换算，该公司的港股标准答案全部降级为“口径”差异，不参与 ✅ 判定 |
+| US | SEC companyfacts (us-gaap, matched by accession and period_end, with Q/H/YTD/FY told apart by duration) | revenue: list of candidate tags (`Revenues`, `RevenueFromContractWithCustomerExcludingAssessedTax`, `RevenuesNetOfInterestExpense` …); `NetIncomeLoss`; `EarningsPerShareBasic`; `GrossProfit`; `NetCashProvidedByUsedInOperatingActivities`; `InterestIncomeExpenseNet`. Only the unit of the reporting currency is used |
+| A-shares | AKShare Eastmoney: `OPERATE_INCOME`, `PARENT_NETPROFIT`, `BASIC_EPS`, `NETCASH_OPERATE`, `OPERATE_COST` (for deriving gross profit) | Unit: yuan |
+| Hong Kong | AKShare Eastmoney Hong Kong F10: `营运收入`, `股东应占溢利`, `每股基本盈利`, `毛利`, `经营业务现金净额` | Eastmoney's "currency" field is not reliable. EPS is used as a probe: if the ratio of Eastmoney EPS to filing EPS clearly differs from 1, the reference is judged to be converted, and all Hong Kong reference values of that company are downgraded to a "definition" difference and take no part in ✅ |
 
-标准答案只是“答案之一”，不是真理。标准答案与原文冲突、而原文核验通过（C1–C3）时，结果文档要把冲突列出来，由人工判断。
+The reference answer is "one answer", not the truth. When it conflicts with the filing and the filing checks (C1–C3) pass, the result document lists the conflict for a human to judge.
 
 ---
 
-## 9. 已确认的决定（2026-10-06）
+## 9. Confirmed decisions (2026-10-06)
 
-1. 归母净利润主字段取母公司所有者合计（含其他权益工具持有者），普通股股东口径作为子字段 `net_income_common`。
-2. 港股优先用业绩公告，找不到再用中期报告或年报；结果里记录实际用的是哪份文件。
-3. 美股银行收入取 reported 口径的 Total net revenue。
-4. A 股毛利 = 营业收入 − 营业成本，不扣税金及附加。
+1. The main net-income-attributable field is the total for owners of the parent (including holders of other equity instruments); the ordinary-shareholder figure is the sub-field `net_income_common`.
+2. Hong Kong: prefer the results announcement; if not found, use the interim or annual report; the result records which file was used.
+3. US bank revenue uses reported Total net revenue.
+4. A-share gross profit = revenue − cost of revenue, without deducting taxes and surcharges.

@@ -1,5 +1,7 @@
 # 开发集验证结果（第 2 阶段评估机制，冻结前）
 
+> Internal process document (Chinese): development-set check of the phase 2 evaluation machinery before the freeze.
+
 由 `eval/run_dev.py` + `eval/dev_report.py` 生成。DeepSeek 两格跑开发集全部 9 份；Fable 5.1 两格只跑最短的 1 份，用来测试 Batch 客户端。全部费用记入 $20 账本。
 
 **账本**：已花 $0.5635，未结预留 $0.0000，剩余 $19.4365（上限 $20）。

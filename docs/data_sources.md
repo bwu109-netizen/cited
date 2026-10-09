@@ -1,66 +1,66 @@
-# 数据源可行性验证（第 0 阶段）
+# Data source feasibility check (phase 0)
 
-验证日期：2026-10-06。脚本在 `scripts/` 里，原始文件和结果 JSON 在 `data/raw/{us,a,hk}/`（已 gitignore）。
+Checked on 2026-10-06. The scripts are in `scripts/`; raw files and result JSON are in `data/raw/{us,a,hk}/` (gitignored). Chinese terms are kept where they are field or line names in the sources.
 
 ```bash
-.venv/bin/python scripts/us_sec.py          # 可用 SEC_USER_AGENT="姓名 邮箱" 覆盖默认 UA
+.venv/bin/python scripts/us_sec.py          # SEC_USER_AGENT="name email" overrides the default UA
 .venv/bin/python scripts/a_share_cninfo.py
 .venv/bin/python scripts/hk_hkexnews.py
 ```
 
-## 1. 总表：市场 × 来源 × 可行性 × 坑
+## 1. Overview: market × source × feasibility × pitfalls
 
-| 市场 | 用途 | 来源 / 接口 | 是否可行 | 主要的坑 |
+| Market | Use | Source / endpoint | Feasible | Main pitfalls |
 |---|---|---|---|---|
-| 美股 | 原文 | SEC EDGAR `data.sec.gov/submissions/CIK##########.json` → `www.sec.gov/Archives/edgar/data/{cik}/{accn}/{primaryDocument}` | ✅ 3/3 | 必须带含联系方式的 User-Agent，限速 10 次/秒（脚本限在 8 次/秒）。原文是 inline-XBRL HTML，体积大（JPM 10-Q 11.5MB）。`recent` 列表里 JPM 的 424B2 很多，要按 form 过滤。外国发行人（BABA）季报走 6-K 新闻稿，不是 10-Q |
-| 美股 | 结构化 | SEC XBRL `data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | ✅ 10-Q/10-K/20-F 可行；⚠️ FPI 季报不行 | 同一字段在不同公司用不同 tag（营收：AAPL `RevenueFromContractWithCustomerExcludingAssessedTax`，JPM `RevenuesNetOfInterestExpense`，BABA `Revenues`）。10-Q 里同一 tag 同时有单季和年初至今两条，要按 start/end 区分；现金流量表只有年初至今。银行（JPM）没有 GrossProfit；BABA 也没打 GrossProfit 标签（要用 Revenues − CostOfRevenue 推导）。**BABA 自 2021 年起 6-K 季报没有 XBRL**，最新一季拿不到。BABA 同时有 CNY 和 USD 便利折算两套值，EPS 是每普通股（1 ADS = 8 股） |
-| A 股 | 原文 | 巨潮 cninfo：`/new/information/topSearch/query` 取 orgId → `/new/hisAnnouncement/query`（按定期报告 category 过滤）→ `static.cninfo.com.cn/{adjunctUrl}` | ✅ 3/3 | 非官方文档化的内部接口，参数可能变。同一批结果里有“摘要”“英文版”“更正”，要过滤标题。深市标题不带公司名（宁德时代就叫“2026年半年度报告”）。`column` 要按交易所传 sse/szse |
-| A 股 | 结构化 | AKShare `stock_profit_sheet_by_report_em` / `stock_cash_flow_sheet_by_report_em`（数据来自东方财富 F10） | ✅ 3/3 | 慢：每次调用翻页拉全部历史，单表约 20–25 秒。单位统一为元，但原文单位不一（茅台用元，宁德时代用**千元**，招行用**百万元**）。茅台有 `TOTAL_OPERATE_INCOME`（营业总收入，含财务公司利息收入）≠ `OPERATE_INCOME`（营业收入），研究员通常用营业总收入，必须选定一个口径。A 股利润表**没有毛利行**，要用营业收入 − 营业成本推导；银行没有营业成本，毛利不适用。AKShare 是第三方封装，东财接口改了它就会坏 |
-| 港股 | 原文 | 披露易 HKEXnews：`/search/prefix.do` 取 stockId → `/search/titleSearchServlet.do`（t1code=40000 财务报表；t1code=10000 & t2Gcode=3 业绩公告）→ PDF | ✅ 3/3 | 同样是非文档化接口。**业绩公告比中期报告/年报早 2–4 周**（美团 08-28 公告 vs 09-29 中期报告），做业绩点评要用公告。返回的分类文字是 HTML 转义的，要 unescape。PDF 是繁体中文。**汇丰 PDF 抽出来的字有康熙部首（⺟、⽇），不做 NFKC 规范化就搜不到“母公司”** |
-| 港股 | 结构化 | AKShare `stock_financial_hk_report_em`（东方财富港股 F10，长表 `STD_ITEM_NAME`/`AMOUNT`） | ⚠️ 非银行可行；银行有大坑 | 科目是东财的标准化口径，不是公司口径：腾讯 `营业额` 396,431 ≠ 报告的“收入” 401,243（东财把“其他”分部 4,812 拆到 `其他营业收入`，要用 `营运收入`）。**汇丰的数被东财按约 6.8109 换算成人民币**，`CURRENCY` 字段却写 HKD（腾讯也写 HKD，实际是人民币），所以这个字段不能用。汇丰 `经营收入总额` 是扣除预期信贸损失后的“营业收益净额” 35,389，不是标题“收入” 37,742。没有货币和单位元数据 |
-| 港股（备选） | 结构化 | SEC companyfacts（`ifrs-full`），仅限同时在 SEC 申报的公司（如汇丰 CIK 1089113） | ⚠️ 只有年报 | 汇丰只有 20-F 年度数据，没有中期数据。`ProfitLossAttributableToOwnersOfParent` 最新只到 2022 年（原因未查） |
+| US | Filing | SEC EDGAR `data.sec.gov/submissions/CIK##########.json` → `www.sec.gov/Archives/edgar/data/{cik}/{accn}/{primaryDocument}` | ✅ 3/3 | Requires a User-Agent with contact details; rate limit 10 requests/s (the scripts stay at 8/s). The filing is inline-XBRL HTML and large (JPM 10-Q 11.5 MB). JPM's `recent` list has many 424B2 filings, so filter by form. Foreign private issuers (BABA) file quarterly results as 6-K press releases, not 10-Q |
+| US | Structured | SEC XBRL `data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | ✅ 10-Q/10-K/20-F; ⚠️ not FPI quarterly results | The same field uses different tags at different companies (revenue: AAPL `RevenueFromContractWithCustomerExcludingAssessedTax`, JPM `RevenuesNetOfInterestExpense`, BABA `Revenues`). In a 10-Q the same tag has both a single-quarter and a year-to-date fact, told apart by start/end; the cash flow statement is year-to-date only. The bank (JPM) has no GrossProfit; BABA has no GrossProfit tag either (derive Revenues − CostOfRevenue). **BABA's 6-K quarterly results have had no XBRL since 2021**, so the latest quarter is unavailable. BABA has both CNY and USD convenience-translation values; EPS is per ordinary share (1 ADS = 8 shares) |
+| A-shares | Filing | cninfo: `/new/information/topSearch/query` for the orgId → `/new/hisAnnouncement/query` (filtered by the periodic-report category) → `static.cninfo.com.cn/{adjunctUrl}` | ✅ 3/3 | Undocumented internal endpoints; parameters may change. The same result set contains "summary", "English version" and "correction" documents, so filter by title. Shenzhen titles do not carry the company name (CATL's is just "2026年半年度报告"). `column` must be sse/szse by exchange |
+| A-shares | Structured | AKShare `stock_profit_sheet_by_report_em` / `stock_cash_flow_sheet_by_report_em` (data from Eastmoney F10) | ✅ 3/3 | Slow: every call pages through the full history, about 20–25 s per statement. Units are always yuan, but the filings differ (Moutai in yuan, CATL in **thousand yuan**, China Merchants Bank in **million yuan**). Moutai has `TOTAL_OPERATE_INCOME` (营业总收入, total operating revenue, including interest income of its finance company) ≠ `OPERATE_INCOME` (营业收入, revenue); analysts often use total operating revenue, so one definition must be chosen. A-share income statements **have no gross profit line**: derive revenue − cost of revenue; banks have no cost of revenue, so gross profit does not apply. AKShare is a third-party wrapper and breaks when Eastmoney changes its endpoints |
+| Hong Kong | Filing | HKEXnews: `/search/prefix.do` for the stockId → `/search/titleSearchServlet.do` (t1code=40000 financial statements; t1code=10000 & t2Gcode=3 results announcements) → PDF | ✅ 3/3 | Also undocumented endpoints. **Results announcements come 2–4 weeks before the interim / annual report** (Meituan announcement 08-28 vs interim report 09-29), so results reviews should use the announcement. Category text is HTML-escaped and must be unescaped. PDFs are in traditional Chinese. **Text extracted from HSBC's PDF contains Kangxi radicals (⺟, ⽇); without NFKC normalisation "母公司" (parent company) cannot be found** |
+| Hong Kong | Structured | AKShare `stock_financial_hk_report_em` (Eastmoney Hong Kong F10, long table `STD_ITEM_NAME`/`AMOUNT`) | ⚠️ works for non-banks; big pitfalls for banks | Line items follow Eastmoney's standardised definitions, not the company's: Tencent `营业额` 396,431 ≠ the report's "收入" (revenue) 401,243 (Eastmoney moves the "other" segment 4,812 into `其他营业收入`; use `营运收入`). **HSBC's figures were converted into RMB by Eastmoney at about 6.8109**, yet the `CURRENCY` field says HKD (Tencent also says HKD, but is actually RMB), so that field cannot be used. HSBC's `经营收入总额` is the "net operating income" after expected credit losses, 35,389, not the headline "revenue" 37,742. No currency or unit metadata |
+| Hong Kong (alternative) | Structured | SEC companyfacts (`ifrs-full`), only for companies that also file with the SEC (e.g. HSBC CIK 1089113) | ⚠️ annual only | HSBC has only 20-F annual data, no interim data. `ProfitLossAttributableToOwnersOfParent` stops at 2022 (reason not investigated) |
 
-## 2. 逐家记录
+## 2. Per-company notes
 
-“原文核对”是把结构化值按常见单位缩放后，到原文文本里自动搜索。下面列出的都已经对上；没对上的会单独写明原因。另外每家都人工看过 1–2 个数字的上下文（例如 AAPL “Total net sales 109,417”，汇丰“母公司普通股股东 14,626”）。
+"Filing check" means the structured value, scaled by common units, was searched for automatically in the filing text. Everything listed below matched; mismatches are stated with the reason. In addition, the context of 1–2 numbers per company was checked by hand (e.g. AAPL "Total net sales 109,417", HSBC "母公司普通股股东" (ordinary shareholders of the parent) 14,626).
 
-### 美股（SEC，HTML 原文均为文本，不涉及扫描）
+### US (SEC; HTML filings are all text, no scans)
 
-| 公司 | 行业 | 原文 | 期间 | 结构化字段（单位） | 原文核对 |
+| Company | Industry | Filing | Period | Structured fields (unit) | Filing check |
 |---|---|---|---|---|---|
-| AAPL | 消费电子 | 10-Q `aapl-20260627.htm`，1.0MB HTML | FY26 Q3（截至 2026-06-27），单季 + 9 个月 | 营收、NetIncomeLoss、EPS 基本、GrossProfit、经营现金流（USD；EPS 为 USD/股） | 5 个字段全部对上：营收 109,417，净利 29,789，EPS 2.03，毛利 54,770，经营现金流（9 个月）116,996（USD 百万） |
-| JPM | 银行 | 10-Q `jpm-20260630.htm`，11.5MB HTML | 2026 Q2，单季 + 上半年 | `RevenuesNetOfInterestExpense`、NetIncomeLoss、EPS、经营现金流；**无毛利** | 4 个字段对上：Total net revenue 57,347，净利 21,155，EPS 7.71，经营现金流（上半年）−237,044。注意原文中 57,347 带脚注 (e)，旁边还有管理口径（managed basis）的数，别取错 |
-| BABA | 互联网 | 20-F `baba-20260331.htm`，11.7MB HTML | FY2026（截至 2026-03-31） | Revenues、NetIncomeLoss、EPS、经营现金流（CNY 和 USD 各一套）；**无 GrossProfit 标签** | 全部对上：营收 1,023,670，净利 103,592，EPS 5.70（每普通股），经营现金流 76,213（RMB 百万）。毛利推导：1,023,670 − 616,136 = 407,534。**最新一季（2026-06 季度）的 6-K 没有 XBRL**；AKShare 港股 09988 有 2026-06-30 的数，但本次没有拿原文核对 |
+| AAPL | Consumer electronics | 10-Q `aapl-20260627.htm`, 1.0 MB HTML | FY26 Q3 (ended 2026-06-27), single quarter + 9 months | Revenue, NetIncomeLoss, basic EPS, GrossProfit, operating cash flow (USD; EPS in USD/share) | All 5 fields matched: revenue 109,417, net income 29,789, EPS 2.03, gross profit 54,770, operating cash flow (9 months) 116,996 (USD millions) |
+| JPM | Bank | 10-Q `jpm-20260630.htm`, 11.5 MB HTML | 2026 Q2, single quarter + six months | `RevenuesNetOfInterestExpense`, NetIncomeLoss, EPS, operating cash flow; **no gross profit** | 4 fields matched: Total net revenue 57,347, net income 21,155, EPS 7.71, operating cash flow (six months) −237,044. Note that 57,347 carries footnote (e) and the managed-basis figure sits next to it; do not take the wrong one |
+| BABA | Internet | 20-F `baba-20260331.htm`, 11.7 MB HTML | FY2026 (ended 2026-03-31) | Revenues, NetIncomeLoss, EPS, operating cash flow (one set each in CNY and USD); **no GrossProfit tag** | All matched: revenue 1,023,670, net income 103,592, EPS 5.70 (per ordinary share), operating cash flow 76,213 (RMB millions). Derived gross profit: 1,023,670 − 616,136 = 407,534. **The 6-K for the latest quarter (June 2026) has no XBRL**; AKShare Hong Kong 09988 has the 2026-06-30 figures, but they were not checked against a filing this time |
 
-### A 股（巨潮 PDF 均为文字版：第 2–5 页每页 400–1200 字，第 1 页是封面，字数很少）
+### A-shares (cninfo PDFs are all text: pages 2–5 have 400–1,200 characters each; page 1 is the cover with very little text)
 
-| 公司 | 行业 | 原文 | 期间 | 结构化字段（AKShare/东财，单位：元） | 原文核对 |
+| Company | Industry | Filing | Period | Structured fields (AKShare/Eastmoney, unit: yuan) | Filing check |
 |---|---|---|---|---|---|
-| 贵州茅台 600519 | 白酒 | 2026 年半年度报告，110 页，0.8MB，文字版 | 2026H1 | 营业总收入、营业收入、营业成本、归母净利润、基本 EPS、经营现金流；利润表共 203 列 | 全部按“元”精确对上：营业收入 90,703,260,964.48，营业总收入 92,278,072,083.21，归母净利 44,516,880,421.86，EPS 35.57，经营现金流 70,690,750,119.06。毛利由推导得出，原文没有这一行 |
-| 宁德时代 300750 | 动力电池 | 2026 年半年度报告，182 页，1.6MB，文字版 | 2026H1 | 同上 | 全部对上，原文单位是**千元**：营收 276,916,580，营业成本 210,654,890，归母净利 43,284,002，EPS 9.51，经营现金流 60,216,851 |
-| 招商银行 600036 | 银行 | 2026 年半年度报告，246 页，2.6MB，文字版 | 2026H1 | 营业收入、归母净利润、EPS、经营现金流；**营业总收入和营业成本为空，毛利不适用** | 全部对上，原文单位是**百万元**：营收 178,181，归母净利 76,445，EPS 2.98，经营现金流 304,611 |
+| Kweichow Moutai 600519 | Baijiu | 2026 interim report, 110 pages, 0.8 MB, text | 2026H1 | Total operating revenue, revenue, cost of revenue, net income attributable, basic EPS, operating cash flow; 203 columns in the income statement | All matched exactly in yuan: revenue 90,703,260,964.48, total operating revenue 92,278,072,083.21, net income attributable 44,516,880,421.86, EPS 35.57, operating cash flow 70,690,750,119.06. Gross profit is derived; the filing has no such line |
+| CATL 300750 | Batteries | 2026 interim report, 182 pages, 1.6 MB, text | 2026H1 | As above | All matched; the filing's unit is **thousand yuan**: revenue 276,916,580, cost of revenue 210,654,890, net income attributable 43,284,002, EPS 9.51, operating cash flow 60,216,851 |
+| China Merchants Bank 600036 | Bank | 2026 interim report, 246 pages, 2.6 MB, text | 2026H1 | Revenue, net income attributable, EPS, operating cash flow; **total operating revenue and cost of revenue are empty; gross profit does not apply** | All matched; the filing's unit is **million yuan**: revenue 178,181, net income attributable 76,445, EPS 2.98, operating cash flow 304,611 |
 
-### 港股（披露易 PDF 均为文字版，第 1 页封面为 0 字）
+### Hong Kong (HKEXnews PDFs are all text; the cover page has 0 characters)
 
-| 公司 | 行业 | 原文 | 期间 | 结构化字段（AKShare/东财） | 原文核对 |
+| Company | Industry | Filing | Period | Structured fields (AKShare/Eastmoney) | Filing check |
 |---|---|---|---|---|---|
-| 腾讯 00700 | 互联网 | 中期业绩公告（08-12，50 页）和 2026 中期报告（08-25，122 页，5.5MB） | 2026H1 | 营业额、营运收入、毛利、股东应占溢利、每股基本盈利、经营业务现金净额（RMB；货币字段错写为 HKD） | 改用 `营运收入` 后全部对上（RMB 百万）：收入 401,243，毛利 229,698，归母 114,115，EPS 12.639，经营现金流 154,061。`营业额` 396,431 在原文里找不到 |
-| 美团 03690 | 本地生活 | 中期业绩公告（08-28，41 页）和 2026 中期报告（09-29，129 页，4.4MB） | 2026H1 | 同上 | 全部对上，原文单位是 **RMB 千元**：收入 195,681,950，毛利 61,064,869，归母 −4,672,487，EPS −0.76，经营现金流 2,719,085 |
-| 汇丰 00005 | 银行 | 2026 中期业绩公告（08-04，26 页）和 2026 中期业绩报告（08-21，123 页，7.2MB） | 2026H1 | 经营收入总额、股东应占溢利、每股基本盈利、经营业务现金净额；**无毛利** | **自动核对 0/4**。人工查明东财的值 = 原文 USD × 6.8109：归母 99,616.2 / 6.8109 = 14,626 ✓，EPS 5.789 / 6.8109 = 0.85 ✓，经营现金流 556,872.8 / 6.8109 = 81,762 ✓，经营收入总额 → 35,389 = “营业收益净额”（扣 ECL 后），不是“收入” 37,742。结论：数字本身能对上，但币种被换算过，口径也不同 |
+| Tencent 00700 | Internet | Interim results announcement (08-12, 50 pages) and 2026 interim report (08-25, 122 pages, 5.5 MB) | 2026H1 | 营业额, 营运收入, 毛利, 股东应占溢利, 每股基本盈利, 经营业务现金净额 (RMB; currency field wrongly says HKD) | All matched after switching to `营运收入` (RMB millions): revenue 401,243, gross profit 229,698, net income attributable 114,115, EPS 12.639, operating cash flow 154,061. `营业额` 396,431 is not in the filing |
+| Meituan 03690 | Local services | Interim results announcement (08-28, 41 pages) and 2026 interim report (09-29, 129 pages, 4.4 MB) | 2026H1 | As above | All matched; the filing's unit is **RMB thousands**: revenue 195,681,950, gross profit 61,064,869, net income attributable −4,672,487, EPS −0.76, operating cash flow 2,719,085 |
+| HSBC 00005 | Bank | 2026 interim results announcement (08-04, 26 pages) and 2026 interim report (08-21, 123 pages, 7.2 MB) | 2026H1 | 经营收入总额, 股东应占溢利, 每股基本盈利, 经营业务现金净额; **no gross profit** | **Automatic check 0/4.** Manual check: Eastmoney's value = filing USD × 6.8109: net income attributable 99,616.2 / 6.8109 = 14,626 ✓, EPS 5.789 / 6.8109 = 0.85 ✓, operating cash flow 556,872.8 / 6.8109 = 81,762 ✓; 经营收入总额 → 35,389 = "net operating income" (after ECL), not "revenue" 37,742. Conclusion: the numbers themselves reconcile, but the currency was converted and the definition differs |
 
-## 3. 结论与推荐方案
+## 3. Conclusions and recommendation
 
-1. **原文获取：三个市场都可行，全部是文字版 PDF 或 HTML，9 家里没有扫描版。** 美股用 EDGAR 官方 API（稳定，有文档）。A 股用巨潮、港股用披露易，都是网站内部的 JSON 接口，能用但没有文档，要做好接口变动的监控和重试。港股做业绩点评应抓**业绩公告**，不要等中期报告/年报。
-2. **结构化核对答案：**
-   - 美股：用 SEC companyfacts 作为标准答案（10-K/10-Q/20-F）。需要维护“字段 → 候选 tag”映射，并按 duration 区分单季和年初至今。FPI（BABA 这类）的季度数 XBRL 拿不到，只能从 6-K 新闻稿原文解析，或者退而用港股二次上市的东财数据。
-   - A 股：AKShare 东财接口可以用，按“元”精确到分对得上。要缓存（慢），并统一营业收入口径（营业总收入还是营业收入）。
-   - 港股：AKShare 东财接口可以作为**参考**，不能直接当标准答案。科目口径被标准化过，货币可能被换算（汇丰），货币字段不可信。建议：①非银行优先用 `营运收入`，②每家公司检查报告币种，用 EPS 比值识别是否被换算，③最终以原文解析值为准，东财只做交叉校验。
-3. **核对字段在不同行业的适用性：** 毛利对银行（JPM、招行、汇丰）不适用。A 股和 BABA 需要用营收 − 营业成本推导。后续 schema 里毛利应设为可空，并按行业模板区分（银行用净利息收入、拨备前利润等）。
-4. **单位和币种必须逐家处理：** 同一市场内单位就不一样（元 / 千元 / 百万元，RMB 百万 / RMB 千元），抽取原文时要识别表头的单位声明。港股 PDF 抽取前先做 NFKC 规范化。
+1. **Getting filings: feasible in all three markets; all are text PDFs or HTML, none of the 9 companies has a scanned filing.** The US uses EDGAR's official API (stable, documented). A-shares use cninfo and Hong Kong uses HKEXnews, both internal JSON endpoints of the websites: usable but undocumented, so endpoint changes need monitoring and retries. Hong Kong results reviews should fetch the **results announcement** rather than wait for the interim / annual report.
+2. **Structured reference answers:**
+   - US: SEC companyfacts as the reference (10-K/10-Q/20-F). Needs a "field → candidate tags" mapping and Q vs year-to-date told apart by duration. Quarterly figures of FPIs (like BABA) have no XBRL; they can only be parsed from the 6-K press release, or taken from Eastmoney data for the Hong Kong secondary listing.
+   - A-shares: the AKShare Eastmoney endpoints work and match to the cent in yuan. They need caching (slow) and a single revenue definition (total operating revenue or revenue).
+   - Hong Kong: the AKShare Eastmoney endpoint can be a **reference** only, not the answer. Line items are standardised, the currency may be converted (HSBC) and the currency field is unreliable. Recommendation: ① for non-banks prefer `营运收入`; ② check each company's reporting currency and use the EPS ratio to detect conversion; ③ the parsed filing value is final, Eastmoney is only a cross-check.
+3. **Which fields apply by industry:** gross profit does not apply to banks (JPM, China Merchants Bank, HSBC). A-shares and BABA need revenue − cost of revenue. The schema should make gross profit nullable and use industry templates (banks: net interest income, pre-provision profit, etc.).
+4. **Units and currencies must be handled per company:** units differ even within a market (yuan / thousand yuan / million yuan; RMB millions / RMB thousands), so extraction must read the unit declared in the table header. Hong Kong PDFs need NFKC normalisation before extraction.
 
-## 4. 没做到 / 没验证的
+## 4. Not done / not verified
 
-- BABA 最新一季（2026-06 季度）：SEC 上没有 XBRL。AKShare 09988 有数据（营收 268,953、归母 10,614，RMB 百万），但本次没有下载对应的 6-K 原文去核对。
-- 汇丰：没找到不经换算的港股结构化数据源。SEC 只有 20-F 年度数据，没有中期。
-- 没测试 cninfo 官方数据服务（webapi.cninfo.com.cn，需要注册 token），也没测试 HKEX 的付费数据产品。
-- 没做原文表格的结构化抽取，只做了“数值是否出现在原文文本中”的检验。这一步留给下一阶段。
+- BABA's latest quarter (June 2026): no XBRL on the SEC. AKShare 09988 has the data (revenue 268,953, net income attributable 10,614, RMB millions), but the matching 6-K was not downloaded and checked this time.
+- HSBC: no unconverted Hong Kong structured data source was found. The SEC has only 20-F annual data, no interim data.
+- The official cninfo data service (webapi.cninfo.com.cn, registration token required) and HKEX's paid data products were not tested.
+- No structured extraction of filing tables was done, only the check "does the value appear in the filing text". That step is left to the next phase.

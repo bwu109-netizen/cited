@@ -1,9 +1,10 @@
-# 通用提示词 / Universal prompt
+# Universal prompt
 
-- `universal_prompt_zh.md`、`universal_prompt_en.md`：同一份提示词的中英文版。网页核验页的“复制通用提示词”按钮按界面语言复制其中一份（文件内容原样复制，所以文件里只放提示词本身）。
-- 用法：在任意 AI 里上传财报 PDF，贴上提示词；把回答整段贴回核验页。核验页会取回答里第一个 ```json 代码块，忽略后面的表格；`status` 为 `not_disclosed` 的条目单独列出，不算解析失败。
-- 口径与 `docs/metrics_spec.md` 一致；页码是 PDF 页序号（从 1 开始），与核验层的页码定义相同。
+- `universal_prompt_zh.md`, `universal_prompt_en.md`: the same prompt in Chinese and English. The "copy universal prompt" button on the site's Verify page copies one of them, following the interface language (the file content is copied as is, so the files contain only the prompt itself).
+- Usage: upload the filing PDF to any AI and paste the prompt; paste the whole reply back into the Verify page. The Verify page takes the first ```json code block of the reply and ignores the table after it; items whose `status` is `not_disclosed` are listed separately and do not count as parse failures.
+- Definitions follow `docs/metrics_spec.md`; the page is the PDF page index (counted from 1), the same page definition as the verification layer.
+- The English prompt keeps a few Chinese line names (for example "营业收入" vs "营业总收入", "人民币百万元") on purpose: they are the literal wording printed in A-share and Hong Kong filings that the model has to find and copy.
 
-评估情况：
-- 由评估里“专业直接问 + 核验层”（R3，`earnings_agent/direct.py` 的 `build_verified_prompt`）改写而来。R3 在 DeepSeek 留出集上的严格正确率为 97.1%（美股 + A 股 205 条，输入是解析后的文本，见 `docs/eval_results.md` §3）。
-- 通用版改了输出格式（直接输出 JSON，不再经过解析模型），本身没有单独评估；其他模型都未经评估。
+Evaluation status:
+- Adapted from the "expert direct question + verification layer" tier in the evaluation (R3, `build_verified_prompt` in `earnings_agent/direct.py`). R3 scored 97.1% strict accuracy on the DeepSeek holdout (205 US + A-share rows, parsed text as input; see `docs/eval_results.md` §3).
+- The universal version changes the output format (JSON directly, no parser model in between) and has not been evaluated on its own; other models have not been evaluated.
